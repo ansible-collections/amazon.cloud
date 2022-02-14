@@ -1,0 +1,21 @@
+- name: Create S3 bucket
+  amazon.cloud.s3_bucket:
+    bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
+  register: output
+
+- name: Get S3 bucket
+  amazon.cloud.s3_bucket:
+    state: describe
+    bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+
+- name: Modify S3 bucket
+  amazon.cloud.s3_bucket:
+    state: update
+    bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+    tags:
+      - mykey: myval
+
+- name: Delete S3 bucket
+  amazon.cloud.s3_bucket:
+    state: delete
+    bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
