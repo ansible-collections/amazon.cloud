@@ -23,3 +23,9 @@ plugins/module_utils/core.py import-2.7!skip
 plugins/module_utils/core.py import-3.5!skip
 plugins/module_utils/core.py future-import-boilerplate!skip
 plugins/module_utils/core.py metaclass-boilerplate!skip
+plugins/module_utils/utils.py compile-2.7!skip
+plugins/module_utils/utils.py compile-3.5!skip
+plugins/module_utils/utils.py import-2.7!skip
+plugins/module_utils/utils.py import-3.5!skip
+plugins/module_utils/utils.py future-import-boilerplate!skip
+plugins/module_utils/utils.py metaclass-boilerplate!skip

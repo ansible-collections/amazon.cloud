@@ -7,15 +7,14 @@
 # See: https://github.com/ansible-collections/amazon_cloud_code_generator
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-DOCUMENTATION = r'''
+DOCUMENTATION = r"""
 module: iam_policy
-short_description:
-- Resource Type definition for AWS::IAM::Policy
-description:
-- Resource Type definition for AWS::IAM::Policy
+short_description: []
+description: []
 options:
     groups:
         elements: str
@@ -34,10 +33,20 @@ options:
     users:
         elements: str
         type: list
+    wait:
+        default: false
+        description:
+        - Wait for operation to complete before returning.
+        type: bool
+    wait_timeout:
+        default: 320
+        description:
+        - How many seconds to wait for an operation to complete before timing out.
+        type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: TODO
 requirements: []
-'''
+"""
 
 EXAMPLES = r"""
 """
@@ -48,64 +57,73 @@ RETURN = r"""
 import json
 
 from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSModule
-from ansible_collections.amazon.cloud.plugins.module_utils.core import CloudControlResource
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import snake_dict_to_camel_dict
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    CloudControlResource,
+)
+from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+    snake_dict_to_camel_dict,
+)
 
 
 def main():
 
     argument_spec = dict(
-        client_token=dict(type='str', no_log=True),
-        state=dict(type='str', choices=['create', 'update', 'delete', 'list', 'describe'], default='create'),
+        client_token=dict(type="str", no_log=True),
+        state=dict(
+            type="str",
+            choices=["create", "update", "delete", "list", "describe"],
+            default="create",
+        ),
     )
-        
-    argument_spec['id'] = {'type': 'str'}
-    argument_spec['groups'] = {'type': 'list', 'elements': 'str'}
-    argument_spec['policy_document'] = {'type': 'dict', 'required': True}
-    argument_spec['policy_name'] = {'type': 'str', 'required': True}
-    argument_spec['roles'] = {'type': 'list', 'elements': 'str'}
-    argument_spec['users'] = {'type': 'list', 'elements': 'str'}
 
+    argument_spec["id"] = {"type": "str"}
+    argument_spec["groups"] = {"type": "list", "elements": "str"}
+    argument_spec["policy_document"] = {"type": "dict", "required": True}
+    argument_spec["policy_name"] = {"type": "str", "required": True}
+    argument_spec["roles"] = {"type": "list", "elements": "str"}
+    argument_spec["users"] = {"type": "list", "elements": "str"}
+    argument_spec["wait"] = {"type": "bool", "default": False}
+    argument_spec["wait_timeout"] = {"type": "int", "default": "320"}
 
-    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=False)
+    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=True)
     cloud = CloudControlResource(module)
 
-    type_name = 'AWS::IAM::Policy'
+    type_name = "AWS::IAM::Policy"
 
     params = {}
-        
-    params['id'] = module.params.get('id')
-    params['groups'] = module.params.get('groups')
-    params['policy_document'] = module.params.get('policy_document')
-    params['policy_name'] = module.params.get('policy_name')
-    params['roles'] = module.params.get('roles')
-    params['users'] = module.params.get('users')
+
+    params["groups"] = module.params.get("groups")
+    params["roles"] = module.params.get("roles")
+    params["id"] = module.params.get("id")
+    params["users"] = module.params.get("users")
+    params["policy_document"] = module.params.get("policy_document")
+    params["policy_name"] = module.params.get("policy_name")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    
-    desired_state = json.dumps(params_to_set)
-    state = module.params.get('state')
-    identifier = module.params.get('id')
 
-    if state == 'list':
+    desired_state = json.dumps(params_to_set)
+    state = module.params.get("state")
+    identifier = module.params.get("id")
+
+    if state == "list":
         result = cloud.list_resources(type_name)
 
-    if state == 'create':
-        result = cloud.create_resource(type_name, identifier, desired_state)            
+    if state == "create":
+        result = cloud.create_resource(type_name, identifier, desired_state)
 
-    if state == 'update':
+    if state == "update":
         result = cloud.update_resource(type_name, identifier, params_to_set)
-      
-    if state == 'delete':
+
+    if state == "delete":
         result = cloud.delete_resource(type_name, identifier)
-    
-    if state == 'describe':
+
+    if state == "describe":
         result = cloud.get_resource(type_name, identifier)
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -7,10 +7,11 @@
 # See: https://github.com/ansible-collections/amazon_cloud_code_generator
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-DOCUMENTATION = r'''
+DOCUMENTATION = r"""
 module: s3_bucket
 short_description: Manage S3 buckets in AWS, DigitalOcean, Ceph, Walrus, FakeS3 and
     StorageGRID
@@ -72,35 +73,35 @@ options:
                             for an Amazon S3 bucket should be exported.
                         suboptions:
                             destination:
-                                description: &id002
+                                description:
                                 - Specifies information about where to publish analysis
                                     or configuration results for an Amazon S3 bucket
                                     and S3 Replication Time Control (S3 RTC).
                                 required: true
                                 suboptions:
                                     bucket_account_id:
-                                        description: &id003
+                                        description:
                                         - 'The account ID that owns the destination
                                             S3 bucket. '
                                         type: str
                                     bucket_arn:
-                                        description: &id004
+                                        description:
                                         - The Amazon Resource Name (ARN) of the bucket
                                             to which data is exported.
                                         type: str
                                     format:
-                                        choices: &id005
+                                        choices:
                                         - CSV
                                         - ORC
                                         - Parquet
-                                        description: &id006
+                                        description:
                                         - Specifies the file format used when exporting
                                             data to Amazon S3.
                                         type: str
                                     prefix:
-                                        description: &id007
-                                        - The prefix to use when exporting data. The
-                                            prefix is prepended to all results.
+                                        description:
+                                        - The prefix to use when exporting data.
+                                        - The prefix is prepended to all results.
                                         type: str
                                 type: dict
                             output_schema_version:
@@ -113,7 +114,7 @@ options:
                         type: dict
                 type: dict
             tag_filters:
-                description: &id001
+                description:
                 - Tags to use to identify a subset of objects for an Amazon S3 bucket.
                 elements: dict
                 suboptions:
@@ -128,8 +129,6 @@ options:
     arn:
         description:
         - the Amazon Resource Name (ARN) of the specified bucket.
-        examples:
-        - arn:aws:s3:::mybucket
         type: str
     bucket_encryption:
         description:
@@ -146,17 +145,18 @@ options:
                         description:
                         - Specifies whether Amazon S3 should use an S3 Bucket Key
                             with server-side encryption using KMS (SSE-KMS) for new
-                            objects in the bucket. Existing objects are not affected.
-                            Setting the BucketKeyEnabled element to true causes Amazon
-                            S3 to use an S3 Bucket Key. By default, S3 Bucket Key
-                            is not enabled.
+                            objects in the bucket.
+                        - Existing objects are not affected.
+                        - Setting the BucketKeyEnabled element to true causes Amazon
+                            S3 to use an S3 Bucket Key.
+                        - By default, S3 Bucket Key is not enabled.
                         type: bool
                     server_side_encryption_by_default:
                         description:
                         - Specifies the default server-side encryption to apply to
-                            new objects in the bucket. If a PUT Object request doesn't
-                            specify any server-side encryption, this default encryption
-                            will be applied.
+                            new objects in the bucket.
+                        - If a PUT Object request doesn't specify any server-side
+                            encryption, this default encryption will be applied.
                         suboptions:
                             kms_master_key_id:
                                 description:
@@ -174,10 +174,9 @@ options:
         type: dict
     bucket_name:
         description:
-        - A name for the bucket. If you don't specify a name, AWS CloudFormation generates
-            a unique physical ID and uses that ID for the bucket name.
-        max_length: 63
-        min_length: 3
+        - A name for the bucket.
+        - If you don't specify a name, AWS CloudFormation generates a unique physical
+            ID and uses that ID for the bucket name.
         type: str
     cors_configuration:
         description:
@@ -186,7 +185,8 @@ options:
             cors_rules:
                 description:
                 - A set of origins and methods (cross-origin access that you want
-                    to allow). You can add up to 100 rules to the configuration.
+                    to allow).
+                - You can add up to 100 rules to the configuration.
                 elements: dict
                 suboptions:
                     allowed_headers:
@@ -224,7 +224,6 @@ options:
                     id:
                         description:
                         - A unique identifier for this rule.
-                        max_length: 255
                         type: str
                     max_age:
                         description:
@@ -237,15 +236,12 @@ options:
     domain_name:
         description:
         - The IPv4 DNS name of the specified bucket.
-        examples:
-        - mystack-mybucket-kdwwxmddtr2g.s3.amazonaws.com
         type: str
     dual_stack_domain_name:
         description:
-        - The IPv6 DNS name of the specified bucket. For more information about dual-stack
-            endpoints, see [Using Amazon S3 Dual-Stack Endpoints](https://docs.aws.amazon.com/AmazonS3/latest/dev/dual-stack-endpoints.html).
-        examples:
-        - mystack-mybucket-kdwwxmddtr2g.s3.dualstack.us-east-2.amazonaws.com
+        - The IPv6 DNS name of the specified bucket.
+        - For more information about dual-stack endpoints, see [Using Amazon S3 Dual-Stack
+            Endpoints](https://docs.aws.amazon.com/AmazonS3/latest/dev/dual-stack-endpoints.html).
         type: str
     intelligent_tiering_configurations:
         description:
@@ -271,7 +267,8 @@ options:
                 required: true
                 type: str
             tag_filters:
-                description: *id001
+                description:
+                - Tags to use to identify a subset of objects for an Amazon S3 bucket.
                 suboptions:
                     key:
                         required: true
@@ -282,10 +279,11 @@ options:
                 type: list
             tierings:
                 description:
-                - 'Specifies a list of S3 Intelligent-Tiering storage class tiers
-                    in the configuration. At least one tier must be defined in the
-                    list. At most, you can specify two tiers in the list, one for
-                    each available AccessTier: ARCHIVE_ACCESS and DEEP_ARCHIVE_ACCESS.'
+                - Specifies a list of S3 Intelligent-Tiering storage class tiers in
+                    the configuration.
+                - At least one tier must be defined in the list.
+                - 'At most, you can specify two tiers in the list, one for each available
+                    AccessTier: ARCHIVE_ACCESS and DEEP_ARCHIVE_ACCESS.'
                 elements: dict
                 suboptions:
                     access_tier:
@@ -293,20 +291,21 @@ options:
                         - ARCHIVE_ACCESS
                         - DEEP_ARCHIVE_ACCESS
                         description:
-                        - S3 Intelligent-Tiering access tier. See Storage class for
-                            automatically optimizing frequently and infrequently accessed
-                            objects for a list of access tiers in the S3 Intelligent-Tiering
-                            storage class.
+                        - S3 Intelligent-Tiering access tier.
+                        - See Storage class for automatically optimizing frequently
+                            and infrequently accessed objects for a list of access
+                            tiers in the S3 Intelligent-Tiering storage class.
                         required: true
                         type: str
                     days:
                         description:
                         - The number of consecutive days of no access after which
                             an object will be eligible to be transitioned to the corresponding
-                            tier. The minimum number of days specified for Archive
-                            Access tier must be at least 90 days and Deep Archive
-                            Access tier must be at least 180 days. The maximum can
-                            be up to 2 years (730 days).
+                            tier.
+                        - The minimum number of days specified for Archive Access
+                            tier must be at least 90 days and Deep Archive Access
+                            tier must be at least 180 days.
+                        - The maximum can be up to 2 years (730 days).
                         required: true
                         type: int
                 type: list
@@ -317,21 +316,34 @@ options:
         elements: dict
         suboptions:
             destination:
-                description: *id002
+                description:
+                - Specifies information about where to publish analysis or configuration
+                    results for an Amazon S3 bucket and S3 Replication Time Control
+                    (S3 RTC).
                 required: true
                 suboptions:
                     bucket_account_id:
-                        description: *id003
+                        description:
+                        - 'The account ID that owns the destination S3 bucket. '
                         type: str
                     bucket_arn:
-                        description: *id004
+                        description:
+                        - The Amazon Resource Name (ARN) of the bucket to which data
+                            is exported.
                         type: str
                     format:
-                        choices: *id005
-                        description: *id006
+                        choices:
+                        - CSV
+                        - ORC
+                        - Parquet
+                        description:
+                        - Specifies the file format used when exporting data to Amazon
+                            S3.
                         type: str
                     prefix:
-                        description: *id007
+                        description:
+                        - The prefix to use when exporting data.
+                        - The prefix is prepended to all results.
                         type: str
                 type: dict
             enabled:
@@ -411,24 +423,24 @@ options:
                                 type: int
                         type: dict
                     expiration_date:
-                        description: &id013
-                        - The date value in ISO 8601 format. The timezone is always
-                            UTC. (YYYY-MM-DDThh:mm:ssZ)
+                        description:
+                        - The date value in ISO 8601 format.
+                        - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
                         type: str
                     expiration_in_days:
                         type: int
                     expired_object_delete_marker:
                         type: bool
                     id:
-                        max_length: 255
                         type: str
                     noncurrent_version_expiration:
                         description:
                         - Container for the expiration rule that describes when noncurrent
-                            objects are expired. If your bucket is versioning-enabled
-                            (or versioning is suspended), you can set this action
-                            to request that Amazon S3 expire noncurrent object versions
-                            at a specific period in the object's lifetime
+                            objects are expired.
+                        - If your bucket is versioning-enabled (or versioning is suspended),
+                            you can set this action to request that Amazon S3 expire
+                            noncurrent object versions at a specific period in the
+                            object's lifetime
                         suboptions:
                             newer_noncurrent_versions:
                                 description:
@@ -446,24 +458,24 @@ options:
                     noncurrent_version_expiration_in_days:
                         type: int
                     noncurrent_version_transition:
-                        description: &id008
+                        description:
                         - Container for the transition rule that describes when noncurrent
                             objects transition to the STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING,
-                            GLACIER_IR, GLACIER, or DEEP_ARCHIVE storage class. If
-                            your bucket is versioning-enabled (or versioning is suspended),
+                            GLACIER_IR, GLACIER, or DEEP_ARCHIVE storage class.
+                        - If your bucket is versioning-enabled (or versioning is suspended),
                             you can set this action to request that Amazon S3 transition
                             noncurrent object versions to the STANDARD_IA, ONEZONE_IA,
                             INTELLIGENT_TIERING, GLACIER_IR, GLACIER, or DEEP_ARCHIVE
                             storage class at a specific period in the object's lifetime.
                         suboptions:
                             newer_noncurrent_versions:
-                                description: &id009
+                                description:
                                 - Specified the number of newer noncurrent and current
                                     versions that must exists before performing the
                                     associated action
                                 type: int
                             storage_class:
-                                choices: &id010
+                                choices:
                                 - DEEP_ARCHIVE
                                 - GLACIER
                                 - GLACIER_IR
@@ -471,38 +483,57 @@ options:
                                 - INTELLIGENT_TIERING
                                 - ONEZONE_IA
                                 - STANDARD_IA
-                                description: &id011
+                                description:
                                 - The class of storage used to store the object.
                                 required: true
                                 type: str
                             transition_in_days:
-                                description: &id012
+                                description:
                                 - Specifies the number of days an object is noncurrent
                                     before Amazon S3 can perform the associated action.
                                 required: true
                                 type: int
                     noncurrent_version_transitions:
-                        description: *id008
+                        description:
+                        - Container for the transition rule that describes when noncurrent
+                            objects transition to the STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING,
+                            GLACIER_IR, GLACIER, or DEEP_ARCHIVE storage class.
+                        - If your bucket is versioning-enabled (or versioning is suspended),
+                            you can set this action to request that Amazon S3 transition
+                            noncurrent object versions to the STANDARD_IA, ONEZONE_IA,
+                            INTELLIGENT_TIERING, GLACIER_IR, GLACIER, or DEEP_ARCHIVE
+                            storage class at a specific period in the object's lifetime.
                         elements: dict
                         suboptions:
                             newer_noncurrent_versions:
-                                description: *id009
+                                description:
+                                - Specified the number of newer noncurrent and current
+                                    versions that must exists before performing the
+                                    associated action
                                 type: int
                             storage_class:
-                                choices: *id010
-                                description: *id011
+                                choices:
+                                - DEEP_ARCHIVE
+                                - GLACIER
+                                - GLACIER_IR
+                                - Glacier
+                                - INTELLIGENT_TIERING
+                                - ONEZONE_IA
+                                - STANDARD_IA
+                                description:
+                                - The class of storage used to store the object.
                                 required: true
                                 type: str
                             transition_in_days:
-                                description: *id012
+                                description:
+                                - Specifies the number of days an object is noncurrent
+                                    before Amazon S3 can perform the associated action.
                                 required: true
                                 type: int
                         type: list
                     object_size_greater_than:
-                        max_length: 20
                         type: str
                     object_size_less_than:
-                        max_length: 20
                         type: str
                     prefix:
                         type: str
@@ -513,7 +544,9 @@ options:
                         required: true
                         type: str
                     tag_filters:
-                        description: *id001
+                        description:
+                        - Tags to use to identify a subset of objects for an Amazon
+                            S3 bucket.
                         suboptions:
                             key:
                                 required: true
@@ -523,11 +556,11 @@ options:
                                 type: str
                         type: list
                     transition:
-                        description: &id014
+                        description:
                         - You must specify at least one of "TransitionDate" and "TransitionInDays"
                         suboptions:
                             storage_class:
-                                choices: &id015
+                                choices:
                                 - DEEP_ARCHIVE
                                 - GLACIER
                                 - GLACIER_IR
@@ -538,20 +571,32 @@ options:
                                 required: true
                                 type: str
                             transition_date:
-                                description: *id013
+                                description:
+                                - The date value in ISO 8601 format.
+                                - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
                                 type: str
                             transition_in_days:
                                 type: int
                     transitions:
-                        description: *id014
+                        description:
+                        - You must specify at least one of "TransitionDate" and "TransitionInDays"
                         elements: dict
                         suboptions:
                             storage_class:
-                                choices: *id015
+                                choices:
+                                - DEEP_ARCHIVE
+                                - GLACIER
+                                - GLACIER_IR
+                                - Glacier
+                                - INTELLIGENT_TIERING
+                                - ONEZONE_IA
+                                - STANDARD_IA
                                 required: true
                                 type: str
                             transition_date:
-                                description: *id013
+                                description:
+                                - The date value in ISO 8601 format.
+                                - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
                                 type: str
                             transition_in_days:
                                 type: int
@@ -565,8 +610,9 @@ options:
             destination_bucket_name:
                 description:
                 - The name of an Amazon S3 bucket where Amazon S3 store server access
-                    log files. You can store log files in any bucket that you own.
-                    By default, logs are stored in the bucket where the LoggingConfiguration
+                    log files.
+                - You can store log files in any bucket that you own.
+                - By default, logs are stored in the bucket where the LoggingConfiguration
                     property is defined.
                 type: str
             log_file_prefix:
@@ -586,7 +632,8 @@ options:
             prefix:
                 type: str
             tag_filters:
-                description: *id001
+                description:
+                - Tags to use to identify a subset of objects for an Amazon S3 bucket.
                 suboptions:
                     key:
                         required: true
@@ -626,24 +673,21 @@ options:
                         required: true
                         type: str
                     filter:
-                        description: &id016
-                        - Specifies object key name filtering rules.
                         suboptions:
                             s3_key:
-                                description: &id017
+                                description:
                                 - A container for object key name prefix and suffix
                                     filtering rules.
                                 required: true
                                 suboptions:
                                     rules:
-                                        description: &id018
+                                        description:
                                         - Specifies the Amazon S3 object key name
                                             to filter on and whether to filter on
                                             the suffix or prefix of the key name.
                                         elements: dict
                                         suboptions:
                                             name:
-                                                max_length: 1024
                                                 required: true
                                                 type: str
                                             value:
@@ -672,18 +716,21 @@ options:
                         required: true
                         type: str
                     filter:
-                        description: *id016
                         suboptions:
                             s3_key:
-                                description: *id017
+                                description:
+                                - A container for object key name prefix and suffix
+                                    filtering rules.
                                 required: true
                                 suboptions:
                                     rules:
-                                        description: *id018
+                                        description:
+                                        - Specifies the Amazon S3 object key name
+                                            to filter on and whether to filter on
+                                            the suffix or prefix of the key name.
                                         elements: dict
                                         suboptions:
                                             name:
-                                                max_length: 1024
                                                 required: true
                                                 type: str
                                             value:
@@ -712,18 +759,21 @@ options:
                         required: true
                         type: str
                     filter:
-                        description: *id016
                         suboptions:
                             s3_key:
-                                description: *id017
+                                description:
+                                - A container for object key name prefix and suffix
+                                    filtering rules.
                                 required: true
                                 suboptions:
                                     rules:
-                                        description: *id018
+                                        description:
+                                        - Specifies the Amazon S3 object key name
+                                            to filter on and whether to filter on
+                                            the suffix or prefix of the key name.
                                         elements: dict
                                         suboptions:
                                             name:
-                                                max_length: 1024
                                                 required: true
                                                 type: str
                                             value:
@@ -797,55 +847,54 @@ options:
         suboptions:
             block_public_acls:
                 description:
-                - "Specifies whether Amazon S3 should block public access control\
-                    \ lists (ACLs) for this bucket and objects in this bucket. Setting\
-                    \ this element to TRUE causes the following behavior:\n- PUT Bucket\
-                    \ acl and PUT Object acl calls fail if the specified ACL is public.\n\
-                    \ - PUT Object calls fail if the request includes a public ACL.\n\
-                    Enabling this setting doesn't affect existing policies or ACLs."
+                - Specifies whether Amazon S3 should block public access control lists
+                    (ACLs) for this bucket and objects in this bucket.
+                - 'Setting this element to TRUE causes the following behavior:'
+                - '- PUT Bucket acl and PUT Object acl calls fail if the specified
+                    ACL is public.'
+                - ' - PUT Object calls fail if the request includes a public ACL.'
+                - Enabling this setting doesn't affect existing policies or ACLs.
                 type: bool
             block_public_policy:
                 description:
-                - 'Specifies whether Amazon S3 should block public bucket policies
-                    for this bucket. Setting this element to TRUE causes Amazon S3
-                    to reject calls to PUT Bucket policy if the specified bucket policy
-                    allows public access.
-
-                    Enabling this setting doesn''t affect existing bucket policies.'
+                - Specifies whether Amazon S3 should block public bucket policies
+                    for this bucket.
+                - Setting this element to TRUE causes Amazon S3 to reject calls to
+                    PUT Bucket policy if the specified bucket policy allows public
+                    access.
+                - Enabling this setting doesn't affect existing bucket policies.
                 type: bool
             ignore_public_acls:
                 description:
-                - 'Specifies whether Amazon S3 should ignore public ACLs for this
-                    bucket and objects in this bucket. Setting this element to TRUE
-                    causes Amazon S3 to ignore all public ACLs on this bucket and
-                    objects in this bucket.
-
-                    Enabling this setting doesn''t affect the persistence of any existing
-                    ACLs and doesn''t prevent new public ACLs from being set.'
+                - Specifies whether Amazon S3 should ignore public ACLs for this bucket
+                    and objects in this bucket.
+                - Setting this element to TRUE causes Amazon S3 to ignore all public
+                    ACLs on this bucket and objects in this bucket.
+                - Enabling this setting doesn't affect the persistence of any existing
+                    ACLs and doesn't prevent new public ACLs from being set.
                 type: bool
             restrict_public_buckets:
                 description:
-                - 'Specifies whether Amazon S3 should restrict public bucket policies
-                    for this bucket. Setting this element to TRUE restricts access
-                    to this bucket to only AWS services and authorized users within
-                    this account if the bucket has a public policy.
-
-                    Enabling this setting doesn''t affect previously stored bucket
-                    policies, except that public and cross-account access within any
-                    public bucket policy, including non-public delegation to specific
-                    accounts, is blocked.'
+                - Specifies whether Amazon S3 should restrict public bucket policies
+                    for this bucket.
+                - Setting this element to TRUE restricts access to this bucket to
+                    only AWS services and authorized users within this account if
+                    the bucket has a public policy.
+                - Enabling this setting doesn't affect previously stored bucket policies,
+                    except that public and cross-account access within any public
+                    bucket policy, including non-public delegation to specific accounts,
+                    is blocked.
                 type: bool
         type: dict
     regional_domain_name:
         description:
         - Returns the regional domain name of the specified bucket.
-        examples:
-        - mystack-mybucket-kdwwxmddtr2g.s3.us-east-2.amazonaws.com
         type: str
     replication_configuration:
         description:
-        - A container for replication rules. You can add up to 1,000 rules. The maximum
-            size of a replication configuration is 2 MB.
+        - A container for replication rules.
+        - You can add up to 1,000 rules.
+        - The maximum size of a replication configuration is 2 MB.
         suboptions:
             role:
                 description:
@@ -879,7 +928,7 @@ options:
                                     source and destination bucket owners are not the
                                     same), and you want to change replica ownership
                                     to the AWS account that owns the destination bucket.
-                                    If this is not specified in the replication configuration,
+                                - If this is not specified in the replication configuration,
                                     the replicas are owned by same AWS account that
                                     owns the source object.
                                 suboptions:
@@ -961,7 +1010,9 @@ options:
                                     prefix:
                                         type: str
                                     tag_filters:
-                                        description: *id001
+                                        description:
+                                        - Tags to use to identify a subset of objects
+                                            for an Amazon S3 bucket.
                                         suboptions:
                                             key:
                                                 required: true
@@ -974,7 +1025,9 @@ options:
                             prefix:
                                 type: str
                             tag_filter:
-                                description: *id001
+                                description:
+                                - Tags to use to identify a subset of objects for
+                                    an Amazon S3 bucket.
                                 suboptions:
                                     key:
                                         required: true
@@ -986,13 +1039,11 @@ options:
                     id:
                         description:
                         - A unique identifier for the rule.
-                        max_length: 255
                         type: str
                     prefix:
                         description:
                         - An object key name prefix that identifies the object or
                             objects to which the rule applies.
-                        max_length: 1024
                         type: str
                     priority:
                         type: int
@@ -1014,9 +1065,6 @@ options:
                                         type: str
                                 type: dict
                             sse_kms_encrypted_objects:
-                                description:
-                                - A container for filter information for the selection
-                                    of S3 objects encrypted with AWS KMS.
                                 suboptions:
                                     status:
                                         choices:
@@ -1047,13 +1095,9 @@ options:
         elements: dict
         suboptions:
             key:
-                max_length: 127
-                min_length: 1
                 required: true
                 type: str
             value:
-                max_length: 255
-                min_length: 1
                 required: true
                 type: str
         type: list
@@ -1071,6 +1115,16 @@ options:
                 required: true
                 type: str
         type: dict
+    wait:
+        default: false
+        description:
+        - Wait for operation to complete before returning.
+        type: bool
+    wait_timeout:
+        default: 320
+        description:
+        - How many seconds to wait for an operation to complete before timing out.
+        type: int
     website_configuration:
         description:
         - Specifies website configuration parameters for an Amazon S3 bucket.
@@ -1098,8 +1152,9 @@ options:
                         - http
                         - https
                         description:
-                        - Protocol to use when redirecting requests. The default is
-                            the protocol that is used in the original request.
+                        - Protocol to use when redirecting requests.
+                        - The default is the protocol that is used in the original
+                            request.
                         type: str
                 type: dict
             routing_rules:
@@ -1108,9 +1163,6 @@ options:
                 elements: dict
                 suboptions:
                     redirect_rule:
-                        description:
-                        - Specifies how requests are redirected. In the event of an
-                            error, you can specify a different error code to return.
                         required: true
                         suboptions:
                             host_name:
@@ -1119,16 +1171,17 @@ options:
                                 type: str
                             http_redirect_code:
                                 description:
-                                - The HTTP redirect code to use on the response. Not
-                                    required if one of the siblings is present.
+                                - The HTTP redirect code to use on the response.
+                                - Not required if one of the siblings is present.
                                 type: str
                             protocol:
                                 choices:
                                 - http
                                 - https
                                 description:
-                                - Protocol to use when redirecting requests. The default
-                                    is the protocol that is used in the original request.
+                                - Protocol to use when redirecting requests.
+                                - The default is the protocol that is used in the
+                                    original request.
                                 type: str
                             replace_key_prefix_with:
                                 description:
@@ -1160,17 +1213,34 @@ options:
     website_url:
         description:
         - The Amazon S3 website endpoint for the specified bucket.
-        examples:
-        - 'Example (IPv4): http://mystack-mybucket-kdwwxmddtr2g.s3-website-us-east-2.amazonaws.com/'
-        - 'Example (IPv6): http://mystack-mybucket-kdwwxmddtr2g.s3.dualstack.us-east-2.amazonaws.com/'
-        format: uri
         type: str
 author: Ansible Cloud Team (@ansible-collections)
 version_added: TODO
 requirements: []
-'''
+"""
 
 EXAMPLES = r"""
+- name: Create S3 bucket
+  amazon.cloud.s3_bucket:
+    bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
+  register: output
+
+- name: Get S3 bucket
+  amazon.cloud.s3_bucket:
+    state: describe
+    bucket_name: '{{ output.result.ResourceDescription.Identifier }}'
+
+- name: Modify S3 bucket
+  amazon.cloud.s3_bucket:
+    state: update
+    bucket_name: '{{ output.result.ResourceDescription.Identifier }}'
+    tags:
+    - mykey: myval
+
+- name: Delete S3 bucket
+  amazon.cloud.s3_bucket:
+    state: delete
+    bucket_name: '{{ output.result.ResourceDescription.Identifier }}'
 """
 
 RETURN = r"""
@@ -1179,102 +1249,132 @@ RETURN = r"""
 import json
 
 from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSModule
-from ansible_collections.amazon.cloud.plugins.module_utils.core import CloudControlResource
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import snake_dict_to_camel_dict
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    CloudControlResource,
+)
+from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+    snake_dict_to_camel_dict,
+)
 
 
 def main():
 
     argument_spec = dict(
-        client_token=dict(type='str', no_log=True),
-        state=dict(type='str', choices=['create', 'update', 'delete', 'list', 'describe'], default='create'),
+        client_token=dict(type="str", no_log=True),
+        state=dict(
+            type="str",
+            choices=["create", "update", "delete", "list", "describe"],
+            default="create",
+        ),
     )
-        
-    argument_spec['accelerate_configuration'] = {'type': 'dict'}
-    argument_spec['access_control'] = {'type': 'str', 'choices': ['AuthenticatedRead', 'AwsExecRead', 'BucketOwnerFullControl', 'BucketOwnerRead', 'LogDeliveryWrite', 'Private', 'PublicRead', 'PublicReadWrite']}
-    argument_spec['analytics_configurations'] = {'type': 'list', 'elements': 'dict'}
-    argument_spec['bucket_encryption'] = {'type': 'dict'}
-    argument_spec['bucket_name'] = {'type': 'str'}
-    argument_spec['cors_configuration'] = {'type': 'dict'}
-    argument_spec['intelligent_tiering_configurations'] = {'type': 'list', 'elements': 'dict'}
-    argument_spec['inventory_configurations'] = {'type': 'list', 'elements': 'dict'}
-    argument_spec['lifecycle_configuration'] = {'type': 'dict'}
-    argument_spec['logging_configuration'] = {'type': 'dict'}
-    argument_spec['metrics_configurations'] = {'type': 'list', 'elements': 'dict'}
-    argument_spec['notification_configuration'] = {'type': 'dict'}
-    argument_spec['object_lock_configuration'] = {'type': 'dict'}
-    argument_spec['object_lock_enabled'] = {'type': 'bool'}
-    argument_spec['ownership_controls'] = {'type': 'dict'}
-    argument_spec['public_access_block_configuration'] = {'type': 'dict'}
-    argument_spec['replication_configuration'] = {'type': 'dict'}
-    argument_spec['tags'] = {'type': 'list', 'elements': 'dict'}
-    argument_spec['versioning_configuration'] = {'type': 'dict'}
-    argument_spec['website_configuration'] = {'type': 'dict'}
-    argument_spec['arn'] = {'type': 'str'}
-    argument_spec['domain_name'] = {'type': 'str'}
-    argument_spec['dual_stack_domain_name'] = {'type': 'str'}
-    argument_spec['regional_domain_name'] = {'type': 'str'}
-    argument_spec['website_url'] = {'type': 'str'}
 
+    argument_spec["accelerate_configuration"] = {"type": "dict"}
+    argument_spec["access_control"] = {
+        "type": "str",
+        "choices": [
+            "AuthenticatedRead",
+            "AwsExecRead",
+            "BucketOwnerFullControl",
+            "BucketOwnerRead",
+            "LogDeliveryWrite",
+            "Private",
+            "PublicRead",
+            "PublicReadWrite",
+        ],
+    }
+    argument_spec["analytics_configurations"] = {"type": "list", "elements": "dict"}
+    argument_spec["bucket_encryption"] = {"type": "dict"}
+    argument_spec["bucket_name"] = {"type": "str"}
+    argument_spec["cors_configuration"] = {"type": "dict"}
+    argument_spec["intelligent_tiering_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+    }
+    argument_spec["inventory_configurations"] = {"type": "list", "elements": "dict"}
+    argument_spec["lifecycle_configuration"] = {"type": "dict"}
+    argument_spec["logging_configuration"] = {"type": "dict"}
+    argument_spec["metrics_configurations"] = {"type": "list", "elements": "dict"}
+    argument_spec["notification_configuration"] = {"type": "dict"}
+    argument_spec["object_lock_configuration"] = {"type": "dict"}
+    argument_spec["object_lock_enabled"] = {"type": "bool"}
+    argument_spec["ownership_controls"] = {"type": "dict"}
+    argument_spec["public_access_block_configuration"] = {"type": "dict"}
+    argument_spec["replication_configuration"] = {"type": "dict"}
+    argument_spec["tags"] = {"type": "list", "elements": "dict"}
+    argument_spec["versioning_configuration"] = {"type": "dict"}
+    argument_spec["website_configuration"] = {"type": "dict"}
+    argument_spec["arn"] = {"type": "str"}
+    argument_spec["domain_name"] = {"type": "str"}
+    argument_spec["dual_stack_domain_name"] = {"type": "str"}
+    argument_spec["regional_domain_name"] = {"type": "str"}
+    argument_spec["website_url"] = {"type": "str"}
+    argument_spec["wait"] = {"type": "bool", "default": False}
+    argument_spec["wait_timeout"] = {"type": "int", "default": "320"}
 
-    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=False)
+    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=True)
     cloud = CloudControlResource(module)
 
-    type_name = 'AWS::S3::Bucket'
+    type_name = "AWS::S3::Bucket"
 
     params = {}
-        
-    params['accelerate_configuration'] = module.params.get('accelerate_configuration')
-    params['access_control'] = module.params.get('access_control')
-    params['analytics_configurations'] = module.params.get('analytics_configurations')
-    params['bucket_encryption'] = module.params.get('bucket_encryption')
-    params['bucket_name'] = module.params.get('bucket_name')
-    params['cors_configuration'] = module.params.get('cors_configuration')
-    params['intelligent_tiering_configurations'] = module.params.get('intelligent_tiering_configurations')
-    params['inventory_configurations'] = module.params.get('inventory_configurations')
-    params['lifecycle_configuration'] = module.params.get('lifecycle_configuration')
-    params['logging_configuration'] = module.params.get('logging_configuration')
-    params['metrics_configurations'] = module.params.get('metrics_configurations')
-    params['notification_configuration'] = module.params.get('notification_configuration')
-    params['object_lock_configuration'] = module.params.get('object_lock_configuration')
-    params['object_lock_enabled'] = module.params.get('object_lock_enabled')
-    params['ownership_controls'] = module.params.get('ownership_controls')
-    params['public_access_block_configuration'] = module.params.get('public_access_block_configuration')
-    params['replication_configuration'] = module.params.get('replication_configuration')
-    params['tags'] = module.params.get('tags')
-    params['versioning_configuration'] = module.params.get('versioning_configuration')
-    params['website_configuration'] = module.params.get('website_configuration')
-    params['arn'] = module.params.get('arn')
-    params['domain_name'] = module.params.get('domain_name')
-    params['dual_stack_domain_name'] = module.params.get('dual_stack_domain_name')
-    params['regional_domain_name'] = module.params.get('regional_domain_name')
-    params['website_url'] = module.params.get('website_url')
+
+    params["intelligent_tiering_configurations"] = module.params.get(
+        "intelligent_tiering_configurations"
+    )
+    params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
+    params["public_access_block_configuration"] = module.params.get(
+        "public_access_block_configuration"
+    )
+    params["inventory_configurations"] = module.params.get("inventory_configurations")
+    params["notification_configuration"] = module.params.get(
+        "notification_configuration"
+    )
+    params["regional_domain_name"] = module.params.get("regional_domain_name")
+    params["ownership_controls"] = module.params.get("ownership_controls")
+    params["tags"] = module.params.get("tags")
+    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
+    params["versioning_configuration"] = module.params.get("versioning_configuration")
+    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["access_control"] = module.params.get("access_control")
+    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["domain_name"] = module.params.get("domain_name")
+    params["website_url"] = module.params.get("website_url")
+    params["arn"] = module.params.get("arn")
+    params["bucket_name"] = module.params.get("bucket_name")
+    params["website_configuration"] = module.params.get("website_configuration")
+    params["analytics_configurations"] = module.params.get("analytics_configurations")
+    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
+    params["metrics_configurations"] = module.params.get("metrics_configurations")
+    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
+    params["bucket_encryption"] = module.params.get("bucket_encryption")
+    params["cors_configuration"] = module.params.get("cors_configuration")
+    params["replication_configuration"] = module.params.get("replication_configuration")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    
-    desired_state = json.dumps(params_to_set)
-    state = module.params.get('state')
-    identifier = module.params.get('bucket_name')
 
-    if state == 'list':
+    desired_state = json.dumps(params_to_set)
+    state = module.params.get("state")
+    identifier = module.params.get("bucket_name")
+
+    if state == "list":
         result = cloud.list_resources(type_name)
 
-    if state == 'create':
-        result = cloud.create_resource(type_name, identifier, desired_state)            
+    if state == "create":
+        result = cloud.create_resource(type_name, identifier, desired_state)
 
-    if state == 'update':
+    if state == "update":
         result = cloud.update_resource(type_name, identifier, params_to_set)
-      
-    if state == 'delete':
+
+    if state == "delete":
         result = cloud.delete_resource(type_name, identifier)
-    
-    if state == 'describe':
+
+    if state == "describe":
         result = cloud.get_resource(type_name, identifier)
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

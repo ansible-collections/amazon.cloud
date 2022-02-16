@@ -1,19 +1,21 @@
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import camel_dict_to_snake_dict
+from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+    camel_dict_to_snake_dict,
+)
 
 
 def format_list(response):
     result = list()
-    identifier = response.get('ResourceDescription', {}).get('Identifier', None)
+    identifier = response.get("ResourceDescription", {}).get("Identifier", None)
 
     # Convert the Resource Properties from a str back to json
-    properties = response.get('ResourceDescription', {}).get('Properties', {})
+    properties = response.get("ResourceDescription", {}).get("Properties", {})
     properties = json.loads(properties)
-    
+
     bucket = dict()
-    bucket['Identifier'] = identifier
-    bucket['properties'] = properties
+    bucket["Identifier"] = identifier
+    bucket["properties"] = properties
     result.append(bucket)
-    
+
     result = [camel_dict_to_snake_dict(res) for res in result]
 
     return result
