@@ -1,44 +1,62 @@
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+import json
+from typing import Iterable, List
+
+from ansible.module_utils.common.dict_transformations import (
     camel_dict_to_snake_dict,
+    snake_dict_to_camel_dict,
 )
 
 
-def format_list(response):
-    result = list()
-    identifier = response.get("ResourceDescription", {}).get("Identifier", None)
-
+def _jsonify(data):
+    identifier = data.get("Identifier", None)
+    properties = data.get("Properties", None)
     # Convert the Resource Properties from a str back to json
-    properties = response.get("ResourceDescription", {}).get("Properties", {})
-    properties = json.loads(properties)
+    data = {"identifier": identifier, "properties": json.loads(properties)}
+    return data
 
-    bucket = dict()
-    bucket["Identifier"] = identifier
-    bucket["properties"] = properties
-    result.append(bucket)
 
-    result = [camel_dict_to_snake_dict(res) for res in result]
+def normalize_response(response: Iterable):
+    result: List = []
+
+    resource_descriptions = response.get("ResourceDescription", {}) or response.get(
+        "ResourceDescriptions", []
+    )
+    if isinstance(resource_descriptions, list):
+        res = [_jsonify(r_d) for r_d in resource_descriptions]
+        _result = [camel_dict_to_snake_dict(r) for r in res]
+        result.append(_result)
+    else:
+        result.append(_jsonify(resource_descriptions))
+        result = [camel_dict_to_snake_dict(res) for res in result]
 
     return result
 
 
-def diff_dict(d1, d2):
-    d1_keys = set(d1.keys())
-    d2_keys = set(d2.keys())
-    shared_keys = d1_keys.intersection(d2_keys)
-    shared_deltas = {o: (d1[o], d2[o]) for o in shared_keys if d1[o] != d2[o]}
-    added_keys = d2_keys - d1_keys
-    added_deltas = {o: (None, d2[o]) for o in added_keys}
-    deltas = {**shared_deltas, **added_deltas}
-    return parse_deltas(deltas)
+class JsonPatch(list):
+    def __str__(self):
+        return json.dumps(self)
 
 
-def parse_deltas(deltas: dict):
-    res = {}
-    for k, v in deltas.items():
-        if isinstance(v[0], dict):
-            tmp = diff_dict(v[0], v[1])
-            if tmp:
-                res[k] = tmp
-        else:
-            res[k] = v[1]
-    return res
+def list_merge(old, new):
+    l = []
+    for i in old + new:
+        if i not in l:
+            l.append(i)
+    return l
+
+
+def op(operation, path, value):
+    path = "/{0}".format(path.lstrip("/"))
+    return {"op": operation, "path": path, "value": value}
+
+
+# This is a rather naive implementation. Dictionaries within
+# lists and lists within dictionaries will not be merged.
+def make_op(path, old, new, strategy):
+    if isinstance(old, dict):
+        if strategy == "merge":
+            new = dict(old, **new)
+    elif isinstance(old, list):
+        if strategy == "merge":
+            new = list_merge(old, new)
+    return op("replace", path, new)

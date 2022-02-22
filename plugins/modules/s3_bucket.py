@@ -81,8 +81,8 @@ options:
                                 suboptions:
                                     bucket_account_id:
                                         description:
-                                        - 'The account ID that owns the destination
-                                            S3 bucket. '
+                                        - The account ID that owns the destination
+                                            S3 bucket.
                                         type: str
                                     bucket_arn:
                                         description:
@@ -128,7 +128,8 @@ options:
         type: list
     arn:
         description:
-        - the Amazon Resource Name (ARN) of the specified bucket.
+        - The Amazon Resource Name (ARN) of the specified bucket.the Amazon Resource
+            Name (ARN) of the specified bucket.
         type: str
     bucket_encryption:
         description:
@@ -147,21 +148,21 @@ options:
                             with server-side encryption using KMS (SSE-KMS) for new
                             objects in the bucket.
                         - Existing objects are not affected.
-                        - Setting the BucketKeyEnabled element to true causes Amazon
-                            S3 to use an S3 Bucket Key.
+                        - Setting the I(bucket_key_enabled) element to true causes
+                            Amazon S3 to use an S3 Bucket Key.
                         - By default, S3 Bucket Key is not enabled.
                         type: bool
                     server_side_encryption_by_default:
                         description:
                         - Specifies the default server-side encryption to apply to
                             new objects in the bucket.
-                        - If a PUT Object request doesn't specify any server-side
-                            encryption, this default encryption will be applied.
+                        - If a PUT Object request doesnt specify any server-side encryption,
+                            this default encryption will be applied.
                         suboptions:
                             kms_master_key_id:
                                 description:
-                                - '"KMSMasterKeyID" can only be used when you set
-                                    the value of SSEAlgorithm as aws:kms.'
+                                - I(kms_master_key)ID can only be used when you set
+                                    the value of I(sse_algorithm) as aws:kms.
                                 type: str
                             sse_algorithm:
                                 choices:
@@ -175,7 +176,7 @@ options:
     bucket_name:
         description:
         - A name for the bucket.
-        - If you don't specify a name, AWS CloudFormation generates a unique physical
+        - If you dont specify a name, AWS CloudFormation generates a unique physical
             ID and uses that ID for the bucket name.
         type: str
     cors_configuration:
@@ -240,8 +241,7 @@ options:
     dual_stack_domain_name:
         description:
         - The IPv6 DNS name of the specified bucket.
-        - For more information about dual-stack endpoints, see [Using Amazon S3 Dual-Stack
-            Endpoints](https://docs.aws.amazon.com/AmazonS3/latest/dev/dual-stack-endpoints.html).
+        - For more information about dual-stack endpoints, see (U(https://docs.aws.amazon.com/AmazonS3/latest/dev/dual-stack-endpoints.html).)
         type: str
     intelligent_tiering_configurations:
         description:
@@ -269,6 +269,7 @@ options:
             tag_filters:
                 description:
                 - Tags to use to identify a subset of objects for an Amazon S3 bucket.
+                elements: dict
                 suboptions:
                     key:
                         required: true
@@ -283,7 +284,7 @@ options:
                     the configuration.
                 - At least one tier must be defined in the list.
                 - 'At most, you can specify two tiers in the list, one for each available
-                    AccessTier: ARCHIVE_ACCESS and DEEP_ARCHIVE_ACCESS.'
+                    I(access_tier): C(ARCHIVE_ACCESS) and C(DEEP_ARCHIVE_ACCESS).'
                 elements: dict
                 suboptions:
                     access_tier:
@@ -324,7 +325,7 @@ options:
                 suboptions:
                     bucket_account_id:
                         description:
-                        - 'The account ID that owns the destination S3 bucket. '
+                        - The account ID that owns the destination S3 bucket.
                         type: str
                     bucket_arn:
                         description:
@@ -402,10 +403,10 @@ options:
         suboptions:
             rules:
                 description:
-                - 'You must specify at least one of the following properties: AbortIncompleteMultipartUpload,
-                    ExpirationDate, ExpirationInDays, NoncurrentVersionExpirationInDays,
-                    NoncurrentVersionTransition, NoncurrentVersionTransitions, Transition,
-                    or Transitions.'
+                - 'You must specify at least one of the following properties: I(abort_incomplete_multipart_upload),
+                    I(expiration_date), I(expiration_in_days), I(noncurrent_version_expiration_in_days),
+                    I(noncurrent_version_transition), I(noncurrent_version_transitions),
+                    Transition, or Transitions.'
                 elements: dict
                 suboptions:
                     abort_incomplete_multipart_upload:
@@ -425,7 +426,7 @@ options:
                     expiration_date:
                         description:
                         - The date value in ISO 8601 format.
-                        - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
+                        - The timezone is always UTC. (YYYY-MM-I(dd_thh):mm:ssZ)
                         type: str
                     expiration_in_days:
                         type: int
@@ -440,7 +441,7 @@ options:
                         - If your bucket is versioning-enabled (or versioning is suspended),
                             you can set this action to request that Amazon S3 expire
                             noncurrent object versions at a specific period in the
-                            object's lifetime
+                            objects lifetime
                         suboptions:
                             newer_noncurrent_versions:
                                 description:
@@ -460,13 +461,15 @@ options:
                     noncurrent_version_transition:
                         description:
                         - Container for the transition rule that describes when noncurrent
-                            objects transition to the STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING,
-                            GLACIER_IR, GLACIER, or DEEP_ARCHIVE storage class.
+                            objects transition to the C(STANDARD_IA), C(ONEZONE_IA),
+                            C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
+                            C(DEEP_ARCHIVE) storage class.
                         - If your bucket is versioning-enabled (or versioning is suspended),
                             you can set this action to request that Amazon S3 transition
-                            noncurrent object versions to the STANDARD_IA, ONEZONE_IA,
-                            INTELLIGENT_TIERING, GLACIER_IR, GLACIER, or DEEP_ARCHIVE
-                            storage class at a specific period in the object's lifetime.
+                            noncurrent object versions to the C(STANDARD_IA), C(ONEZONE_IA),
+                            C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
+                            C(DEEP_ARCHIVE) storage class at a specific period in
+                            the objects lifetime.
                         suboptions:
                             newer_noncurrent_versions:
                                 description:
@@ -493,16 +496,19 @@ options:
                                     before Amazon S3 can perform the associated action.
                                 required: true
                                 type: int
+                        type: dict
                     noncurrent_version_transitions:
                         description:
                         - Container for the transition rule that describes when noncurrent
-                            objects transition to the STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING,
-                            GLACIER_IR, GLACIER, or DEEP_ARCHIVE storage class.
+                            objects transition to the C(STANDARD_IA), C(ONEZONE_IA),
+                            C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
+                            C(DEEP_ARCHIVE) storage class.
                         - If your bucket is versioning-enabled (or versioning is suspended),
                             you can set this action to request that Amazon S3 transition
-                            noncurrent object versions to the STANDARD_IA, ONEZONE_IA,
-                            INTELLIGENT_TIERING, GLACIER_IR, GLACIER, or DEEP_ARCHIVE
-                            storage class at a specific period in the object's lifetime.
+                            noncurrent object versions to the C(STANDARD_IA), C(ONEZONE_IA),
+                            C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
+                            C(DEEP_ARCHIVE) storage class at a specific period in
+                            the objects lifetime.
                         elements: dict
                         suboptions:
                             newer_noncurrent_versions:
@@ -547,6 +553,7 @@ options:
                         description:
                         - Tags to use to identify a subset of objects for an Amazon
                             S3 bucket.
+                        elements: dict
                         suboptions:
                             key:
                                 required: true
@@ -557,7 +564,8 @@ options:
                         type: list
                     transition:
                         description:
-                        - You must specify at least one of "TransitionDate" and "TransitionInDays"
+                        - You must specify at least one of I(transition_date) and
+                            I(transition_in_days)
                         suboptions:
                             storage_class:
                                 choices:
@@ -573,13 +581,15 @@ options:
                             transition_date:
                                 description:
                                 - The date value in ISO 8601 format.
-                                - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
+                                - The timezone is always UTC. (YYYY-MM-I(dd_thh):mm:ssZ)
                                 type: str
                             transition_in_days:
                                 type: int
+                        type: dict
                     transitions:
                         description:
-                        - You must specify at least one of "TransitionDate" and "TransitionInDays"
+                        - You must specify at least one of I(transition_date) and
+                            I(transition_in_days)
                         elements: dict
                         suboptions:
                             storage_class:
@@ -596,7 +606,7 @@ options:
                             transition_date:
                                 description:
                                 - The date value in ISO 8601 format.
-                                - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
+                                - The timezone is always UTC. (YYYY-MM-I(dd_thh):mm:ssZ)
                                 type: str
                             transition_in_days:
                                 type: int
@@ -612,7 +622,7 @@ options:
                 - The name of an Amazon S3 bucket where Amazon S3 store server access
                     log files.
                 - You can store log files in any bucket that you own.
-                - By default, logs are stored in the bucket where the LoggingConfiguration
+                - By default, logs are stored in the bucket where the I(logging_configuration)
                     property is defined.
                 type: str
             log_file_prefix:
@@ -634,6 +644,7 @@ options:
             tag_filters:
                 description:
                 - Tags to use to identify a subset of objects for an Amazon S3 bucket.
+                elements: dict
                 suboptions:
                     key:
                         required: true
@@ -645,7 +656,8 @@ options:
         type: list
     notification_configuration:
         description:
-        - Describes the notification configuration for an Amazon S3 bucket.
+        - Configuration that defines how Amazon S3 handles bucket notifications.Describes
+            the notification configuration for an Amazon S3 bucket.
         suboptions:
             event_bridge_configuration:
                 description:
@@ -673,6 +685,10 @@ options:
                         required: true
                         type: str
                     filter:
+                        description:
+                        - The filtering rules that determine which objects invoke
+                            the AWS Lambda function.Specifies object key name filtering
+                            rules.
                         suboptions:
                             s3_key:
                                 description:
@@ -716,6 +732,9 @@ options:
                         required: true
                         type: str
                     filter:
+                        description:
+                        - The filtering rules that determine which objects trigger
+                            notifications.
                         suboptions:
                             s3_key:
                                 description:
@@ -759,6 +778,9 @@ options:
                         required: true
                         type: str
                     filter:
+                        description:
+                        - The filtering rules that determine for which objects to
+                            send notifications.
                         suboptions:
                             s3_key:
                                 description:
@@ -849,38 +871,38 @@ options:
                 description:
                 - Specifies whether Amazon S3 should block public access control lists
                     (ACLs) for this bucket and objects in this bucket.
-                - 'Setting this element to TRUE causes the following behavior:'
+                - 'Setting this element to C(True) causes the following behavior:'
                 - '- PUT Bucket acl and PUT Object acl calls fail if the specified
                     ACL is public.'
-                - ' - PUT Object calls fail if the request includes a public ACL.'
-                - Enabling this setting doesn't affect existing policies or ACLs.
+                - '- PUT Object calls fail if the request includes a public ACL.'
+                - Enabling this setting doesnt affect existing policies or ACLs.
                 type: bool
             block_public_policy:
                 description:
                 - Specifies whether Amazon S3 should block public bucket policies
                     for this bucket.
-                - Setting this element to TRUE causes Amazon S3 to reject calls to
-                    PUT Bucket policy if the specified bucket policy allows public
+                - Setting this element to C(True) causes Amazon S3 to reject calls
+                    to PUT Bucket policy if the specified bucket policy allows public
                     access.
-                - Enabling this setting doesn't affect existing bucket policies.
+                - Enabling this setting doesnt affect existing bucket policies.
                 type: bool
             ignore_public_acls:
                 description:
                 - Specifies whether Amazon S3 should ignore public ACLs for this bucket
                     and objects in this bucket.
-                - Setting this element to TRUE causes Amazon S3 to ignore all public
+                - Setting this element to C(True) causes Amazon S3 to ignore all public
                     ACLs on this bucket and objects in this bucket.
-                - Enabling this setting doesn't affect the persistence of any existing
-                    ACLs and doesn't prevent new public ACLs from being set.
+                - Enabling this setting doesnt affect the persistence of any existing
+                    ACLs and doesnt prevent new public ACLs from being set.
                 type: bool
             restrict_public_buckets:
                 description:
                 - Specifies whether Amazon S3 should restrict public bucket policies
                     for this bucket.
-                - Setting this element to TRUE restricts access to this bucket to
-                    only AWS services and authorized users within this account if
-                    the bucket has a public policy.
-                - Enabling this setting doesn't affect previously stored bucket policies,
+                - Setting this element to C(True) restricts access to this bucket
+                    to only AWS services and authorized users within this account
+                    if the bucket has a public policy.
+                - Enabling this setting doesnt affect previously stored bucket policies,
                     except that public and cross-account access within any public
                     bucket policy, including non-public delegation to specific accounts,
                     is blocked.
@@ -892,7 +914,8 @@ options:
         type: str
     replication_configuration:
         description:
-        - A container for replication rules.
+        - Configuration for replicating objects in an S3 bucket.A container for replication
+            rules.
         - You can add up to 1,000 rules.
         - The maximum size of a replication configuration is 2 MB.
         suboptions:
@@ -959,7 +982,6 @@ options:
                             metrics:
                                 suboptions:
                                     event_threshold:
-                                        required: true
                                         suboptions:
                                             minutes:
                                                 required: true
@@ -1013,6 +1035,7 @@ options:
                                         description:
                                         - Tags to use to identify a subset of objects
                                             for an Amazon S3 bucket.
+                                        elements: dict
                                         suboptions:
                                             key:
                                                 required: true
@@ -1035,6 +1058,7 @@ options:
                                     value:
                                         required: true
                                         type: str
+                                type: dict
                         type: dict
                     id:
                         description:
@@ -1053,6 +1077,9 @@ options:
                             the source objects that you want to replicate.
                         suboptions:
                             replica_modifications:
+                                description:
+                                - A filter that you can specify for selection for
+                                    modifications on replicas.
                                 suboptions:
                                     status:
                                         choices:
@@ -1065,6 +1092,11 @@ options:
                                         type: str
                                 type: dict
                             sse_kms_encrypted_objects:
+                                description:
+                                - A container for filter information for the selection
+                                    of Amazon S3 objects encrypted with AWS KMS.A
+                                    container for filter information for the selection
+                                    of S3 objects encrypted with AWS KMS.
                                 suboptions:
                                     status:
                                         choices:
@@ -1163,6 +1195,14 @@ options:
                 elements: dict
                 suboptions:
                     redirect_rule:
+                        description:
+                        - Container for redirect information.
+                        - You can redirect requests to another host, to another page,
+                            or with another protocol.
+                        - In the event of an error, you can specify a different error
+                            code to return.Specifies how requests are redirected.
+                        - In the event of an error, you can specify a different error
+                            code to return.
                         required: true
                         suboptions:
                             host_name:
@@ -1196,11 +1236,11 @@ options:
                         description:
                         - A container for describing a condition that must be met
                             for the specified redirect to apply.You must specify at
-                            least one of HttpErrorCodeReturnedEquals and KeyPrefixEquals
+                            least one of I(http_error_code_returned_equals) and I(key_prefix_equals)
                         suboptions:
                             http_error_code_returned_equals:
                                 description:
-                                - 'The HTTP error code when the redirect is applied. '
+                                - The HTTP error code when the redirect is applied.
                                 type: str
                             key_prefix_equals:
                                 description:
@@ -1220,27 +1260,9 @@ requirements: []
 """
 
 EXAMPLES = r"""
-- name: Create S3 bucket
+- name: List all the S3 buckets
   amazon.cloud.s3_bucket:
-    bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
-  register: output
-
-- name: Get S3 bucket
-  amazon.cloud.s3_bucket:
-    state: describe
-    bucket_name: '{{ output.result.ResourceDescription.Identifier }}'
-
-- name: Modify S3 bucket
-  amazon.cloud.s3_bucket:
-    state: update
-    bucket_name: '{{ output.result.ResourceDescription.Identifier }}'
-    tags:
-    - mykey: myval
-
-- name: Delete S3 bucket
-  amazon.cloud.s3_bucket:
-    state: delete
-    bucket_name: '{{ output.result.ResourceDescription.Identifier }}'
+    state: list
 """
 
 RETURN = r"""
@@ -1252,7 +1274,7 @@ from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSM
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     snake_dict_to_camel_dict,
 )
 
@@ -1263,12 +1285,21 @@ def main():
         client_token=dict(type="str", no_log=True),
         state=dict(
             type="str",
-            choices=["create", "update", "delete", "list", "describe"],
+            choices=["create", "update", "delete", "list", "describe", "get"],
             default="create",
         ),
     )
 
-    argument_spec["accelerate_configuration"] = {"type": "dict"}
+    argument_spec["accelerate_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "acceleration_status": {
+                "type": "str",
+                "choices": ["Enabled", "Suspended"],
+                "required": True,
+            }
+        },
+    }
     argument_spec["access_control"] = {
         "type": "str",
         "choices": [
@@ -1282,73 +1313,750 @@ def main():
             "PublicReadWrite",
         ],
     }
-    argument_spec["analytics_configurations"] = {"type": "list", "elements": "dict"}
-    argument_spec["bucket_encryption"] = {"type": "dict"}
+    argument_spec["analytics_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "tag_filters": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "value": {"type": "str", "required": True},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+            "storage_class_analysis": {
+                "type": "dict",
+                "suboptions": {
+                    "data_export": {
+                        "type": "dict",
+                        "suboptions": {
+                            "destination": {
+                                "type": "dict",
+                                "required": True,
+                                "suboptions": {
+                                    "bucket_arn": {"type": "str"},
+                                    "bucket_account_id": {"type": "str"},
+                                    "format": {
+                                        "type": "str",
+                                        "choices": ["CSV", "ORC", "Parquet"],
+                                    },
+                                    "prefix": {"type": "str"},
+                                },
+                            },
+                            "output_schema_version": {
+                                "type": "str",
+                                "default": "V_1",
+                                "required": True,
+                            },
+                        },
+                    }
+                },
+                "required": True,
+            },
+            "id": {"type": "str", "required": True},
+            "prefix": {"type": "str"},
+        },
+    }
+    argument_spec["bucket_encryption"] = {
+        "type": "dict",
+        "suboptions": {
+            "server_side_encryption_configuration": {
+                "type": "list",
+                "required": True,
+                "elements": "dict",
+                "suboptions": {
+                    "bucket_key_enabled": {"type": "bool"},
+                    "server_side_encryption_by_default": {
+                        "type": "dict",
+                        "suboptions": {
+                            "kms_master_key_id": {"type": "str"},
+                            "sse_algorithm": {
+                                "type": "str",
+                                "choices": ["AES256", "aws:kms"],
+                                "required": True,
+                            },
+                        },
+                    },
+                },
+            }
+        },
+    }
     argument_spec["bucket_name"] = {"type": "str"}
-    argument_spec["cors_configuration"] = {"type": "dict"}
+    argument_spec["cors_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "cors_rules": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "allowed_headers": {"type": "list", "elements": "str"},
+                    "allowed_methods": {
+                        "type": "list",
+                        "required": True,
+                        "elements": "str",
+                        "choices": ["DELETE", "GET", "HEAD", "POST", "PUT"],
+                    },
+                    "allowed_origins": {
+                        "type": "list",
+                        "required": True,
+                        "elements": "str",
+                    },
+                    "exposed_headers": {"type": "list", "elements": "str"},
+                    "id": {"type": "str"},
+                    "max_age": {"type": "int", "minimum": 0},
+                },
+            }
+        },
+    }
     argument_spec["intelligent_tiering_configurations"] = {
         "type": "list",
         "elements": "dict",
+        "suboptions": {
+            "id": {"type": "str", "required": True},
+            "prefix": {"type": "str"},
+            "status": {
+                "type": "str",
+                "choices": ["Disabled", "Enabled"],
+                "required": True,
+            },
+            "tag_filters": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "value": {"type": "str", "required": True},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+            "tierings": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "access_tier": {
+                        "type": "str",
+                        "choices": ["ARCHIVE_ACCESS", "DEEP_ARCHIVE_ACCESS"],
+                        "required": True,
+                    },
+                    "days": {"type": "int", "required": True},
+                },
+            },
+        },
     }
-    argument_spec["inventory_configurations"] = {"type": "list", "elements": "dict"}
-    argument_spec["lifecycle_configuration"] = {"type": "dict"}
-    argument_spec["logging_configuration"] = {"type": "dict"}
-    argument_spec["metrics_configurations"] = {"type": "list", "elements": "dict"}
-    argument_spec["notification_configuration"] = {"type": "dict"}
-    argument_spec["object_lock_configuration"] = {"type": "dict"}
+    argument_spec["inventory_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "destination": {
+                "type": "dict",
+                "required": True,
+                "suboptions": {
+                    "bucket_arn": {"type": "str"},
+                    "bucket_account_id": {"type": "str"},
+                    "format": {"type": "str", "choices": ["CSV", "ORC", "Parquet"]},
+                    "prefix": {"type": "str"},
+                },
+            },
+            "enabled": {"type": "bool", "required": True},
+            "id": {"type": "str", "required": True},
+            "included_object_versions": {
+                "type": "str",
+                "choices": ["All", "Current"],
+                "required": True,
+            },
+            "optional_fields": {
+                "type": "list",
+                "elements": "str",
+                "choices": [
+                    "BucketKeyStatus",
+                    "ETag",
+                    "EncryptionStatus",
+                    "IntelligentTieringAccessTier",
+                    "IsMultipartUploaded",
+                    "LastModifiedDate",
+                    "ObjectLockLegalHoldStatus",
+                    "ObjectLockMode",
+                    "ObjectLockRetainUntilDate",
+                    "ReplicationStatus",
+                    "Size",
+                    "StorageClass",
+                ],
+            },
+            "prefix": {"type": "str"},
+            "schedule_frequency": {
+                "type": "str",
+                "choices": ["Daily", "Weekly"],
+                "required": True,
+            },
+        },
+    }
+    argument_spec["lifecycle_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "rules": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "abort_incomplete_multipart_upload": {
+                        "type": "dict",
+                        "suboptions": {
+                            "days_after_initiation": {
+                                "type": "int",
+                                "minimum": 0,
+                                "required": True,
+                            }
+                        },
+                    },
+                    "expiration_date": {"type": "str"},
+                    "expiration_in_days": {"type": "int"},
+                    "expired_object_delete_marker": {"type": "bool"},
+                    "id": {"type": "str"},
+                    "noncurrent_version_expiration_in_days": {"type": "int"},
+                    "noncurrent_version_expiration": {
+                        "type": "dict",
+                        "suboptions": {
+                            "noncurrent_days": {"type": "int", "required": True},
+                            "newer_noncurrent_versions": {"type": "int"},
+                        },
+                    },
+                    "noncurrent_version_transition": {
+                        "type": "dict",
+                        "suboptions": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_in_days": {"type": "int", "required": True},
+                            "newer_noncurrent_versions": {"type": "int"},
+                        },
+                    },
+                    "noncurrent_version_transitions": {
+                        "type": "list",
+                        "elements": "dict",
+                        "suboptions": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_in_days": {"type": "int", "required": True},
+                            "newer_noncurrent_versions": {"type": "int"},
+                        },
+                    },
+                    "prefix": {"type": "str"},
+                    "status": {
+                        "type": "str",
+                        "choices": ["Disabled", "Enabled"],
+                        "required": True,
+                    },
+                    "tag_filters": {
+                        "type": "list",
+                        "elements": "dict",
+                        "suboptions": {
+                            "value": {"type": "str", "required": True},
+                            "key": {"type": "str", "required": True},
+                        },
+                    },
+                    "object_size_greater_than": {"type": "str"},
+                    "object_size_less_than": {"type": "str"},
+                    "transition": {
+                        "type": "dict",
+                        "suboptions": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_date": {"type": "str"},
+                            "transition_in_days": {"type": "int"},
+                        },
+                    },
+                    "transitions": {
+                        "type": "list",
+                        "elements": "dict",
+                        "suboptions": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_date": {"type": "str"},
+                            "transition_in_days": {"type": "int"},
+                        },
+                    },
+                },
+            }
+        },
+    }
+    argument_spec["logging_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "destination_bucket_name": {"type": "str"},
+            "log_file_prefix": {"type": "str"},
+        },
+    }
+    argument_spec["metrics_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "access_point_arn": {"type": "str"},
+            "id": {"type": "str", "required": True},
+            "prefix": {"type": "str"},
+            "tag_filters": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "value": {"type": "str", "required": True},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+        },
+    }
+    argument_spec["notification_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "event_bridge_configuration": {
+                "type": "dict",
+                "suboptions": {
+                    "event_bridge_enabled": {
+                        "type": "bool",
+                        "default": "true",
+                        "required": True,
+                    }
+                },
+            },
+            "lambda_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "event": {"type": "str", "required": True},
+                    "filter": {
+                        "type": "dict",
+                        "suboptions": {
+                            "s3_key": {
+                                "type": "dict",
+                                "required": True,
+                                "suboptions": {
+                                    "rules": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "suboptions": {
+                                            "name": {"type": "str", "required": True},
+                                            "value": {"type": "str", "required": True},
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
+                    "function": {"type": "str", "required": True},
+                },
+            },
+            "queue_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "event": {"type": "str", "required": True},
+                    "filter": {
+                        "type": "dict",
+                        "suboptions": {
+                            "s3_key": {
+                                "type": "dict",
+                                "required": True,
+                                "suboptions": {
+                                    "rules": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "suboptions": {
+                                            "name": {"type": "str", "required": True},
+                                            "value": {"type": "str", "required": True},
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
+                    "queue": {"type": "str", "required": True},
+                },
+            },
+            "topic_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "event": {"type": "str", "required": True},
+                    "filter": {
+                        "type": "dict",
+                        "suboptions": {
+                            "s3_key": {
+                                "type": "dict",
+                                "required": True,
+                                "suboptions": {
+                                    "rules": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "suboptions": {
+                                            "name": {"type": "str", "required": True},
+                                            "value": {"type": "str", "required": True},
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
+                    "topic": {"type": "str", "required": True},
+                },
+            },
+        },
+    }
+    argument_spec["object_lock_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "object_lock_enabled": {"type": "str", "default": "Enabled"},
+            "rule": {
+                "type": "dict",
+                "suboptions": {
+                    "default_retention": {
+                        "type": "dict",
+                        "suboptions": {
+                            "years": {"type": "int"},
+                            "days": {"type": "int"},
+                            "mode": {
+                                "type": "str",
+                                "choices": ["COMPLIANCE", "GOVERNANCE"],
+                            },
+                        },
+                    }
+                },
+            },
+        },
+    }
     argument_spec["object_lock_enabled"] = {"type": "bool"}
-    argument_spec["ownership_controls"] = {"type": "dict"}
-    argument_spec["public_access_block_configuration"] = {"type": "dict"}
-    argument_spec["replication_configuration"] = {"type": "dict"}
-    argument_spec["tags"] = {"type": "list", "elements": "dict"}
-    argument_spec["versioning_configuration"] = {"type": "dict"}
-    argument_spec["website_configuration"] = {"type": "dict"}
+    argument_spec["ownership_controls"] = {
+        "type": "dict",
+        "suboptions": {
+            "rules": {
+                "type": "list",
+                "required": True,
+                "elements": "dict",
+                "suboptions": {
+                    "object_ownership": {
+                        "type": "str",
+                        "choices": [
+                            "BucketOwnerEnforced",
+                            "BucketOwnerPreferred",
+                            "ObjectWriter",
+                        ],
+                    }
+                },
+            }
+        },
+    }
+    argument_spec["public_access_block_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "block_public_acls": {"type": "bool"},
+            "block_public_policy": {"type": "bool"},
+            "ignore_public_acls": {"type": "bool"},
+            "restrict_public_buckets": {"type": "bool"},
+        },
+    }
+    argument_spec["replication_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "role": {"type": "str", "required": True},
+            "rules": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "delete_marker_replication": {
+                        "type": "dict",
+                        "suboptions": {
+                            "status": {
+                                "type": "str",
+                                "choices": ["Disabled", "Enabled"],
+                            }
+                        },
+                    },
+                    "destination": {
+                        "type": "dict",
+                        "required": True,
+                        "suboptions": {
+                            "access_control_translation": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "owner": {
+                                        "type": "str",
+                                        "default": "Destination",
+                                        "required": True,
+                                    }
+                                },
+                            },
+                            "account": {"type": "str"},
+                            "bucket": {"type": "str"},
+                            "encryption_configuration": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "replica_kms_key_id": {
+                                        "type": "str",
+                                        "required": True,
+                                    }
+                                },
+                            },
+                            "metrics": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "event_threshold": {
+                                        "type": "dict",
+                                        "suboptions": {
+                                            "minutes": {"type": "int", "required": True}
+                                        },
+                                    },
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    },
+                                },
+                            },
+                            "replication_time": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    },
+                                    "time": {
+                                        "type": "dict",
+                                        "required": True,
+                                        "suboptions": {
+                                            "minutes": {"type": "int", "required": True}
+                                        },
+                                    },
+                                },
+                            },
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "REDUCED_REDUNDANCY",
+                                    "STANDARD",
+                                    "STANDARD_IA",
+                                ],
+                            },
+                        },
+                    },
+                    "filter": {
+                        "type": "dict",
+                        "suboptions": {
+                            "and": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "prefix": {"type": "str"},
+                                    "tag_filters": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "suboptions": {
+                                            "value": {"type": "str", "required": True},
+                                            "key": {"type": "str", "required": True},
+                                        },
+                                    },
+                                },
+                            },
+                            "prefix": {"type": "str"},
+                            "tag_filter": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "value": {"type": "str", "required": True},
+                                    "key": {"type": "str", "required": True},
+                                },
+                            },
+                        },
+                    },
+                    "id": {"type": "str"},
+                    "prefix": {"type": "str"},
+                    "priority": {"type": "int"},
+                    "source_selection_criteria": {
+                        "type": "dict",
+                        "suboptions": {
+                            "replica_modifications": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    }
+                                },
+                            },
+                            "sse_kms_encrypted_objects": {
+                                "type": "dict",
+                                "suboptions": {
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    "status": {
+                        "type": "str",
+                        "choices": ["Disabled", "Enabled"],
+                        "required": True,
+                    },
+                },
+            },
+        },
+    }
+    argument_spec["tags"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "key": {"type": "str", "required": True},
+            "value": {"type": "str", "required": True},
+        },
+    }
+    argument_spec["versioning_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "status": {
+                "type": "str",
+                "default": "Suspended",
+                "choices": ["Enabled", "Suspended"],
+                "required": True,
+            }
+        },
+    }
+    argument_spec["website_configuration"] = {
+        "type": "dict",
+        "suboptions": {
+            "error_document": {"type": "str"},
+            "index_document": {"type": "str"},
+            "routing_rules": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "redirect_rule": {
+                        "type": "dict",
+                        "suboptions": {
+                            "host_name": {"type": "str"},
+                            "http_redirect_code": {"type": "str"},
+                            "protocol": {"type": "str", "choices": ["http", "https"]},
+                            "replace_key_prefix_with": {"type": "str"},
+                            "replace_key_with": {"type": "str"},
+                        },
+                        "required": True,
+                    },
+                    "routing_rule_condition": {
+                        "type": "dict",
+                        "suboptions": {
+                            "key_prefix_equals": {"type": "str"},
+                            "http_error_code_returned_equals": {"type": "str"},
+                        },
+                    },
+                },
+            },
+            "redirect_all_requests_to": {
+                "type": "dict",
+                "suboptions": {
+                    "host_name": {"type": "str", "required": True},
+                    "protocol": {"type": "str", "choices": ["http", "https"]},
+                },
+            },
+        },
+    }
     argument_spec["arn"] = {"type": "str"}
     argument_spec["domain_name"] = {"type": "str"}
     argument_spec["dual_stack_domain_name"] = {"type": "str"}
     argument_spec["regional_domain_name"] = {"type": "str"}
     argument_spec["website_url"] = {"type": "str"}
     argument_spec["wait"] = {"type": "bool", "default": False}
-    argument_spec["wait_timeout"] = {"type": "int", "default": "320"}
+    argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
-    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=True)
+    required_if = [
+        ["state", "update", ["bucket_name"], True],
+        ["state", "delete", ["bucket_name"], True],
+        ["state", "get", ["bucket_name"], True],
+    ]
+
+    module = AnsibleAWSModule(
+        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+    )
     cloud = CloudControlResource(module)
 
     type_name = "AWS::S3::Bucket"
 
     params = {}
 
-    params["intelligent_tiering_configurations"] = module.params.get(
-        "intelligent_tiering_configurations"
-    )
-    params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
-    params["public_access_block_configuration"] = module.params.get(
-        "public_access_block_configuration"
-    )
+    params["tags"] = module.params.get("tags")
+    params["bucket_name"] = module.params.get("bucket_name")
     params["inventory_configurations"] = module.params.get("inventory_configurations")
+    params["replication_configuration"] = module.params.get("replication_configuration")
+    params["ownership_controls"] = module.params.get("ownership_controls")
     params["notification_configuration"] = module.params.get(
         "notification_configuration"
     )
     params["regional_domain_name"] = module.params.get("regional_domain_name")
-    params["ownership_controls"] = module.params.get("ownership_controls")
-    params["tags"] = module.params.get("tags")
     params["object_lock_enabled"] = module.params.get("object_lock_enabled")
-    params["versioning_configuration"] = module.params.get("versioning_configuration")
-    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["bucket_encryption"] = module.params.get("bucket_encryption")
     params["access_control"] = module.params.get("access_control")
-    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["public_access_block_configuration"] = module.params.get(
+        "public_access_block_configuration"
+    )
+    params["versioning_configuration"] = module.params.get("versioning_configuration")
     params["domain_name"] = module.params.get("domain_name")
-    params["website_url"] = module.params.get("website_url")
-    params["arn"] = module.params.get("arn")
-    params["bucket_name"] = module.params.get("bucket_name")
+    params["cors_configuration"] = module.params.get("cors_configuration")
+    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
+    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["metrics_configurations"] = module.params.get("metrics_configurations")
+    params["intelligent_tiering_configurations"] = module.params.get(
+        "intelligent_tiering_configurations"
+    )
+    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
     params["website_configuration"] = module.params.get("website_configuration")
     params["analytics_configurations"] = module.params.get("analytics_configurations")
-    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
-    params["metrics_configurations"] = module.params.get("metrics_configurations")
-    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
-    params["bucket_encryption"] = module.params.get("bucket_encryption")
-    params["cors_configuration"] = module.params.get("cors_configuration")
-    params["replication_configuration"] = module.params.get("replication_configuration")
+    params["website_url"] = module.params.get("website_url")
+    params["arn"] = module.params.get("arn")
+    params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -1358,22 +2066,30 @@ def main():
     state = module.params.get("state")
     identifier = module.params.get("bucket_name")
 
+    results = {"changed": False, "result": []}
+
     if state == "list":
-        result = cloud.list_resources(type_name)
+        results["result"] = cloud.list_resources(type_name)
+
+    if state == ("describe", "get"):
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
-        result = cloud.create_resource(type_name, identifier, desired_state)
+        results["changed"] |= cloud.create_resource(
+            type_name, identifier, desired_state
+        )
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
-        result = cloud.update_resource(type_name, identifier, params_to_set)
+        results["changed"] |= cloud.update_resource(
+            type_name, identifier, params_to_set
+        )
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "delete":
-        result = cloud.delete_resource(type_name, identifier)
+        results["changed"] |= cloud.delete_resource(type_name, identifier)
 
-    if state == "describe":
-        result = cloud.get_resource(type_name, identifier)
-
-    module.exit_json(**result)
+    module.exit_json(**results)
 
 
 if __name__ == "__main__":

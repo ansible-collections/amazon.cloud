@@ -60,7 +60,7 @@ from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSM
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     snake_dict_to_camel_dict,
 )
 
@@ -71,7 +71,7 @@ def main():
         client_token=dict(type="str", no_log=True),
         state=dict(
             type="str",
-            choices=["create", "update", "delete", "list", "describe"],
+            choices=["create", "update", "delete", "list", "describe", "get"],
             default="create",
         ),
     )
@@ -83,21 +83,30 @@ def main():
     argument_spec["roles"] = {"type": "list", "elements": "str"}
     argument_spec["users"] = {"type": "list", "elements": "str"}
     argument_spec["wait"] = {"type": "bool", "default": False}
-    argument_spec["wait_timeout"] = {"type": "int", "default": "320"}
+    argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
-    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=True)
+    required_if = [
+        ["state", "create", ["id", "policy_document", "policy_name"], True],
+        ["state", "update", ["id"], True],
+        ["state", "delete", ["id"], True],
+        ["state", "get", ["id"], True],
+    ]
+
+    module = AnsibleAWSModule(
+        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+    )
     cloud = CloudControlResource(module)
 
     type_name = "AWS::IAM::Policy"
 
     params = {}
 
-    params["groups"] = module.params.get("groups")
-    params["roles"] = module.params.get("roles")
-    params["id"] = module.params.get("id")
-    params["users"] = module.params.get("users")
-    params["policy_document"] = module.params.get("policy_document")
     params["policy_name"] = module.params.get("policy_name")
+    params["roles"] = module.params.get("roles")
+    params["groups"] = module.params.get("groups")
+    params["policy_document"] = module.params.get("policy_document")
+    params["users"] = module.params.get("users")
+    params["id"] = module.params.get("id")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -107,22 +116,30 @@ def main():
     state = module.params.get("state")
     identifier = module.params.get("id")
 
+    results = {"changed": False, "result": []}
+
     if state == "list":
-        result = cloud.list_resources(type_name)
+        results["result"] = cloud.list_resources(type_name)
+
+    if state == ("describe", "get"):
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
-        result = cloud.create_resource(type_name, identifier, desired_state)
+        results["changed"] |= cloud.create_resource(
+            type_name, identifier, desired_state
+        )
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
-        result = cloud.update_resource(type_name, identifier, params_to_set)
+        results["changed"] |= cloud.update_resource(
+            type_name, identifier, params_to_set
+        )
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "delete":
-        result = cloud.delete_resource(type_name, identifier)
+        results["changed"] |= cloud.delete_resource(type_name, identifier)
 
-    if state == "describe":
-        result = cloud.get_resource(type_name, identifier)
-
-    module.exit_json(**result)
+    module.exit_json(**results)
 
 
 if __name__ == "__main__":

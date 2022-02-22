@@ -1,4 +1,3 @@
-#
 # This code is part of Ansible, but is an independent component.
 # This particular file snippet, and this file snippet only, is BSD licensed.
 # Modules you write using this snippet, which is embedded dynamically by Ansible
@@ -31,6 +30,8 @@ This module_utility adds shared support for AWS Cloud Control API modules.
 """
 
 from __future__ import absolute_import, division, print_function
+from cmath import log
+from typing import Dict
 
 __metaclass__ = type
 
@@ -40,7 +41,12 @@ import json
 from itertools import count
 
 from ansible_collections.amazon.aws.plugins.module_utils.ec2 import AWSRetry
-from ansible_collections.amazon.cloud.plugins.module_utils.utils import diff_dict
+from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
+    JsonPatch,
+    make_op,
+    op,
+    normalize_response,
+)
 
 
 class CloudControlResource(object):
@@ -63,8 +69,9 @@ class CloudControlResource(object):
         """
         An exception occurred during task execution. To see the full traceback, use -vvv.
         The error was: botocore.exceptions.OperationNotPageableError: Operation cannot be paginated: list_resources
+        Fall to manual pagination
         """
-        results = {"result": []}
+        results = []
         response = {}
 
         for i in count():
@@ -82,17 +89,23 @@ class CloudControlResource(object):
                     botocore.exceptions.BotoCoreError,
                     botocore.exceptions.ClientError,
                 ) as e:
-                    self.module.fail_json_aws(e, msg="")
-                results["result"].extend(response["ResourceDescriptions"])
+                    self.module.fail_json_aws(e, msg="Failed to list resources")
+                results.append(normalize_response(response))
             else:
                 break
+
+        # TODO: append properties for each resource
+        # for each in results:
+        #     resource_descriptions = each.get("ResourceDescriptions", [])
+        #     for r in resource_descriptions:
+        #         identifier = r.get("Identifier")
+        #         properties = self.get_resource(type_name, identifier)
 
         return results
 
     def list_resource_requests(self, params):
         """
         Returns existing resource operation requests using specific filters.
-        Resource operation requests expire after seven days.
         """
         results = []
         response = {}
@@ -108,7 +121,7 @@ class CloudControlResource(object):
                     botocore.exceptions.BotoCoreError,
                     botocore.exceptions.ClientError,
                 ) as e:
-                    self.module.fail_json_aws(e, msg="")
+                    self.module.fail_json_aws(e, msg="Failed to list resource requests")
                 results.extend(response["ResourceRequestStatusSummaries"])
             else:
                 break
@@ -116,38 +129,35 @@ class CloudControlResource(object):
         return results
 
     def get_resource(self, type_name, primary_identifier):
-        result = {"changed": False, "result": {}}
         # This is the "describe" equivalent for CCAPI
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=primary_identifier
             )
         except self.client.exceptions.ResourceNotFoundException:
-            return result
+            return response
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
         ) as e:
-            self.module.fail_json_aws(e, msg="")
+            self.module.fail_json_aws(e, msg="Failed to retrieve resource")
 
-        result["result"] = response
+        result = normalize_response(response)
         return result
 
-    def create_resource(self, type_name, identifier, params):
-        result = {"changed": False, "result": {}}
+    def create_resource(self, type_name: str, identifier: str, params: Dict) -> bool:
+        changed: bool = False
 
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier
             )
-            result["result"] = response
         except self.client.exceptions.ResourceNotFoundException:
             if not self.module.check_mode:
                 try:
                     response = self.client.create_resource(
                         TypeName=type_name, DesiredState=params
                     )
-                    result["result"] = response
                     self.client.get_waiter("resource_request_success").wait(
                         RequestToken=response["ProgressEvent"]["RequestToken"],
                         WaiterConfig=self._waiter_config,
@@ -157,17 +167,16 @@ class CloudControlResource(object):
                         e,
                         msg="An error occurred waiting for the resource request to become successful",
                     )
-            result["changed"] = True
-            self.module.exit_json(**result)
+            changed: bool = True
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
         ) as e:
-            self.module.fail_json_aws(e, msg="")
+            self.module.fail_json_aws(e, msg="Failed to created resource")
 
-        return result
+        return changed
 
-    def check_in_progress_requests(self, type_name, identifier):
+    def check_in_progress_requests(self, type_name: str, identifier: str):
         in_progress_requests = []
         params = {
             "ResourceRequestStatusFilter": {
@@ -196,18 +205,15 @@ class CloudControlResource(object):
                         RequestToken=e["RequestToken"]
                     )
 
-        return
-
-    def delete_resource(self, type_name, identifier):
-        result = {"changed": False, "result": {}}
-        response = {}
+    def delete_resource(self, type_name: str, identifier: str) -> bool:
+        changed: bool = False
 
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier
             )
         except self.client.exceptions.ResourceNotFoundException:
-            return result
+            return changed
 
         try:
             if not self.module.check_mode:
@@ -228,44 +234,46 @@ class CloudControlResource(object):
                             e,
                             msg="An error occurred waiting for the resource request to become successful.",
                         )
-            result["changed"] = True
-            result["result"] = response
+            changed = True
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
         ) as e:
-            self.module.fail_json_aws(e, msg="")
+            self.module.fail_json_aws(e, msg="Failed to delete resource")
 
-        return result
+        return changed
 
-    def update_resource(self, type_name, identifier, params):
-        result = {"changed": False, "result": {}}
+    def update_resource(self, type_name: str, identifier: str, params: Dict) -> bool:
+        changed: bool = False
 
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier
             )
         except self.client.exceptions.ResourceNotFoundException:
-            return result
+            return changed
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
         ) as e:
-            self.module.fail_json_aws(e, msg="")
+            self.module.fail_json_aws(e, msg="Failed to retrieve resource")
 
         properties = response.get("ResourceDescription", {}).get("Properties", {})
         properties = json.loads(properties)
 
-        to_be_updated = diff_dict(properties, params)
+        patch = JsonPatch()
+        for k, v in params.items():
+            strategy = "merge"
+            if v == properties.get(k):
+                continue
+            if k not in properties:
+                patch.append(op("add", k, v))
+            else:
+                if self.module.params.get("purge_{0}".format(k.lower())):
+                    strategy = "replace"
+                patch.append(make_op(k, properties[k], v, strategy))
 
-        def _format_patch(data):
-            params = []
-            for key in data.keys():
-                result = {"op": "replace", "path": key, "value": data[key]}
-                params.append(result)
-            return json.dumps(params)
-
-        if to_be_updated:
+        if patch:
             try:
                 if not self.module.check_mode:
                     self.check_in_progress_requests(type_name, identifier)
@@ -273,7 +281,7 @@ class CloudControlResource(object):
                     response = self.client.update_resource(
                         TypeName=type_name,
                         Identifier=identifier,
-                        PatchDocument=_format_patch(to_be_updated),
+                        PatchDocument=str(patch),
                     )
 
                     if self.module.params.get("wait"):
@@ -287,12 +295,11 @@ class CloudControlResource(object):
                                 e,
                                 msg="An error occurred waiting for the resource request to become successful.",
                             )
-                result["changed"] = True
-                result["result"] = response
+                changed = True
             except (
                 botocore.exceptions.BotoCoreError,
                 botocore.exceptions.ClientError,
             ) as e:
-                self.module.fail_json_aws(e, msg="")
+                self.module.fail_json_aws(e, msg="Failed to update resource")
 
-        return result
+        return changed

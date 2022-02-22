@@ -156,6 +156,7 @@ options:
             ipv6_address_count:
                 type: int
             ipv6_addresses:
+                elements: dict
                 suboptions:
                     ipv6_address:
                         required: true
@@ -184,6 +185,15 @@ options:
         type: str
     private_dns_name:
         type: str
+    private_dns_name_options:
+        suboptions:
+            enable_resource_name_dns_a_record:
+                type: bool
+            enable_resource_name_dns_aaaa_record:
+                type: bool
+            hostname_type:
+                type: str
+        type: dict
     private_ip:
         type: str
     private_ip_address:
@@ -275,7 +285,7 @@ from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSM
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
-from ansible_collections.amazon.aws.plugins.module_utils.ec2 import (
+from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     snake_dict_to_camel_dict,
 )
 
@@ -286,7 +296,7 @@ def main():
         client_token=dict(type="str", no_log=True),
         state=dict(
             type="str",
-            choices=["create", "update", "delete", "list", "describe"],
+            choices=["create", "update", "delete", "list", "describe", "get"],
             default="create",
         ),
     )
@@ -296,35 +306,139 @@ def main():
     argument_spec["private_dns_name"] = {"type": "str"}
     argument_spec["private_ip_address"] = {"type": "str"}
     argument_spec["user_data"] = {"type": "str"}
-    argument_spec["block_device_mappings"] = {"type": "list", "elements": "dict"}
+    argument_spec["block_device_mappings"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "no_device": {"type": "dict"},
+            "virtual_name": {"type": "str"},
+            "ebs": {
+                "type": "dict",
+                "suboptions": {
+                    "snapshot_id": {"type": "str"},
+                    "volume_type": {"type": "str"},
+                    "kms_key_id": {"type": "str"},
+                    "encrypted": {"type": "bool"},
+                    "iops": {"type": "int"},
+                    "volume_size": {"type": "int"},
+                    "delete_on_termination": {"type": "bool"},
+                },
+            },
+            "device_name": {"type": "str", "required": True},
+        },
+    }
     argument_spec["iam_instance_profile"] = {"type": "str"}
-    argument_spec["ipv6_addresses"] = {"type": "list", "elements": "dict"}
+    argument_spec["ipv6_addresses"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {"ipv6_address": {"type": "str", "required": True}},
+    }
     argument_spec["kernel_id"] = {"type": "str"}
     argument_spec["subnet_id"] = {"type": "str"}
     argument_spec["ebs_optimized"] = {"type": "bool"}
     argument_spec["propagate_tags_to_volume_on_creation"] = {"type": "bool"}
-    argument_spec["elastic_gpu_specifications"] = {"type": "list", "elements": "dict"}
+    argument_spec["elastic_gpu_specifications"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {"type": {"type": "str", "required": True}},
+    }
     argument_spec["elastic_inference_accelerators"] = {
         "type": "list",
         "elements": "dict",
+        "suboptions": {
+            "type": {"type": "str", "required": True},
+            "count": {"type": "int"},
+        },
     }
-    argument_spec["volumes"] = {"type": "list", "elements": "dict"}
+    argument_spec["volumes"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "volume_id": {"type": "str", "required": True},
+            "device": {"type": "str", "required": True},
+        },
+    }
     argument_spec["private_ip"] = {"type": "str"}
     argument_spec["ipv6_address_count"] = {"type": "int"}
-    argument_spec["launch_template"] = {"type": "dict"}
-    argument_spec["enclave_options"] = {"type": "dict"}
-    argument_spec["network_interfaces"] = {"type": "list", "elements": "dict"}
+    argument_spec["launch_template"] = {
+        "type": "dict",
+        "suboptions": {
+            "launch_template_name": {"type": "str"},
+            "launch_template_id": {"type": "str"},
+            "version": {"type": "str", "required": True},
+        },
+    }
+    argument_spec["enclave_options"] = {
+        "type": "dict",
+        "suboptions": {"enabled": {"type": "bool"}},
+    }
+    argument_spec["network_interfaces"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "private_ip_address": {"type": "str"},
+            "private_ip_addresses": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "private_ip_address": {"type": "str", "required": True},
+                    "primary": {"type": "bool", "required": True},
+                },
+            },
+            "secondary_private_ip_address_count": {"type": "int"},
+            "device_index": {"type": "str", "required": True},
+            "group_set": {"type": "list", "elements": "str"},
+            "ipv6_addresses": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {"ipv6_address": {"type": "str", "required": True}},
+            },
+            "subnet_id": {"type": "str"},
+            "associate_public_ip_address": {"type": "bool"},
+            "network_interface_id": {"type": "str"},
+            "ipv6_address_count": {"type": "int"},
+            "delete_on_termination": {"type": "bool"},
+        },
+    }
     argument_spec["image_id"] = {"type": "str"}
     argument_spec["instance_type"] = {"type": "str"}
     argument_spec["monitoring"] = {"type": "bool"}
-    argument_spec["tags"] = {"type": "list", "elements": "dict"}
+    argument_spec["tags"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "value": {"type": "str", "required": True},
+            "key": {"type": "str", "required": True},
+        },
+    }
     argument_spec["additional_info"] = {"type": "str"}
-    argument_spec["hibernation_options"] = {"type": "dict"}
-    argument_spec["license_specifications"] = {"type": "list", "elements": "dict"}
+    argument_spec["hibernation_options"] = {
+        "type": "dict",
+        "suboptions": {"configured": {"type": "bool"}},
+    }
+    argument_spec["license_specifications"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {"license_configuration_arn": {"type": "str", "required": True}},
+    }
     argument_spec["public_ip"] = {"type": "str"}
     argument_spec["instance_initiated_shutdown_behavior"] = {"type": "str"}
-    argument_spec["cpu_options"] = {"type": "dict"}
+    argument_spec["cpu_options"] = {
+        "type": "dict",
+        "suboptions": {
+            "threads_per_core": {"type": "int"},
+            "core_count": {"type": "int"},
+        },
+    }
     argument_spec["availability_zone"] = {"type": "str"}
+    argument_spec["private_dns_name_options"] = {
+        "type": "dict",
+        "suboptions": {
+            "hostname_type": {"type": "str"},
+            "enable_resource_name_dns_aaaa_record": {"type": "bool"},
+            "enable_resource_name_dns_a_record": {"type": "bool"},
+        },
+    }
     argument_spec["host_id"] = {"type": "str"}
     argument_spec["host_resource_group_arn"] = {"type": "str"}
     argument_spec["public_dns_name"] = {"type": "str"}
@@ -334,72 +448,98 @@ def main():
     argument_spec["ramdisk_id"] = {"type": "str"}
     argument_spec["source_dest_check"] = {"type": "bool"}
     argument_spec["placement_group_name"] = {"type": "str"}
-    argument_spec["ssm_associations"] = {"type": "list", "elements": "dict"}
+    argument_spec["ssm_associations"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "association_parameters": {
+                "type": "list",
+                "elements": "dict",
+                "suboptions": {
+                    "value": {"type": "list", "required": True, "elements": "str"},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+            "document_name": {"type": "str", "required": True},
+        },
+    }
     argument_spec["affinity"] = {"type": "str"}
     argument_spec["id"] = {"type": "str"}
-    argument_spec["credit_specification"] = {"type": "dict"}
+    argument_spec["credit_specification"] = {
+        "type": "dict",
+        "suboptions": {"cpu_credits": {"type": "str"}},
+    }
     argument_spec["wait"] = {"type": "bool", "default": False}
-    argument_spec["wait_timeout"] = {"type": "int", "default": "320"}
+    argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
-    module = AnsibleAWSModule(argument_spec=argument_spec, supports_check_mode=True)
+    required_if = [
+        ["state", "update", ["id"], True],
+        ["state", "delete", ["id"], True],
+        ["state", "get", ["id"], True],
+    ]
+
+    module = AnsibleAWSModule(
+        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+    )
     cloud = CloudControlResource(module)
 
     type_name = "AWS::EC2::Instance"
 
     params = {}
 
-    params["block_device_mappings"] = module.params.get("block_device_mappings")
-    params["public_ip"] = module.params.get("public_ip")
-    params["ipv6_address_count"] = module.params.get("ipv6_address_count")
-    params["source_dest_check"] = module.params.get("source_dest_check")
-    params["license_specifications"] = module.params.get("license_specifications")
-    params["hibernation_options"] = module.params.get("hibernation_options")
-    params["enclave_options"] = module.params.get("enclave_options")
-    params["private_dns_name"] = module.params.get("private_dns_name")
-    params["instance_initiated_shutdown_behavior"] = module.params.get(
-        "instance_initiated_shutdown_behavior"
-    )
-    params["monitoring"] = module.params.get("monitoring")
-    params["additional_info"] = module.params.get("additional_info")
-    params["tenancy"] = module.params.get("tenancy")
-    params["propagate_tags_to_volume_on_creation"] = module.params.get(
-        "propagate_tags_to_volume_on_creation"
-    )
-    params["elastic_gpu_specifications"] = module.params.get(
-        "elastic_gpu_specifications"
-    )
-    params["tags"] = module.params.get("tags")
-    params["availability_zone"] = module.params.get("availability_zone")
-    params["iam_instance_profile"] = module.params.get("iam_instance_profile")
-    params["volumes"] = module.params.get("volumes")
-    params["instance_type"] = module.params.get("instance_type")
-    params["ebs_optimized"] = module.params.get("ebs_optimized")
-    params["security_group_ids"] = module.params.get("security_group_ids")
-    params["ipv6_addresses"] = module.params.get("ipv6_addresses")
-    params["id"] = module.params.get("id")
-    params["host_id"] = module.params.get("host_id")
-    params["cpu_options"] = module.params.get("cpu_options")
-    params["user_data"] = module.params.get("user_data")
-    params["disable_api_termination"] = module.params.get("disable_api_termination")
-    params["affinity"] = module.params.get("affinity")
-    params["private_ip"] = module.params.get("private_ip")
-    params["network_interfaces"] = module.params.get("network_interfaces")
-    params["public_dns_name"] = module.params.get("public_dns_name")
     params["ssm_associations"] = module.params.get("ssm_associations")
-    params["credit_specification"] = module.params.get("credit_specification")
-    params["private_ip_address"] = module.params.get("private_ip_address")
-    params["host_resource_group_arn"] = module.params.get("host_resource_group_arn")
-    params["ramdisk_id"] = module.params.get("ramdisk_id")
-    params["subnet_id"] = module.params.get("subnet_id")
-    params["security_groups"] = module.params.get("security_groups")
+    params["tags"] = module.params.get("tags")
+    params["enclave_options"] = module.params.get("enclave_options")
+    params["iam_instance_profile"] = module.params.get("iam_instance_profile")
     params["launch_template"] = module.params.get("launch_template")
-    params["key_name"] = module.params.get("key_name")
-    params["kernel_id"] = module.params.get("kernel_id")
-    params["placement_group_name"] = module.params.get("placement_group_name")
+    params["host_resource_group_arn"] = module.params.get("host_resource_group_arn")
+    params["ipv6_addresses"] = module.params.get("ipv6_addresses")
+    params["image_id"] = module.params.get("image_id")
+    params["affinity"] = module.params.get("affinity")
+    params["cpu_options"] = module.params.get("cpu_options")
+    params["license_specifications"] = module.params.get("license_specifications")
+    params["private_ip_address"] = module.params.get("private_ip_address")
+    params["private_dns_name_options"] = module.params.get("private_dns_name_options")
+    params["disable_api_termination"] = module.params.get("disable_api_termination")
+    params["private_dns_name"] = module.params.get("private_dns_name")
+    params["additional_info"] = module.params.get("additional_info")
+    params["security_groups"] = module.params.get("security_groups")
     params["elastic_inference_accelerators"] = module.params.get(
         "elastic_inference_accelerators"
     )
-    params["image_id"] = module.params.get("image_id")
+    params["ramdisk_id"] = module.params.get("ramdisk_id")
+    params["credit_specification"] = module.params.get("credit_specification")
+    params["network_interfaces"] = module.params.get("network_interfaces")
+    params["placement_group_name"] = module.params.get("placement_group_name")
+    params["instance_type"] = module.params.get("instance_type")
+    params["key_name"] = module.params.get("key_name")
+    params["monitoring"] = module.params.get("monitoring")
+    params["private_ip"] = module.params.get("private_ip")
+    params["tenancy"] = module.params.get("tenancy")
+    params["volumes"] = module.params.get("volumes")
+    params["ipv6_address_count"] = module.params.get("ipv6_address_count")
+    params["instance_initiated_shutdown_behavior"] = module.params.get(
+        "instance_initiated_shutdown_behavior"
+    )
+    params["source_dest_check"] = module.params.get("source_dest_check")
+    params["hibernation_options"] = module.params.get("hibernation_options")
+    params["public_ip"] = module.params.get("public_ip")
+    params["availability_zone"] = module.params.get("availability_zone")
+    params["subnet_id"] = module.params.get("subnet_id")
+    params["block_device_mappings"] = module.params.get("block_device_mappings")
+    params["security_group_ids"] = module.params.get("security_group_ids")
+    params["propagate_tags_to_volume_on_creation"] = module.params.get(
+        "propagate_tags_to_volume_on_creation"
+    )
+    params["user_data"] = module.params.get("user_data")
+    params["public_dns_name"] = module.params.get("public_dns_name")
+    params["kernel_id"] = module.params.get("kernel_id")
+    params["host_id"] = module.params.get("host_id")
+    params["ebs_optimized"] = module.params.get("ebs_optimized")
+    params["id"] = module.params.get("id")
+    params["elastic_gpu_specifications"] = module.params.get(
+        "elastic_gpu_specifications"
+    )
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -409,22 +549,30 @@ def main():
     state = module.params.get("state")
     identifier = module.params.get("id")
 
+    results = {"changed": False, "result": []}
+
     if state == "list":
-        result = cloud.list_resources(type_name)
+        results["result"] = cloud.list_resources(type_name)
+
+    if state == ("describe", "get"):
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
-        result = cloud.create_resource(type_name, identifier, desired_state)
+        results["changed"] |= cloud.create_resource(
+            type_name, identifier, desired_state
+        )
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
-        result = cloud.update_resource(type_name, identifier, params_to_set)
+        results["changed"] |= cloud.update_resource(
+            type_name, identifier, params_to_set
+        )
+        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "delete":
-        result = cloud.delete_resource(type_name, identifier)
+        results["changed"] |= cloud.delete_resource(type_name, identifier)
 
-    if state == "describe":
-        result = cloud.get_resource(type_name, identifier)
-
-    module.exit_json(**result)
+    module.exit_json(**results)
 
 
 if __name__ == "__main__":
