@@ -1,206 +1,218 @@
-- set_fact:
-    local_bucket_name: "{{ 'test-bucket-ccapi' | hash('md5')}}-simple"
-    
-- name: List all the S3 buckets
-  amazon.cloud.s3_bucket:
-    state: list
-  register: _result
+---
+- module_defaults:
+    group/aws:
+      aws_access_key: '{{ aws_access_key | default(omit) }}'
+      aws_secret_key: '{{ aws_secret_key | default(omit) }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region | default(omit) }}'
 
-- assert:
-    that:
-        - _result is success
+  collections:
+    - amazon.cloud
 
-- name: Delete the simple S3 bucket
-  amazon.cloud.s3_bucket:
-    bucket_name: '{{ local_bucket_name }}'
-    state: delete
-  register: _result
-  ignore_errors: true
+  block:
+  - set_fact:
+      local_bucket_name: "{{ 'test-bucket-ccapi' | hash('md5')}}-simple"
+      
+  - name: List all the S3 buckets
+    amazon.cloud.s3_bucket:
+      state: list
+    register: _result
 
-- name: Create a simple bucket with public access block configuration - check_mode
-  amazon.cloud.s3_bucket:
-    bucket_name: "{{ local_bucket_name }}"
-    state: create
-    public_access_block_configuration:
-      block_public_acls: true
-      block_public_policy: true
-      ignore_public_acls: true
-      restrict_public_buckets: true
-  check_mode: true
-  register: _result
+  - assert:
+      that:
+          - _result is success
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  - name: Delete the simple S3 bucket
+    amazon.cloud.s3_bucket:
+      bucket_name: '{{ local_bucket_name }}'
+      state: delete
+    register: _result
+    ignore_errors: true
 
-# - name: Create a simple bucket with public access block configuration
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: create
-#     public_access_block_configuration:
-#       block_public_acls: true
-#       block_public_policy: true
-#       ignore_public_acls: true
-#       restrict_public_buckets: true
-#   register: _result
+  - name: Create a simple bucket with public access block configuration - check_mode
+    amazon.cloud.s3_bucket:
+      bucket_name: "{{ local_bucket_name }}"
+      state: create
+      public_access_block_configuration:
+        block_public_acls: true
+        block_public_policy: true
+        ignore_public_acls: true
+        restrict_public_buckets: true
+    check_mode: true
+    register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Describe S3 bucket
-#   amazon.cloud.s3_bucket:
-#     state: describe
-#     bucket_name: "{{ local_bucket_name }}"
-#   register: _result
+  # - name: Create a simple bucket with public access block configuration
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: create
+  #     public_access_block_configuration:
+  #       block_public_acls: true
+  #       block_public_policy: true
+  #       ignore_public_acls: true
+  #       restrict_public_buckets: true
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Create a simple bucket with public access block configuration - idempotence
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: create
-#     public_access_block_configuration:
-#       block_public_acls: true
-#       block_public_policy: true
-#       ignore_public_acls: true
-#       restrict_public_buckets: true
-#   register: _result
+  # - name: Describe S3 bucket
+  #   amazon.cloud.s3_bucket:
+  #     state: describe
+  #     bucket_name: "{{ local_bucket_name }}"
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is not changed
+  # - assert:
+  #     that:
+  #         - _result is success
 
-# - name: Create a simple bucket with public access block configuration (check_mode) - idempotence
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: create
-#     public_access_block_configuration:
-#       block_public_acls: true
-#       block_public_policy: true
-#       ignore_public_acls: true
-#       restrict_public_buckets: true
-#   check_mode: true
-#   register: _result
+  # - name: Create a simple bucket with public access block configuration - idempotence
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: create
+  #     public_access_block_configuration:
+  #       block_public_acls: true
+  #       block_public_policy: true
+  #       ignore_public_acls: true
+  #       restrict_public_buckets: true
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is not changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is not changed
 
-# - name: Update simple bucket public access block configuration - check_mode
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: update
-#     public_access_block_configuration:
-#       block_public_acls: false
-#       block_public_policy: false
-#       ignore_public_acls: false
-#       restrict_public_buckets: false
-#   check_mode: true
-#   register: _result
+  # - name: Create a simple bucket with public access block configuration (check_mode) - idempotence
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: create
+  #     public_access_block_configuration:
+  #       block_public_acls: true
+  #       block_public_policy: true
+  #       ignore_public_acls: true
+  #       restrict_public_buckets: true
+  #   check_mode: true
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is not changed
 
-# - name: Update simple bucket public access block configuration
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: update
-#     public_access_block_configuration:
-#       block_public_acls: false
-#       block_public_policy: false
-#       ignore_public_acls: false
-#       restrict_public_buckets: false
-#   register: _result
+  # - name: Update simple bucket public access block configuration - check_mode
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: update
+  #     public_access_block_configuration:
+  #       block_public_acls: false
+  #       block_public_policy: false
+  #       ignore_public_acls: false
+  #       restrict_public_buckets: false
+  #   check_mode: true
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Update simple bucket public access block configuration - idempotence
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: update
-#     public_access_block_configuration:
-#       block_public_acls: false
-#       block_public_policy: false
-#       ignore_public_acls: false
-#       restrict_public_buckets: false
-#   register: _result
+  # - name: Update simple bucket public access block configuration
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: update
+  #     public_access_block_configuration:
+  #       block_public_acls: false
+  #       block_public_policy: false
+  #       ignore_public_acls: false
+  #       restrict_public_buckets: false
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is not changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Update simple bucket public access block configuration (block_public_policy=true)
-#   amazon.cloud.s3_bucket:
-#     bucket_name: "{{ local_bucket_name }}"
-#     state: update
-#     public_access_block_configuration:
-#       block_public_acls: false
-#       block_public_policy: true
-#       ignore_public_acls: false
-#       restrict_public_buckets: false
-#     wait: true
-#   register: _result
+  # - name: Update simple bucket public access block configuration - idempotence
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: update
+  #     public_access_block_configuration:
+  #       block_public_acls: false
+  #       block_public_policy: false
+  #       ignore_public_acls: false
+  #       restrict_public_buckets: false
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is not changed
 
-# - name: Delete the simple s3_bucket - check_mode
-#   amazon.cloud.s3_bucket:
-#     bucket_name: '{{ local_bucket_name }}'
-#     state: delete
-#   check_mode: true
-#   register: _result
+  # - name: Update simple bucket public access block configuration (block_public_policy=true)
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: "{{ local_bucket_name }}"
+  #     state: update
+  #     public_access_block_configuration:
+  #       block_public_acls: false
+  #       block_public_policy: true
+  #       ignore_public_acls: false
+  #       restrict_public_buckets: false
+  #     wait: true
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Delete the simple s3_bucket
-#   amazon.cloud.s3_bucket:
-#     bucket_name: '{{ local_bucket_name }}'
-#     state: delete
-#   register: _result
+  # - name: Delete the simple s3_bucket - check_mode
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: '{{ local_bucket_name }}'
+  #     state: delete
+  #   check_mode: true
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Delete the simple S3 bucket - idempotence
-#   amazon.cloud.s3_bucket:
-#     bucket_name: '{{ local_bucket_name }}'
-#     state: delete
-#   register: _result
+  # - name: Delete the simple s3_bucket
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: '{{ local_bucket_name }}'
+  #     state: delete
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is not changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is changed
 
-# - name: Delete the simple S3 bucket (check_mode) - idempotence
-#   amazon.cloud.s3_bucket:
-#     bucket_name: '{{ local_bucket_name }}'
-#     state: delete
-#   check_mode: true
-#   register: _result
+  # - name: Delete the simple S3 bucket - idempotence
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: '{{ local_bucket_name }}'
+  #     state: delete
+  #   register: _result
 
-# - assert:
-#     that:
-#         - _result is success
-#         - _result is not changed
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is not changed
+
+  # - name: Delete the simple S3 bucket (check_mode) - idempotence
+  #   amazon.cloud.s3_bucket:
+  #     bucket_name: '{{ local_bucket_name }}'
+  #     state: delete
+  #   check_mode: true
+  #   register: _result
+
+  # - assert:
+  #     that:
+  #         - _result is success
+  #         - _result is not changed

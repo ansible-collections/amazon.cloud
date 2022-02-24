@@ -1,2 +1,7 @@
 ---
 requires_ansible: '>=2.9.10'
+action_groups:
+  aws:
+  - s3_bucket
+  - ec2_instance
+  - logs_log_group.py
