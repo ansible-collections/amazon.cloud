@@ -13,9 +13,8 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: s3_bucket
-short_description: Manage S3 buckets in AWS, DigitalOcean, Ceph, Walrus, FakeS3 and
-    StorageGRID
-description: Manage S3 buckets in AWS, DigitalOcean, Ceph, Walrus, FakeS3 and StorageGRID.
+short_description: Manage S3 buckets
+description: Create and manage S3 buckets (list, create, update, describe, delete).
 options:
     accelerate_configuration:
         description:
@@ -26,7 +25,7 @@ options:
                 - Enabled
                 - Suspended
                 description:
-                - Configures the transfer acceleration state for an Amazon S3 bucket.
+                - Configures the transfer acceleration state for an Amazon C(S3) bucket.
                 required: true
                 type: str
         type: dict
@@ -41,18 +40,18 @@ options:
         - PublicRead
         - PublicReadWrite
         description:
-        - A canned access control list (ACL) that grants predefined permissions to
-            the bucket.
+        - A canned access control list () that grants predefined permissions to the
+            bucket.
         type: str
     analytics_configurations:
         description:
         - Specifies the configuration and any analyses for the analytics filter of
-            an Amazon S3 bucket.
+            an Amazon C(S3) bucket.
         elements: dict
         suboptions:
             id:
                 description:
-                - The ID that identifies the analytics configuration.
+                - The  that identifies the analytics configuration.
                 required: true
                 type: str
             prefix:
@@ -64,29 +63,29 @@ options:
                 description:
                 - Specifies data related to access patterns to be collected and made
                     available to analyze the tradeoffs between different storage classes
-                    for an Amazon S3 bucket.
+                    for an Amazon C(S3) bucket.
                 required: true
                 suboptions:
                     data_export:
                         description:
                         - Specifies how data related to the storage class analysis
-                            for an Amazon S3 bucket should be exported.
+                            for an Amazon C(S3) bucket should be exported.
                         suboptions:
                             destination:
                                 description:
                                 - Specifies information about where to publish analysis
-                                    or configuration results for an Amazon S3 bucket
-                                    and S3 Replication Time Control (S3 RTC).
+                                    or configuration results for an Amazon C(S3) bucket
+                                    and C(S3) Replication Time Control (C(S3) ).
                                 required: true
                                 suboptions:
                                     bucket_account_id:
                                         description:
-                                        - The account ID that owns the destination
-                                            S3 bucket.
+                                        - The account  that owns the destination C(S3)
+                                            bucket.
                                         type: str
                                     bucket_arn:
                                         description:
-                                        - The Amazon Resource Name (ARN) of the bucket
+                                        - The Amazon Resource Name () of the bucket
                                             to which data is exported.
                                         type: str
                                     format:
@@ -96,7 +95,7 @@ options:
                                         - Parquet
                                         description:
                                         - Specifies the file format used when exporting
-                                            data to Amazon S3.
+                                            data to Amazon C(S3).
                                         type: str
                                     prefix:
                                         description:
@@ -115,7 +114,8 @@ options:
                 type: dict
             tag_filters:
                 description:
-                - Tags to use to identify a subset of objects for an Amazon S3 bucket.
+                - Tags to use to identify a subset of objects for an Amazon C(S3)
+                    bucket.
                 elements: dict
                 suboptions:
                     key:
@@ -128,13 +128,13 @@ options:
         type: list
     arn:
         description:
-        - The Amazon Resource Name (ARN) of the specified bucket.the Amazon Resource
-            Name (ARN) of the specified bucket.
+        - The Amazon Resource Name () of the specified bucket.the Amazon Resource
+            Name () of the specified bucket.
         type: str
     bucket_encryption:
         description:
         - Specifies default encryption for a bucket using server-side encryption with
-            either Amazon S3-managed keys (SSE-S3) or AWS KMS-managed keys (SSE-KMS).
+            either Amazon C(S3)-managed keys (-C(S3)) or  -managed keys (-).
         suboptions:
             server_side_encryption_configuration:
                 description:
@@ -144,24 +144,24 @@ options:
                 suboptions:
                     bucket_key_enabled:
                         description:
-                        - Specifies whether Amazon S3 should use an S3 Bucket Key
-                            with server-side encryption using KMS (SSE-KMS) for new
-                            objects in the bucket.
+                        - Specifies whether Amazon C(S3) should use an C(S3) Bucket
+                            Key with server-side encryption using  (-) for new objects
+                            in the bucket.
                         - Existing objects are not affected.
                         - Setting the I(bucket_key_enabled) element to true causes
-                            Amazon S3 to use an S3 Bucket Key.
-                        - By default, S3 Bucket Key is not enabled.
+                            Amazon C(S3) to use an C(S3) Bucket Key.
+                        - By default, C(S3) Bucket Key is not enabled.
                         type: bool
                     server_side_encryption_by_default:
                         description:
                         - Specifies the default server-side encryption to apply to
                             new objects in the bucket.
-                        - If a PUT Object request doesnt specify any server-side encryption,
+                        - If a  Object request doesnt specify any server-side encryption,
                             this default encryption will be applied.
                         suboptions:
                             kms_master_key_id:
                                 description:
-                                - I(kms_master_key)ID can only be used when you set
+                                - I(kms_master_key) can only be used when you set
                                     the value of I(sse_algorithm) as aws:kms.
                                 type: str
                             sse_algorithm:
@@ -176,8 +176,8 @@ options:
     bucket_name:
         description:
         - A name for the bucket.
-        - If you dont specify a name, AWS CloudFormation generates a unique physical
-            ID and uses that ID for the bucket name.
+        - If you dont specify a name,  CloudFormation generates a unique physical  and
+            uses that  for the bucket name.
         type: str
     cors_configuration:
         description:
@@ -204,7 +204,7 @@ options:
                         - POST
                         - PUT
                         description:
-                        - An HTTP method that you allow the origin to execute.
+                        - An  method that you allow the origin to execute.
                         elements: str
                         required: true
                         type: list
@@ -219,7 +219,7 @@ options:
                         description:
                         - One or more headers in the response that you want customers
                             to be able to access from their applications (for example,
-                            from a JavaScript XMLHttpRequest object).
+                            from a JavaScript ttpRequest object).
                         elements: str
                         type: list
                     id:
@@ -236,21 +236,22 @@ options:
         type: dict
     domain_name:
         description:
-        - The IPv4 DNS name of the specified bucket.
+        - The v4  name of the specified bucket.
         type: str
     dual_stack_domain_name:
         description:
-        - The IPv6 DNS name of the specified bucket.
-        - For more information about dual-stack endpoints, see (U(https://docs.aws.amazon.com/AmazonS3/latest/dev/dual-stack-endpoints.html).)
+        - The v6  name of the specified bucket.
+        - For more information about dual-stack endpoints, see (U(https://docs.aws.amazon.com/AmazonC(S3)/latest/dev/dual-stack-endpoints.html).)
         type: str
     intelligent_tiering_configurations:
         description:
-        - Specifies the S3 Intelligent-Tiering configuration for an Amazon S3 bucket.
+        - Specifies the C(S3) Intelligent-Tiering configuration for an Amazon C(S3)
+            bucket.
         elements: dict
         suboptions:
             id:
                 description:
-                - The ID used to identify the S3 Intelligent-Tiering configuration.
+                - The  used to identify the C(S3) Intelligent-Tiering configuration.
                 required: true
                 type: str
             prefix:
@@ -268,7 +269,8 @@ options:
                 type: str
             tag_filters:
                 description:
-                - Tags to use to identify a subset of objects for an Amazon S3 bucket.
+                - Tags to use to identify a subset of objects for an Amazon C(S3)
+                    bucket.
                 elements: dict
                 suboptions:
                     key:
@@ -280,8 +282,8 @@ options:
                 type: list
             tierings:
                 description:
-                - Specifies a list of S3 Intelligent-Tiering storage class tiers in
-                    the configuration.
+                - Specifies a list of C(S3) Intelligent-Tiering storage class tiers
+                    in the configuration.
                 - At least one tier must be defined in the list.
                 - 'At most, you can specify two tiers in the list, one for each available
                     I(access_tier): C(ARCHIVE_ACCESS) and C(DEEP_ARCHIVE_ACCESS).'
@@ -292,10 +294,10 @@ options:
                         - ARCHIVE_ACCESS
                         - DEEP_ARCHIVE_ACCESS
                         description:
-                        - S3 Intelligent-Tiering access tier.
+                        - C(S3) Intelligent-Tiering access tier.
                         - See Storage class for automatically optimizing frequently
                             and infrequently accessed objects for a list of access
-                            tiers in the S3 Intelligent-Tiering storage class.
+                            tiers in the C(S3) Intelligent-Tiering storage class.
                         required: true
                         type: str
                     days:
@@ -313,23 +315,23 @@ options:
         type: list
     inventory_configurations:
         description:
-        - The inventory configuration for an Amazon S3 bucket.
+        - The inventory configuration for an Amazon C(S3) bucket.
         elements: dict
         suboptions:
             destination:
                 description:
                 - Specifies information about where to publish analysis or configuration
-                    results for an Amazon S3 bucket and S3 Replication Time Control
-                    (S3 RTC).
+                    results for an Amazon C(S3) bucket and C(S3) Replication Time
+                    Control (C(S3) ).
                 required: true
                 suboptions:
                     bucket_account_id:
                         description:
-                        - The account ID that owns the destination S3 bucket.
+                        - The account  that owns the destination C(S3) bucket.
                         type: str
                     bucket_arn:
                         description:
-                        - The Amazon Resource Name (ARN) of the bucket to which data
+                        - The Amazon Resource Name () of the bucket to which data
                             is exported.
                         type: str
                     format:
@@ -339,7 +341,7 @@ options:
                         - Parquet
                         description:
                         - Specifies the file format used when exporting data to Amazon
-                            S3.
+                            C(S3).
                         type: str
                     prefix:
                         description:
@@ -354,7 +356,7 @@ options:
                 type: bool
             id:
                 description:
-                - The ID used to identify the inventory configuration.
+                - The  used to identify the inventory configuration.
                 required: true
                 type: str
             included_object_versions:
@@ -399,34 +401,34 @@ options:
         type: list
     lifecycle_configuration:
         description:
-        - Rules that define how Amazon S3 manages objects during their lifetime.
+        - Rules that define how Amazon C(S3) manages objects during their lifetime.
         suboptions:
             rules:
                 description:
                 - 'You must specify at least one of the following properties: I(abort_incomplete_multipart_upload),
                     I(expiration_date), I(expiration_in_days), I(noncurrent_version_expiration_in_days),
                     I(noncurrent_version_transition), I(noncurrent_version_transitions),
-                    Transition, or Transitions.'
+                    I(transition), or I(transitions).'
                 elements: dict
                 suboptions:
                     abort_incomplete_multipart_upload:
                         description:
                         - Specifies the days since the initiation of an incomplete
-                            multipart upload that Amazon S3 will wait before permanently
+                            multipart upload that Amazon C(S3) will wait before permanently
                             removing all parts of the upload.
                         suboptions:
                             days_after_initiation:
                                 description:
                                 - Specifies the number of days after which Amazon
-                                    S3 aborts an incomplete multipart upload.
+                                    C(S3) aborts an incomplete multipart upload.
                                 minimum: 0
                                 required: true
                                 type: int
                         type: dict
                     expiration_date:
                         description:
-                        - The date value in ISO 8601 format.
-                        - The timezone is always UTC. (YYYY-MM-I(dd_thh):mm:ssZ)
+                        - The date value in  8601 format.
+                        - The timezone is always . (--hh:mm:ssZ)
                         type: str
                     expiration_in_days:
                         type: int
@@ -439,7 +441,7 @@ options:
                         - Container for the expiration rule that describes when noncurrent
                             objects are expired.
                         - If your bucket is versioning-enabled (or versioning is suspended),
-                            you can set this action to request that Amazon S3 expire
+                            you can set this action to request that Amazon C(S3) expire
                             noncurrent object versions at a specific period in the
                             objects lifetime
                         suboptions:
@@ -452,7 +454,8 @@ options:
                             noncurrent_days:
                                 description:
                                 - Specified the number of days an object is noncurrent
-                                    before Amazon S3 can perform the associated action
+                                    before Amazon C(S3) can perform the associated
+                                    action
                                 required: true
                                 type: int
                         type: dict
@@ -465,7 +468,7 @@ options:
                             C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
                             C(DEEP_ARCHIVE) storage class.
                         - If your bucket is versioning-enabled (or versioning is suspended),
-                            you can set this action to request that Amazon S3 transition
+                            you can set this action to request that Amazon C(S3) transition
                             noncurrent object versions to the C(STANDARD_IA), C(ONEZONE_IA),
                             C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
                             C(DEEP_ARCHIVE) storage class at a specific period in
@@ -493,7 +496,8 @@ options:
                             transition_in_days:
                                 description:
                                 - Specifies the number of days an object is noncurrent
-                                    before Amazon S3 can perform the associated action.
+                                    before Amazon C(S3) can perform the associated
+                                    action.
                                 required: true
                                 type: int
                         type: dict
@@ -504,7 +508,7 @@ options:
                             C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
                             C(DEEP_ARCHIVE) storage class.
                         - If your bucket is versioning-enabled (or versioning is suspended),
-                            you can set this action to request that Amazon S3 transition
+                            you can set this action to request that Amazon C(S3) transition
                             noncurrent object versions to the C(STANDARD_IA), C(ONEZONE_IA),
                             C(INTELLIGENT_TIERING), C(GLACIER_IR), C(GLACIER), or
                             C(DEEP_ARCHIVE) storage class at a specific period in
@@ -533,7 +537,8 @@ options:
                             transition_in_days:
                                 description:
                                 - Specifies the number of days an object is noncurrent
-                                    before Amazon S3 can perform the associated action.
+                                    before Amazon C(S3) can perform the associated
+                                    action.
                                 required: true
                                 type: int
                         type: list
@@ -552,7 +557,7 @@ options:
                     tag_filters:
                         description:
                         - Tags to use to identify a subset of objects for an Amazon
-                            S3 bucket.
+                            C(S3) bucket.
                         elements: dict
                         suboptions:
                             key:
@@ -580,8 +585,8 @@ options:
                                 type: str
                             transition_date:
                                 description:
-                                - The date value in ISO 8601 format.
-                                - The timezone is always UTC. (YYYY-MM-I(dd_thh):mm:ssZ)
+                                - The date value in  8601 format.
+                                - The timezone is always . (--hh:mm:ssZ)
                                 type: str
                             transition_in_days:
                                 type: int
@@ -605,8 +610,8 @@ options:
                                 type: str
                             transition_date:
                                 description:
-                                - The date value in ISO 8601 format.
-                                - The timezone is always UTC. (YYYY-MM-I(dd_thh):mm:ssZ)
+                                - The date value in  8601 format.
+                                - The timezone is always . (--hh:mm:ssZ)
                                 type: str
                             transition_in_days:
                                 type: int
@@ -619,8 +624,8 @@ options:
         suboptions:
             destination_bucket_name:
                 description:
-                - The name of an Amazon S3 bucket where Amazon S3 store server access
-                    log files.
+                - The name of an Amazon C(S3) bucket where Amazon C(S3) store server
+                    access log files.
                 - You can store log files in any bucket that you own.
                 - By default, logs are stored in the bucket where the I(logging_configuration)
                     property is defined.
@@ -643,7 +648,8 @@ options:
                 type: str
             tag_filters:
                 description:
-                - Tags to use to identify a subset of objects for an Amazon S3 bucket.
+                - Tags to use to identify a subset of objects for an Amazon C(S3)
+                    bucket.
                 elements: dict
                 suboptions:
                     key:
@@ -656,38 +662,38 @@ options:
         type: list
     notification_configuration:
         description:
-        - Configuration that defines how Amazon S3 handles bucket notifications.Describes
-            the notification configuration for an Amazon S3 bucket.
+        - Configuration that defines how Amazon C(S3) handles bucket notifications.Describes
+            the notification configuration for an Amazon C(S3) bucket.
         suboptions:
             event_bridge_configuration:
                 description:
                 - Describes the Amazon EventBridge notification configuration for
-                    an Amazon S3 bucket.
+                    an Amazon C(S3) bucket.
                 suboptions:
                     event_bridge_enabled:
                         default: 'true'
                         description:
                         - Specifies whether to send notifications to Amazon EventBridge
-                            when events occur in an Amazon S3 bucket.
+                            when events occur in an Amazon C(S3) bucket.
                         required: true
                         type: bool
                 type: dict
             lambda_configurations:
                 description:
-                - Describes the AWS Lambda functions to invoke and the events for
-                    which to invoke them.
+                - Describes the  Lambda functions to invoke and the events for which
+                    to invoke them.
                 elements: dict
                 suboptions:
                     event:
                         description:
-                        - The Amazon S3 bucket event for which to invoke the AWS Lambda
+                        - The Amazon C(S3) bucket event for which to invoke the  Lambda
                             function.
                         required: true
                         type: str
                     filter:
                         description:
                         - The filtering rules that determine which objects invoke
-                            the AWS Lambda function.Specifies object key name filtering
+                            the  Lambda function.Specifies object key name filtering
                             rules.
                         suboptions:
                             s3_key:
@@ -698,7 +704,7 @@ options:
                                 suboptions:
                                     rules:
                                         description:
-                                        - Specifies the Amazon S3 object key name
+                                        - Specifies the Amazon C(S3) object key name
                                             to filter on and whether to filter on
                                             the suffix or prefix of the key name.
                                         elements: dict
@@ -714,8 +720,8 @@ options:
                         type: dict
                     function:
                         description:
-                        - The Amazon Resource Name (ARN) of the AWS Lambda function
-                            that Amazon S3 invokes when the specified event type occurs.
+                        - The Amazon Resource Name () of the  Lambda function that
+                            Amazon C(S3) invokes when the specified event type occurs.
                         required: true
                         type: str
                 type: list
@@ -727,8 +733,8 @@ options:
                 suboptions:
                     event:
                         description:
-                        - The Amazon S3 bucket event about which you want to publish
-                            messages to Amazon SQS.
+                        - The Amazon C(S3) bucket event about which you want to publish
+                            messages to Amazon .
                         required: true
                         type: str
                     filter:
@@ -744,7 +750,7 @@ options:
                                 suboptions:
                                     rules:
                                         description:
-                                        - Specifies the Amazon S3 object key name
+                                        - Specifies the Amazon C(S3) object key name
                                             to filter on and whether to filter on
                                             the suffix or prefix of the key name.
                                         elements: dict
@@ -760,8 +766,8 @@ options:
                         type: dict
                     queue:
                         description:
-                        - The Amazon Resource Name (ARN) of the Amazon SQS queue to
-                            which Amazon S3 publishes a message when it detects events
+                        - The Amazon Resource Name () of the Amazon  queue to which
+                            Amazon C(S3) publishes a message when it detects events
                             of the specified type.
                         required: true
                         type: str
@@ -774,7 +780,7 @@ options:
                 suboptions:
                     event:
                         description:
-                        - The Amazon S3 bucket event about which to send notifications.
+                        - The Amazon C(S3) bucket event about which to send notifications.
                         required: true
                         type: str
                     filter:
@@ -790,7 +796,7 @@ options:
                                 suboptions:
                                     rules:
                                         description:
-                                        - Specifies the Amazon S3 object key name
+                                        - Specifies the Amazon C(S3) object key name
                                             to filter on and whether to filter on
                                             the suffix or prefix of the key name.
                                         elements: dict
@@ -806,8 +812,8 @@ options:
                         type: dict
                     topic:
                         description:
-                        - The Amazon Resource Name (ARN) of the Amazon SNS topic to
-                            which Amazon S3 publishes a message when it detects events
+                        - The Amazon Resource Name () of the Amazon  topic to which
+                            Amazon C(S3) publishes a message when it detects events
                             of the specified type.
                         required: true
                         type: str
@@ -865,43 +871,41 @@ options:
         type: dict
     public_access_block_configuration:
         description:
-        - Configuration that defines how Amazon S3 handles public access.
+        - Configuration that defines how Amazon C(S3) handles public access.
         suboptions:
             block_public_acls:
                 description:
-                - Specifies whether Amazon S3 should block public access control lists
-                    (ACLs) for this bucket and objects in this bucket.
-                - 'Setting this element to C(True) causes the following behavior:'
-                - '- PUT Bucket acl and PUT Object acl calls fail if the specified
-                    ACL is public.'
-                - '- PUT Object calls fail if the request includes a public ACL.'
-                - Enabling this setting doesnt affect existing policies or ACLs.
+                - Specifies whether Amazon C(S3) should block public access control
+                    lists (s) for this bucket and objects in this bucket.
+                - 'Setting this element to  causes the following behavior:'
+                - '-  Bucket acl and  Object acl calls fail if the specified  is public.'
+                - '-  Object calls fail if the request includes a public .'
+                - Enabling this setting doesnt affect existing policies or s.
                 type: bool
             block_public_policy:
                 description:
-                - Specifies whether Amazon S3 should block public bucket policies
+                - Specifies whether Amazon C(S3) should block public bucket policies
                     for this bucket.
-                - Setting this element to C(True) causes Amazon S3 to reject calls
-                    to PUT Bucket policy if the specified bucket policy allows public
-                    access.
+                - Setting this element to  causes Amazon C(S3) to reject calls to  Bucket
+                    policy if the specified bucket policy allows public access.
                 - Enabling this setting doesnt affect existing bucket policies.
                 type: bool
             ignore_public_acls:
                 description:
-                - Specifies whether Amazon S3 should ignore public ACLs for this bucket
+                - Specifies whether Amazon C(S3) should ignore public s for this bucket
                     and objects in this bucket.
-                - Setting this element to C(True) causes Amazon S3 to ignore all public
-                    ACLs on this bucket and objects in this bucket.
+                - Setting this element to  causes Amazon C(S3) to ignore all public
+                    s on this bucket and objects in this bucket.
                 - Enabling this setting doesnt affect the persistence of any existing
-                    ACLs and doesnt prevent new public ACLs from being set.
+                    s and doesnt prevent new public s from being set.
                 type: bool
             restrict_public_buckets:
                 description:
-                - Specifies whether Amazon S3 should restrict public bucket policies
+                - Specifies whether Amazon C(S3) should restrict public bucket policies
                     for this bucket.
-                - Setting this element to C(True) restricts access to this bucket
-                    to only AWS services and authorized users within this account
-                    if the bucket has a public policy.
+                - Setting this element to  restricts access to this bucket to only  services
+                    and authorized users within this account if the bucket has a public
+                    policy.
                 - Enabling this setting doesnt affect previously stored bucket policies,
                     except that public and cross-account access within any public
                     bucket policy, including non-public delegation to specific accounts,
@@ -914,20 +918,20 @@ options:
         type: str
     replication_configuration:
         description:
-        - Configuration for replicating objects in an S3 bucket.A container for replication
-            rules.
+        - Configuration for replicating objects in an C(S3) bucket.A container for
+            replication rules.
         - You can add up to 1,000 rules.
-        - The maximum size of a replication configuration is 2 MB.
+        - The maximum size of a replication configuration is 2 .
         suboptions:
             role:
                 description:
-                - The Amazon Resource Name (ARN) of the AWS Identity and Access Management
-                    (IAM) role that Amazon S3 assumes when replicating objects.
+                - The Amazon Resource Name () of the  Identity and Access Management
+                    () role that Amazon C(S3) assumes when replicating objects.
                 required: true
                 type: str
             rules:
                 description:
-                - Specifies which Amazon S3 objects to replicate and where to store
+                - Specifies which Amazon C(S3) objects to replicate and where to store
                     the replicas.
                 elements: dict
                 suboptions:
@@ -941,8 +945,8 @@ options:
                         type: dict
                     destination:
                         description:
-                        - Specifies which Amazon S3 bucket to store replicated objects
-                            in and their storage class.
+                        - Specifies which Amazon C(S3) bucket to store replicated
+                            objects in and their storage class.
                         required: true
                         suboptions:
                             access_control_translation:
@@ -950,10 +954,10 @@ options:
                                 - Specify this only in a cross-account scenario (where
                                     source and destination bucket owners are not the
                                     same), and you want to change replica ownership
-                                    to the AWS account that owns the destination bucket.
+                                    to the  account that owns the destination bucket.
                                 - If this is not specified in the replication configuration,
-                                    the replicas are owned by same AWS account that
-                                    owns the source object.
+                                    the replicas are owned by same  account that owns
+                                    the source object.
                                 suboptions:
                                     owner:
                                         default: Destination
@@ -967,15 +971,15 @@ options:
                             encryption_configuration:
                                 description:
                                 - Specifies encryption-related information for an
-                                    Amazon S3 bucket that is a destination for replicated
-                                    objects.
+                                    Amazon C(S3) bucket that is a destination for
+                                    replicated objects.
                                 suboptions:
                                     replica_kms_key_id:
                                         description:
-                                        - Specifies the ID (Key ARN or Alias ARN)
-                                            of the customer managed customer master
-                                            key (CMK) stored in AWS Key Management
-                                            Service (KMS) for the destination bucket.
+                                        - Specifies the  (Key  or Alias ) of the customer
+                                            managed customer master key () stored
+                                            in  Key Management Service () for the
+                                            destination bucket.
                                         required: true
                                         type: str
                                 type: dict
@@ -1022,7 +1026,7 @@ options:
                                 - STANDARD_IA
                                 description:
                                 - The storage class to use when replicating objects,
-                                    such as S3 Standard or reduced redundancy.
+                                    such as C(S3) Standard or reduced redundancy.
                                 type: str
                         type: dict
                     filter:
@@ -1034,7 +1038,7 @@ options:
                                     tag_filters:
                                         description:
                                         - Tags to use to identify a subset of objects
-                                            for an Amazon S3 bucket.
+                                            for an Amazon C(S3) bucket.
                                         elements: dict
                                         suboptions:
                                             key:
@@ -1050,7 +1054,7 @@ options:
                             tag_filter:
                                 description:
                                 - Tags to use to identify a subset of objects for
-                                    an Amazon S3 bucket.
+                                    an Amazon C(S3) bucket.
                                 suboptions:
                                     key:
                                         required: true
@@ -1086,27 +1090,27 @@ options:
                                         - Disabled
                                         - Enabled
                                         description:
-                                        - Specifies whether Amazon S3 replicates modifications
-                                            on replicas.
+                                        - Specifies whether Amazon C(S3) replicates
+                                            modifications on replicas.
                                         required: true
                                         type: str
                                 type: dict
                             sse_kms_encrypted_objects:
                                 description:
                                 - A container for filter information for the selection
-                                    of Amazon S3 objects encrypted with AWS KMS.A
-                                    container for filter information for the selection
-                                    of S3 objects encrypted with AWS KMS.
+                                    of Amazon C(S3) objects encrypted with  .A container
+                                    for filter information for the selection of C(S3)
+                                    objects encrypted with  .
                                 suboptions:
                                     status:
                                         choices:
                                         - Disabled
                                         - Enabled
                                         description:
-                                        - Specifies whether Amazon S3 replicates objects
-                                            created with server-side encryption using
-                                            a customer master key (CMK) stored in
-                                            AWS Key Management Service.
+                                        - Specifies whether Amazon C(S3) replicates
+                                            objects created with server-side encryption
+                                            using a customer master key () stored
+                                            in  Key Management Service.
                                         required: true
                                         type: str
                                 type: dict
@@ -1121,9 +1125,26 @@ options:
                         type: str
                 type: list
         type: dict
+    state:
+        choices:
+        - create
+        - update
+        - delete
+        - list
+        - describe
+        - get
+        default: create
+        description:
+        - Goal state for resouirce.
+        - I(state=create) creates the resouce.
+        - I(state=update) updates the existing resouce.
+        - I(state=delete) ensures an existing instance is deleted.
+        - I(state=list) get all the existing resources.
+        - I(state=describe) or I(state=get) retrieves information on an existing resource.
+        type: str
     tags:
         description:
-        - An arbitrary set of tags (key-value pairs) for this S3 bucket.
+        - An arbitrary set of tags (key-value pairs) for this C(S3) bucket.
         elements: dict
         suboptions:
             key:
@@ -1135,7 +1156,7 @@ options:
         type: list
     versioning_configuration:
         description:
-        - Describes the versioning state of an Amazon S3 bucket.
+        - Describes the versioning state of an Amazon C(S3) bucket.
         suboptions:
             status:
                 choices:
@@ -1159,7 +1180,7 @@ options:
         type: int
     website_configuration:
         description:
-        - Specifies website configuration parameters for an Amazon S3 bucket.
+        - Specifies website configuration parameters for an Amazon C(S3) bucket.
         suboptions:
             error_document:
                 description:
@@ -1172,7 +1193,7 @@ options:
             redirect_all_requests_to:
                 description:
                 - Specifies the redirect behavior of all requests to a website endpoint
-                    of an Amazon S3 bucket.
+                    of an Amazon C(S3) bucket.
                 suboptions:
                     host_name:
                         description:
@@ -1211,7 +1232,7 @@ options:
                                 type: str
                             http_redirect_code:
                                 description:
-                                - The HTTP redirect code to use on the response.
+                                - The  redirect code to use on the response.
                                 - Not required if one of the siblings is present.
                                 type: str
                             protocol:
@@ -1240,7 +1261,7 @@ options:
                         suboptions:
                             http_error_code_returned_equals:
                                 description:
-                                - The HTTP error code when the redirect is applied.
+                                - The  error code when the redirect is applied.
                                 type: str
                             key_prefix_equals:
                                 description:
@@ -1252,7 +1273,7 @@ options:
         type: dict
     website_url:
         description:
-        - The Amazon S3 website endpoint for the specified bucket.
+        - The Amazon C(S3) website endpoint for the specified bucket.
         type: str
 author: Ansible Cloud Team (@ansible-collections)
 version_added: TODO
@@ -1263,9 +1284,33 @@ EXAMPLES = r"""
 - name: List all the S3 buckets
   amazon.cloud.s3_bucket:
     state: list
+
+- name: Delete the simple S3 bucket
+  amazon.cloud.s3_bucket:
+    bucket_name: '{{ local_bucket_name }}'
+    state: delete
+  ignore_errors: true
+
+- name: Create a simple bucket with public access block configuration - check_mode
+  amazon.cloud.s3_bucket:
+    bucket_name: '{{ local_bucket_name }}'
+    state: create
+    public_access_block_configuration:
+      block_public_acls: true
+      block_public_policy: true
+      ignore_public_acls: true
+      restrict_public_buckets: true
+  check_mode: true
 """
 
 RETURN = r"""
+result:
+    identifier:
+        description: The unique identifier of the resource.
+        type: str
+    properties:
+        description: The resource properties 
+        type: complex
 """
 
 import json
@@ -2008,6 +2053,11 @@ def main():
     argument_spec["dual_stack_domain_name"] = {"type": "str"}
     argument_spec["regional_domain_name"] = {"type": "str"}
     argument_spec["website_url"] = {"type": "str"}
+    argument_spec["state"] = {
+        "type": "str",
+        "choices": ["create", "update", "delete", "list", "describe", "get"],
+        "default": "create",
+    }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
@@ -2026,37 +2076,37 @@ def main():
 
     params = {}
 
-    params["tags"] = module.params.get("tags")
-    params["bucket_name"] = module.params.get("bucket_name")
-    params["inventory_configurations"] = module.params.get("inventory_configurations")
-    params["replication_configuration"] = module.params.get("replication_configuration")
-    params["ownership_controls"] = module.params.get("ownership_controls")
-    params["notification_configuration"] = module.params.get(
-        "notification_configuration"
-    )
-    params["regional_domain_name"] = module.params.get("regional_domain_name")
-    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
-    params["bucket_encryption"] = module.params.get("bucket_encryption")
-    params["access_control"] = module.params.get("access_control")
+    params["website_url"] = module.params.get("website_url")
+    params["domain_name"] = module.params.get("domain_name")
+    params["cors_configuration"] = module.params.get("cors_configuration")
+    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
     params["public_access_block_configuration"] = module.params.get(
         "public_access_block_configuration"
     )
-    params["versioning_configuration"] = module.params.get("versioning_configuration")
-    params["domain_name"] = module.params.get("domain_name")
-    params["cors_configuration"] = module.params.get("cors_configuration")
-    params["logging_configuration"] = module.params.get("logging_configuration")
-    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
-    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["analytics_configurations"] = module.params.get("analytics_configurations")
+    params["regional_domain_name"] = module.params.get("regional_domain_name")
+    params["bucket_encryption"] = module.params.get("bucket_encryption")
+    params["ownership_controls"] = module.params.get("ownership_controls")
+    params["arn"] = module.params.get("arn")
+    params["inventory_configurations"] = module.params.get("inventory_configurations")
+    params["tags"] = module.params.get("tags")
     params["metrics_configurations"] = module.params.get("metrics_configurations")
+    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["versioning_configuration"] = module.params.get("versioning_configuration")
+    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
+    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
+    params["notification_configuration"] = module.params.get(
+        "notification_configuration"
+    )
+    params["access_control"] = module.params.get("access_control")
     params["intelligent_tiering_configurations"] = module.params.get(
         "intelligent_tiering_configurations"
     )
-    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
-    params["website_configuration"] = module.params.get("website_configuration")
-    params["analytics_configurations"] = module.params.get("analytics_configurations")
-    params["website_url"] = module.params.get("website_url")
-    params["arn"] = module.params.get("arn")
     params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
+    params["website_configuration"] = module.params.get("website_configuration")
+    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["replication_configuration"] = module.params.get("replication_configuration")
+    params["bucket_name"] = module.params.get("bucket_name")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}

@@ -130,6 +130,8 @@ class CloudControlResource(object):
 
     def get_resource(self, type_name, primary_identifier):
         # This is the "describe" equivalent for CCAPI
+        response = {}
+
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=primary_identifier

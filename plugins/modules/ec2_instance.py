@@ -13,8 +13,8 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: ec2_instance
-short_description: []
-description: []
+short_description: Create and manage EC2 instances
+description: Manage EC2 instances (list, create, update, describe, delete).
 options:
     additional_info:
         type: str
@@ -232,6 +232,23 @@ options:
                 required: true
                 type: str
         type: list
+    state:
+        choices:
+        - create
+        - update
+        - delete
+        - list
+        - describe
+        - get
+        default: create
+        description:
+        - Goal state for resouirce.
+        - I(state=create) creates the resouce.
+        - I(state=update) updates the existing resouce.
+        - I(state=delete) ensures an existing instance is deleted.
+        - I(state=list) get all the existing resources.
+        - I(state=describe) or I(state=get) retrieves information on an existing resource.
+        type: str
     subnet_id:
         type: str
     tags:
@@ -277,6 +294,13 @@ EXAMPLES = r"""
 """
 
 RETURN = r"""
+result:
+    identifier:
+        description: The unique identifier of the resource.
+        type: str
+    properties:
+        description: The resource properties 
+        type: complex
 """
 
 import json
@@ -469,6 +493,11 @@ def main():
         "type": "dict",
         "suboptions": {"cpu_credits": {"type": "str"}},
     }
+    argument_spec["state"] = {
+        "type": "str",
+        "choices": ["create", "update", "delete", "list", "describe", "get"],
+        "default": "create",
+    }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
@@ -487,58 +516,58 @@ def main():
 
     params = {}
 
-    params["ssm_associations"] = module.params.get("ssm_associations")
-    params["tags"] = module.params.get("tags")
-    params["enclave_options"] = module.params.get("enclave_options")
-    params["iam_instance_profile"] = module.params.get("iam_instance_profile")
-    params["launch_template"] = module.params.get("launch_template")
-    params["host_resource_group_arn"] = module.params.get("host_resource_group_arn")
-    params["ipv6_addresses"] = module.params.get("ipv6_addresses")
-    params["image_id"] = module.params.get("image_id")
-    params["affinity"] = module.params.get("affinity")
-    params["cpu_options"] = module.params.get("cpu_options")
-    params["license_specifications"] = module.params.get("license_specifications")
-    params["private_ip_address"] = module.params.get("private_ip_address")
-    params["private_dns_name_options"] = module.params.get("private_dns_name_options")
-    params["disable_api_termination"] = module.params.get("disable_api_termination")
-    params["private_dns_name"] = module.params.get("private_dns_name")
-    params["additional_info"] = module.params.get("additional_info")
-    params["security_groups"] = module.params.get("security_groups")
-    params["elastic_inference_accelerators"] = module.params.get(
-        "elastic_inference_accelerators"
-    )
-    params["ramdisk_id"] = module.params.get("ramdisk_id")
-    params["credit_specification"] = module.params.get("credit_specification")
-    params["network_interfaces"] = module.params.get("network_interfaces")
-    params["placement_group_name"] = module.params.get("placement_group_name")
-    params["instance_type"] = module.params.get("instance_type")
-    params["key_name"] = module.params.get("key_name")
-    params["monitoring"] = module.params.get("monitoring")
     params["private_ip"] = module.params.get("private_ip")
-    params["tenancy"] = module.params.get("tenancy")
-    params["volumes"] = module.params.get("volumes")
-    params["ipv6_address_count"] = module.params.get("ipv6_address_count")
-    params["instance_initiated_shutdown_behavior"] = module.params.get(
-        "instance_initiated_shutdown_behavior"
-    )
+    params["id"] = module.params.get("id")
+    params["launch_template"] = module.params.get("launch_template")
     params["source_dest_check"] = module.params.get("source_dest_check")
-    params["hibernation_options"] = module.params.get("hibernation_options")
-    params["public_ip"] = module.params.get("public_ip")
-    params["availability_zone"] = module.params.get("availability_zone")
-    params["subnet_id"] = module.params.get("subnet_id")
-    params["block_device_mappings"] = module.params.get("block_device_mappings")
-    params["security_group_ids"] = module.params.get("security_group_ids")
+    params["kernel_id"] = module.params.get("kernel_id")
+    params["network_interfaces"] = module.params.get("network_interfaces")
+    params["disable_api_termination"] = module.params.get("disable_api_termination")
+    params["tags"] = module.params.get("tags")
+    params["additional_info"] = module.params.get("additional_info")
+    params["private_dns_name"] = module.params.get("private_dns_name")
+    params["cpu_options"] = module.params.get("cpu_options")
+    params["placement_group_name"] = module.params.get("placement_group_name")
     params["propagate_tags_to_volume_on_creation"] = module.params.get(
         "propagate_tags_to_volume_on_creation"
     )
-    params["user_data"] = module.params.get("user_data")
-    params["public_dns_name"] = module.params.get("public_dns_name")
-    params["kernel_id"] = module.params.get("kernel_id")
+    params["subnet_id"] = module.params.get("subnet_id")
+    params["monitoring"] = module.params.get("monitoring")
+    params["availability_zone"] = module.params.get("availability_zone")
+    params["license_specifications"] = module.params.get("license_specifications")
     params["host_id"] = module.params.get("host_id")
+    params["ramdisk_id"] = module.params.get("ramdisk_id")
+    params["security_groups"] = module.params.get("security_groups")
+    params["affinity"] = module.params.get("affinity")
+    params["key_name"] = module.params.get("key_name")
+    params["ipv6_address_count"] = module.params.get("ipv6_address_count")
+    params["ssm_associations"] = module.params.get("ssm_associations")
+    params["ipv6_addresses"] = module.params.get("ipv6_addresses")
+    params["credit_specification"] = module.params.get("credit_specification")
+    params["host_resource_group_arn"] = module.params.get("host_resource_group_arn")
+    params["instance_type"] = module.params.get("instance_type")
+    params["enclave_options"] = module.params.get("enclave_options")
+    params["elastic_inference_accelerators"] = module.params.get(
+        "elastic_inference_accelerators"
+    )
+    params["security_group_ids"] = module.params.get("security_group_ids")
+    params["public_dns_name"] = module.params.get("public_dns_name")
     params["ebs_optimized"] = module.params.get("ebs_optimized")
-    params["id"] = module.params.get("id")
+    params["user_data"] = module.params.get("user_data")
+    params["image_id"] = module.params.get("image_id")
+    params["iam_instance_profile"] = module.params.get("iam_instance_profile")
+    params["tenancy"] = module.params.get("tenancy")
+    params["volumes"] = module.params.get("volumes")
+    params["block_device_mappings"] = module.params.get("block_device_mappings")
     params["elastic_gpu_specifications"] = module.params.get(
         "elastic_gpu_specifications"
+    )
+    params["public_ip"] = module.params.get("public_ip")
+    params["private_dns_name_options"] = module.params.get("private_dns_name_options")
+    params["private_ip_address"] = module.params.get("private_ip_address")
+    params["hibernation_options"] = module.params.get("hibernation_options")
+    params["instance_initiated_shutdown_behavior"] = module.params.get(
+        "instance_initiated_shutdown_behavior"
     )
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
