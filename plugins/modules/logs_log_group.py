@@ -18,17 +18,17 @@ description: Create and manage log groups (list, create, update, describe, delet
 options:
     arn:
         description:
-        - The CloudWatch log group .
+        - The CloudWatch log group ARN.
         type: str
     kms_key_id:
         description:
-        - The Amazon Resource Name () of the  to use when encrypting log data.
+        - The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
         type: str
     log_group_name:
         description:
         - The name of the log group.
-        - If you dont specify a name,  CloudFormation generates a unique  for the
-            log group.
+        - If you dont specify a name, AWS CloudFormation generates a unique ID for
+            the log group.
         type: str
     retention_in_days:
         choices:
@@ -118,7 +118,7 @@ result:
         description: The unique identifier of the resource.
         type: str
     properties:
-        description: The resource properties 
+        description: The resource properties.
         type: complex
 """
 
@@ -200,10 +200,10 @@ def main():
 
     params = {}
 
+    params["log_group_name"] = module.params.get("log_group_name")
     params["tags"] = module.params.get("tags")
     params["retention_in_days"] = module.params.get("retention_in_days")
     params["kms_key_id"] = module.params.get("kms_key_id")
-    params["log_group_name"] = module.params.get("log_group_name")
     params["arn"] = module.params.get("arn")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
