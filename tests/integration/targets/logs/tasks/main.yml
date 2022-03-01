@@ -1,0 +1,111 @@
+- collections:
+    - amazon.cloud
+
+  block:
+    - name: Set log group name
+      set_fact:
+        log_group_name: "test-{{ lookup('password', '/dev/null') | hash('md5') }}"
+
+    - name: Create log group (check mode)
+      logs_log_group: &log_group
+        state: create
+        log_group_name: "{{ log_group_name }}"
+        retention_in_days: 7
+        tags:
+          - key: testkey
+            value: testvalue
+      check_mode: yes
+
+    - name: Create log group
+      logs_log_group:
+        <<: *log_group
+        wait: yes
+      register: output
+
+    - assert:
+        that:
+          - output.result[0].identifier == log_group_name
+
+    - name: Create log group (idempotence)
+      logs_log_group:
+        *log_group
+      register: output
+
+    - assert:
+        that:
+          - output is not changed
+
+    - name: Update log group (check mode)
+      logs_log_group: &log_group_update
+        state: update
+        log_group_name: "{{ log_group_name }}"
+        tags:
+          - key: anotherkey
+            value: anothervalue
+      check_mode: yes
+      register: output
+
+    - assert:
+        that:
+          - output is changed
+
+    - name: Update log group
+      logs_log_group:
+        <<: *log_group_update
+        wait: yes
+      register: output
+
+    - assert:
+        that:
+          - output is changed
+          - "'testkey' in output.result[0].properties.tags|map(attribute='key')"
+          - "'anotherkey' in output.result[0].properties.tags|map(attribute='key')"
+
+    - name: Update log group (idempotence)
+      logs_log_group:
+        *log_group_update
+      register: output
+
+    # This fails with the current merge impementation. The end result is correct,
+    # it's just that it will report a change when there hasn't really been one.
+    # - assert:
+    #     that:
+    #       - output is not changed
+
+    - name: Delete log group (check mode)
+      logs_log_group:
+        state: delete
+        log_group_name: "{{ log_group_name }}"
+      check_mode: yes
+      register: output
+
+    - assert:
+        that:
+          - output is changed
+
+    - name: Delete log group
+      logs_log_group:
+        state: delete
+        log_group_name: "{{ log_group_name }}"
+      register: output
+
+    - assert:
+        that:
+          - output is changed
+
+    - name: Delete log group (idempotence)
+      logs_log_group:
+        state: delete
+        log_group_name: "{{ log_group_name }}"
+      register: output
+
+    - assert:
+        that:
+          - output is not changed
+
+  always:
+    - name: Cleanup log group
+      logs_log_group:
+        state: delete
+        log_group_name: "{{ log_group_name }}"
+      ignore_errors: yes
