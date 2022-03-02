@@ -2051,37 +2051,37 @@ def main():
 
     params = {}
 
-    params["arn"] = module.params.get("arn")
-    params["cors_configuration"] = module.params.get("cors_configuration")
-    params["website_configuration"] = module.params.get("website_configuration")
-    params["inventory_configurations"] = module.params.get("inventory_configurations")
-    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
-    params["metrics_configurations"] = module.params.get("metrics_configurations")
-    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
-    params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
-    params["intelligent_tiering_configurations"] = module.params.get(
-        "intelligent_tiering_configurations"
-    )
-    params["bucket_name"] = module.params.get("bucket_name")
-    params["website_url"] = module.params.get("website_url")
-    params["ownership_controls"] = module.params.get("ownership_controls")
-    params["logging_configuration"] = module.params.get("logging_configuration")
-    params["public_access_block_configuration"] = module.params.get(
-        "public_access_block_configuration"
-    )
-    params["analytics_configurations"] = module.params.get("analytics_configurations")
     params["regional_domain_name"] = module.params.get("regional_domain_name")
-    params["access_control"] = module.params.get("access_control")
-    params["tags"] = module.params.get("tags")
-    params["domain_name"] = module.params.get("domain_name")
-    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
-    params["bucket_encryption"] = module.params.get("bucket_encryption")
-    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["inventory_configurations"] = module.params.get("inventory_configurations")
+    params["ownership_controls"] = module.params.get("ownership_controls")
     params["notification_configuration"] = module.params.get(
         "notification_configuration"
     )
-    params["replication_configuration"] = module.params.get("replication_configuration")
+    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["website_url"] = module.params.get("website_url")
+    params["website_configuration"] = module.params.get("website_configuration")
+    params["intelligent_tiering_configurations"] = module.params.get(
+        "intelligent_tiering_configurations"
+    )
+    params["tags"] = module.params.get("tags")
     params["versioning_configuration"] = module.params.get("versioning_configuration")
+    params["metrics_configurations"] = module.params.get("metrics_configurations")
+    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["access_control"] = module.params.get("access_control")
+    params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
+    params["public_access_block_configuration"] = module.params.get(
+        "public_access_block_configuration"
+    )
+    params["bucket_name"] = module.params.get("bucket_name")
+    params["arn"] = module.params.get("arn")
+    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
+    params["replication_configuration"] = module.params.get("replication_configuration")
+    params["cors_configuration"] = module.params.get("cors_configuration")
+    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
+    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
+    params["domain_name"] = module.params.get("domain_name")
+    params["bucket_encryption"] = module.params.get("bucket_encryption")
+    params["analytics_configurations"] = module.params.get("analytics_configurations")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}

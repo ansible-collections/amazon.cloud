@@ -12,48 +12,75 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: logs_log_group
-short_description: Create and manage log groups
-description: Create and manage log groups (list, create, update, describe, delete).
+module: iam_role
+short_description: Create and manage EC2 instances
+description: Manage EC2 instances (list, create, update, describe, delete).
 options:
     arn:
         description:
-        - The CloudWatch log group ARN.
+        - The Amazon Resource Name (ARN) for the role.
         type: str
-    kms_key_id:
+    assume_role_policy_document:
         description:
-        - The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
+        - The trust policy that is associated with this role.
+        required: true
+        type:
+        - object
+        - string
+    description:
+        description:
+        - A description of the role that you provide.
         type: str
-    log_group_name:
+    managed_policy_arns:
         description:
-        - The name of the log group.
-        - If you dont specify a name, AWS CloudFormation generates a unique ID for
-            the log group.
-        type: str
-    retention_in_days:
-        choices:
-        - 1
-        - 3
-        - 5
-        - 7
-        - 14
-        - 30
-        - 60
-        - 90
-        - 120
-        - 150
-        - 180
-        - 365
-        - 400
-        - 545
-        - 731
-        - 1827
-        - 3653
+        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
+            you want to attach to the role.
+        elements: str
+        type: list
+    max_session_duration:
         description:
-        - The number of days to retain the log events in the specified log group.
-        - 'Possible values are: C(1), C(3), C(5), C(7), C(14), C(30), C(60), C(90),
-            C(120), C(150), C(180), C(365), C(400), C(545), C(731), C(1827), and C(3653).'
+        - The maximum session duration (in seconds) that you want to set for the specified
+            role.
+        - If you do not specify a value for this setting, the default maximum of one
+            hour is applied.
+        - This setting can have a value from 1 hour to 12 hours.
+        maximum: 43200
+        minimum: 3600
         type: int
+    path:
+        description:
+        - The path to the role.
+        type: str
+    permissions_boundary:
+        description:
+        - The ARN of the policy used to set the permissions boundary for the role.
+        type: str
+    policies:
+        description:
+        - The inline policy document that is embedded in the specified IAM role.
+        elements: dict
+        suboptions:
+            policy_document:
+                description:
+                - The policy document.
+                required: true
+                type:
+                - string
+                - object
+            policy_name:
+                description:
+                - The friendly name (not ARN) identifying the policy.
+                required: true
+                type: str
+        type: list
+    role_id:
+        description:
+        - The stable and unique string identifying the role.
+        type: str
+    role_name:
+        description:
+        - A name for the IAM role, up to 64 characters in length.
+        type: str
     state:
         choices:
         - create
@@ -82,15 +109,16 @@ options:
                 - You can specify a value that is 1 to 128 Unicode characters in length
                     and cannot be prefixed with aws:.
                 - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., :, /, =, +, - and @.'
+                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
             value:
                 description:
                 - The value for the tag.
-                - You can specify a value that is 0 to 256 Unicode characters in length.
+                - You can specify a value that is 0 to 256 Unicode characters in length
+                    and cannot be prefixed with aws:.
                 - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., :, /, =, +, - and @.'
+                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
         type: list
@@ -144,30 +172,30 @@ def main():
         ),
     )
 
-    argument_spec["log_group_name"] = {"type": "str"}
-    argument_spec["kms_key_id"] = {"type": "str"}
-    argument_spec["retention_in_days"] = {
-        "type": "int",
-        "choices": [
-            1,
-            3,
-            5,
-            7,
-            14,
-            30,
-            60,
-            90,
-            120,
-            150,
-            180,
-            365,
-            400,
-            545,
-            731,
-            1827,
-            3653,
-        ],
+    argument_spec["arn"] = {"type": "str"}
+    argument_spec["assume_role_policy_document"] = {
+        "type": ["object", "string"],
+        "required": True,
     }
+    argument_spec["description"] = {"type": "str"}
+    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
+    argument_spec["max_session_duration"] = {
+        "type": "int",
+        "minimum": 3600,
+        "maximum": 43200,
+    }
+    argument_spec["path"] = {"type": "str"}
+    argument_spec["permissions_boundary"] = {"type": "str"}
+    argument_spec["policies"] = {
+        "type": "list",
+        "elements": "dict",
+        "suboptions": {
+            "policy_document": {"type": ["string", "object"], "required": True},
+            "policy_name": {"type": "str", "required": True},
+        },
+    }
+    argument_spec["role_id"] = {"type": "str"}
+    argument_spec["role_name"] = {"type": "str"}
     argument_spec["tags"] = {
         "type": "list",
         "elements": "dict",
@@ -176,7 +204,6 @@ def main():
             "value": {"type": "str", "required": True},
         },
     }
-    argument_spec["arn"] = {"type": "str"}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["create", "update", "delete", "list", "describe", "get"],
@@ -186,9 +213,10 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "update", ["log_group_name"], True],
-        ["state", "delete", ["log_group_name"], True],
-        ["state", "get", ["log_group_name"], True],
+        ["state", "create", ["role_name", "assume_role_policy_document"], True],
+        ["state", "update", ["role_name"], True],
+        ["state", "delete", ["role_name"], True],
+        ["state", "get", ["role_name"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -196,15 +224,23 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::Logs::LogGroup"
+    type_name = "AWS::IAM::Role"
 
     params = {}
 
-    params["kms_key_id"] = module.params.get("kms_key_id")
+    params["path"] = module.params.get("path")
     params["arn"] = module.params.get("arn")
-    params["retention_in_days"] = module.params.get("retention_in_days")
-    params["log_group_name"] = module.params.get("log_group_name")
+    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
+    params["assume_role_policy_document"] = module.params.get(
+        "assume_role_policy_document"
+    )
+    params["policies"] = module.params.get("policies")
+    params["description"] = module.params.get("description")
+    params["role_name"] = module.params.get("role_name")
     params["tags"] = module.params.get("tags")
+    params["max_session_duration"] = module.params.get("max_session_duration")
+    params["permissions_boundary"] = module.params.get("permissions_boundary")
+    params["role_id"] = module.params.get("role_id")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -212,7 +248,7 @@ def main():
 
     desired_state = json.dumps(params_to_set)
     state = module.params.get("state")
-    identifier = module.params.get("log_group_name")
+    identifier = module.params.get("role_name")
 
     results = {"changed": False, "result": []}
 
