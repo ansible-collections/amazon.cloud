@@ -125,11 +125,6 @@ options:
                         type: str
                 type: list
         type: list
-    arn:
-        description:
-        - The Amazon Resource Name (ARN) of the specified bucket.the Amazon Resource
-            Name (ARN) of the specified bucket.
-        type: str
     bucket_encryption:
         description:
         - Specifies default encryption for a bucket using server-side encryption with
@@ -233,15 +228,6 @@ options:
                         type: int
                 type: list
         type: dict
-    domain_name:
-        description:
-        - The IPv4 DNS name of the specified bucket.
-        type: str
-    dual_stack_domain_name:
-        description:
-        - The IPv6 DNS name of the specified bucket.
-        - For more information about dual-stack endpoints, see (U(https://docs.aws.amazon.com/AmazonS3/latest/dev/dual-stack-endpoints.html).)
-        type: str
     intelligent_tiering_configurations:
         description:
         - Specifies the S3 Intelligent-Tiering configuration for an Amazon S3 bucket.
@@ -907,10 +893,6 @@ options:
                     is blocked.
                 type: bool
         type: dict
-    regional_domain_name:
-        description:
-        - Returns the regional domain name of the specified bucket.
-        type: str
     replication_configuration:
         description:
         - Configuration for replicating objects in an S3 bucket.A container for replication
@@ -1266,10 +1248,6 @@ options:
                         type: dict
                 type: list
         type: dict
-    website_url:
-        description:
-        - The Amazon S3 website endpoint for the specified bucket.
-        type: str
 author: Ansible Cloud Team (@ansible-collections)
 version_added: TODO
 requirements: []
@@ -2023,11 +2001,6 @@ def main():
             },
         },
     }
-    argument_spec["arn"] = {"type": "str"}
-    argument_spec["domain_name"] = {"type": "str"}
-    argument_spec["dual_stack_domain_name"] = {"type": "str"}
-    argument_spec["regional_domain_name"] = {"type": "str"}
-    argument_spec["website_url"] = {"type": "str"}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["create", "update", "delete", "list", "describe", "get"],
@@ -2051,37 +2024,32 @@ def main():
 
     params = {}
 
-    params["regional_domain_name"] = module.params.get("regional_domain_name")
-    params["inventory_configurations"] = module.params.get("inventory_configurations")
-    params["ownership_controls"] = module.params.get("ownership_controls")
-    params["notification_configuration"] = module.params.get(
-        "notification_configuration"
-    )
     params["accelerate_configuration"] = module.params.get("accelerate_configuration")
-    params["website_url"] = module.params.get("website_url")
-    params["website_configuration"] = module.params.get("website_configuration")
+    params["access_control"] = module.params.get("access_control")
+    params["analytics_configurations"] = module.params.get("analytics_configurations")
+    params["bucket_encryption"] = module.params.get("bucket_encryption")
+    params["bucket_name"] = module.params.get("bucket_name")
+    params["cors_configuration"] = module.params.get("cors_configuration")
     params["intelligent_tiering_configurations"] = module.params.get(
         "intelligent_tiering_configurations"
     )
-    params["tags"] = module.params.get("tags")
-    params["versioning_configuration"] = module.params.get("versioning_configuration")
-    params["metrics_configurations"] = module.params.get("metrics_configurations")
-    params["logging_configuration"] = module.params.get("logging_configuration")
-    params["access_control"] = module.params.get("access_control")
+    params["inventory_configurations"] = module.params.get("inventory_configurations")
     params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
+    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["metrics_configurations"] = module.params.get("metrics_configurations")
+    params["notification_configuration"] = module.params.get(
+        "notification_configuration"
+    )
+    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
+    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
+    params["ownership_controls"] = module.params.get("ownership_controls")
     params["public_access_block_configuration"] = module.params.get(
         "public_access_block_configuration"
     )
-    params["bucket_name"] = module.params.get("bucket_name")
-    params["arn"] = module.params.get("arn")
-    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
     params["replication_configuration"] = module.params.get("replication_configuration")
-    params["cors_configuration"] = module.params.get("cors_configuration")
-    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
-    params["dual_stack_domain_name"] = module.params.get("dual_stack_domain_name")
-    params["domain_name"] = module.params.get("domain_name")
-    params["bucket_encryption"] = module.params.get("bucket_encryption")
-    params["analytics_configurations"] = module.params.get("analytics_configurations")
+    params["tags"] = module.params.get("tags")
+    params["versioning_configuration"] = module.params.get("versioning_configuration")
+    params["website_configuration"] = module.params.get("website_configuration")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -2096,7 +2064,7 @@ def main():
     if state == "list":
         results["result"] = cloud.list_resources(type_name)
 
-    if state == ("describe", "get"):
+    if state in ("describe", "get"):
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
@@ -2106,8 +2074,10 @@ def main():
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
+        # Ignore createOnlyProperties that can be set only during resource creation
+        create_only_params = ["/properties/BucketName", "/properties/ObjectLockEnabled"]
         results["changed"] |= cloud.update_resource(
-            type_name, identifier, params_to_set
+            type_name, identifier, params_to_set, create_only_params
         )
         results["result"] = cloud.get_resource(type_name, identifier)
 

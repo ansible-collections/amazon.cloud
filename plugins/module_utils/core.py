@@ -30,8 +30,6 @@ This module_utility adds shared support for AWS Cloud Control API modules.
 """
 
 from __future__ import absolute_import, division, print_function
-from cmath import log
-from typing import Dict
 
 __metaclass__ = type
 
@@ -39,6 +37,7 @@ __metaclass__ = type
 import botocore
 import json
 from itertools import count
+from typing import Iterable, List, Dict
 
 from ansible_collections.amazon.aws.plugins.module_utils.ec2 import AWSRetry
 from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
@@ -46,6 +45,9 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     make_op,
     op,
     normalize_response,
+    scrub_keys,
+    to_sync,
+    to_async,
 )
 
 
@@ -65,14 +67,16 @@ class CloudControlResource(object):
         max_attempts = self.module.params.get("wait_timeout") // delay
         return {"Delay": delay, "MaxAttempts": max_attempts}
 
-    def list_resources(self, type_name):
+    @to_sync
+    async def list_resources(self, type_name: str) -> List:
         """
         An exception occurred during task execution. To see the full traceback, use -vvv.
         The error was: botocore.exceptions.OperationNotPageableError: Operation cannot be paginated: list_resources
         Fall to manual pagination
         """
-        results = []
-        response = {}
+        resource_list: List = []
+        results: List = []
+        response: Dict = {}
 
         for i in count():
             # https://docs.aws.amazon.com/cloudcontrolapi/latest/APIReference/API_ListResources.html
@@ -90,20 +94,30 @@ class CloudControlResource(object):
                     botocore.exceptions.ClientError,
                 ) as e:
                     self.module.fail_json_aws(e, msg="Failed to list resources")
-                results.append(normalize_response(response))
+                # results.extend(normalize_response(response))
+                resource_list.append(response)
             else:
                 break
 
-        # TODO: append properties for each resource
-        # for each in results:
-        #     resource_descriptions = each.get("ResourceDescriptions", [])
-        #     for r in resource_descriptions:
-        #         identifier = r.get("Identifier")
-        #         properties = self.get_resource(type_name, identifier)
+        for each in resource_list:
+            resource_descriptions = each.get("ResourceDescriptions", [])
+
+            # for r in resource_descriptions:
+            #    identifier = r.get("Identifier")
+            #    results.append(self.get_resource(type_name, identifier))
+
+            # Fall to use asyncio to speed up the process
+            import asyncio
+
+            futures = [
+                self.get_resources_async(type_name, r.get("Identifier"))
+                for r in resource_descriptions
+            ]
+            results = await asyncio.gather(*futures)
 
         return results
 
-    def list_resource_requests(self, params):
+    def list_resource_requests(self, params: Iterable) -> List:
         """
         Returns existing resource operation requests using specific filters.
         """
@@ -128,7 +142,11 @@ class CloudControlResource(object):
 
         return results
 
-    def get_resource(self, type_name, primary_identifier):
+    @to_async
+    def get_resources_async(self, type_name, identifier):
+        return self.get_resource(type_name, identifier)
+
+    def get_resource(self, type_name: str, primary_identifier: str) -> List:
         # This is the "describe" equivalent for CCAPI
         response = {}
 
@@ -245,7 +263,13 @@ class CloudControlResource(object):
 
         return changed
 
-    def update_resource(self, type_name: str, identifier: str, params: Dict) -> bool:
+    def update_resource(
+        self,
+        type_name: str,
+        identifier: str,
+        params_to_set: Dict,
+        create_only_params: List,
+    ) -> bool:
         changed: bool = False
 
         try:
@@ -262,6 +286,10 @@ class CloudControlResource(object):
 
         properties = response.get("ResourceDescription", {}).get("Properties", {})
         properties = json.loads(properties)
+
+        # Ignore createOnlyProperties that can be set only during resource creation
+        _create_only_params = [p.split("/")[-1].strip() for p in create_only_params]
+        params = scrub_keys(params_to_set, _create_only_params)
 
         patch = JsonPatch()
         for k, v in params.items():

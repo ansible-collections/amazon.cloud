@@ -12,62 +12,14 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage EC2 instances
-description: Manage EC2 instances (list, create, update, describe, delete).
+module: ec2_internet_gateway
+short_description: Create and manage AWS VPC Internet gateways
+description: Create and manage AWS VPC Internet gateways (list, create, update, describe,
+    delete).
 options:
-    assume_role_policy_document:
+    internet_gateway_id:
         description:
-        - The trust policy that is associated with this role.
-        required: true
-        type: dict
-    description:
-        description:
-        - A description of the role that you provide.
-        type: str
-    managed_policy_arns:
-        description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
-        elements: str
-        type: list
-    max_session_duration:
-        description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        maximum: 43200
-        minimum: 3600
-        type: int
-    path:
-        description:
-        - The path to the role.
-        type: str
-    permissions_boundary:
-        description:
-        - The ARN of the policy used to set the permissions boundary for the role.
-        type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
-        elements: dict
-        suboptions:
-            policy_document:
-                description:
-                - The policy document.
-                required: true
-                type: str
-            policy_name:
-                description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
-                type: str
-        type: list
-    role_name:
-        description:
-        - A name for the IAM role, up to 64 characters in length.
+        - ID of internet gateway.
         type: str
     state:
         choices:
@@ -88,25 +40,13 @@ options:
         type: str
     tags:
         description:
-        - A key-value pair to associate with a resource.
+        - Any tags to assign to the internet gateway.
         elements: dict
         suboptions:
             key:
-                description:
-                - The key name of the tag.
-                - You can specify a value that is 1 to 128 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
             value:
-                description:
-                - The value for the tag.
-                - You can specify a value that is 0 to 256 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
         type: list
@@ -160,25 +100,7 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {
-        "type": "int",
-        "minimum": 3600,
-        "maximum": 43200,
-    }
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
-        "suboptions": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
-        },
-    }
-    argument_spec["role_name"] = {"type": "str"}
+    argument_spec["internet_gateway_id"] = {"type": "str"}
     argument_spec["tags"] = {
         "type": "list",
         "elements": "dict",
@@ -196,10 +118,9 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "create", ["role_name", "assume_role_policy_document"], True],
-        ["state", "update", ["role_name"], True],
-        ["state", "delete", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ["state", "update", ["internet_gateway_id"], True],
+        ["state", "delete", ["internet_gateway_id"], True],
+        ["state", "get", ["internet_gateway_id"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -207,20 +128,11 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::EC2::InternetGateway"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
-    )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
+    params["internet_gateway_id"] = module.params.get("internet_gateway_id")
     params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
@@ -229,7 +141,7 @@ def main():
 
     desired_state = json.dumps(params_to_set)
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("internet_gateway_id")
 
     results = {"changed": False, "result": []}
 
@@ -247,7 +159,7 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/Path", "/properties/RoleName"]
+        create_only_params = None
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )

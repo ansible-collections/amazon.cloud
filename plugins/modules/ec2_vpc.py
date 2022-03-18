@@ -12,62 +12,43 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage EC2 instances
-description: Manage EC2 instances (list, create, update, describe, delete).
+module: ec2_vpc
+short_description: Create and manage AWS virtual private clouds (VPCs)
+description: Create and manage AWS VPCs (list, create, update, describe, delete).
 options:
-    assume_role_policy_document:
+    cidr_block:
         description:
-        - The trust policy that is associated with this role.
+        - The primary IPv4 CIDR block for the VPC.
         required: true
-        type: dict
-    description:
-        description:
-        - A description of the role that you provide.
         type: str
-    managed_policy_arns:
+    enable_dns_hostnames:
         description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
-        elements: str
-        type: list
-    max_session_duration:
+        - Indicates whether the instances launched in the VPC get DNS hostnames.
+        - If enabled, instances in the VPC get DNS hostnames; otherwise, they do not.
+        - Disabled by default for nondefault VPCs.
+        type: bool
+    enable_dns_support:
         description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        maximum: 43200
-        minimum: 3600
-        type: int
-    path:
+        - Indicates whether the DNS resolution is supported for the VPC. If enabled,
+            queries to the Amazon provided DNS server at the 169.254.169.253 IP address,
+            or the reserved IP address at the base of the VPC network range plus two
+            succeed.
+        - If disabled, the Amazon provided DNS service in the VPC that resolves public
+            DNS hostnames to IP addresses is not enabled.
+        - Enabled by default.
+        type: bool
+    instance_tenancy:
         description:
-        - The path to the role.
-        type: str
-    permissions_boundary:
-        description:
-        - The ARN of the policy used to set the permissions boundary for the role.
-        type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
-        elements: dict
-        suboptions:
-            policy_document:
-                description:
-                - The policy document.
-                required: true
-                type: str
-            policy_name:
-                description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
-                type: str
-        type: list
-    role_name:
-        description:
-        - A name for the IAM role, up to 64 characters in length.
+        - The allowed tenancy of instances launched into the VPC.
+        - 'default: An instance launched into the VPC runs on shared hardware by default,
+            unless you explicitly specify a different tenancy during instance launch.'
+        - 'dedicated: An instance launched into the VPC is a Dedicated Instance by
+            default, unless you explicitly specify a tenancy of host during instance
+            launch.'
+        - You cannot specify a tenancy of default during instance launch.
+        - Updating I(instance_tenancy) requires no replacement only if you are updating
+            its value from dedicated to default.
+        - Updating I(instance_tenancy) from default to dedicated requires replacement.
         type: str
     state:
         choices:
@@ -88,28 +69,20 @@ options:
         type: str
     tags:
         description:
-        - A key-value pair to associate with a resource.
+        - The tags for the VPC.
         elements: dict
         suboptions:
             key:
-                description:
-                - The key name of the tag.
-                - You can specify a value that is 1 to 128 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
             value:
-                description:
-                - The value for the tag.
-                - You can specify a value that is 0 to 256 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
         type: list
+    vpc_id:
+        description:
+        - The Id for the model.
+        type: str
     wait:
         default: false
         description:
@@ -160,25 +133,11 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {
-        "type": "int",
-        "minimum": 3600,
-        "maximum": 43200,
-    }
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
-        "suboptions": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
-        },
-    }
-    argument_spec["role_name"] = {"type": "str"}
+    argument_spec["vpc_id"] = {"type": "str"}
+    argument_spec["cidr_block"] = {"type": "str", "required": True}
+    argument_spec["enable_dns_hostnames"] = {"type": "bool"}
+    argument_spec["enable_dns_support"] = {"type": "bool"}
+    argument_spec["instance_tenancy"] = {"type": "str"}
     argument_spec["tags"] = {
         "type": "list",
         "elements": "dict",
@@ -196,10 +155,10 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "create", ["role_name", "assume_role_policy_document"], True],
-        ["state", "update", ["role_name"], True],
-        ["state", "delete", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ["state", "create", ["vpc_id", "cidr_block"], True],
+        ["state", "update", ["vpc_id"], True],
+        ["state", "delete", ["vpc_id"], True],
+        ["state", "get", ["vpc_id"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -207,21 +166,16 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::EC2::VPC"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
-    )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
+    params["cidr_block"] = module.params.get("cidr_block")
+    params["enable_dns_hostnames"] = module.params.get("enable_dns_hostnames")
+    params["enable_dns_support"] = module.params.get("enable_dns_support")
+    params["instance_tenancy"] = module.params.get("instance_tenancy")
     params["tags"] = module.params.get("tags")
+    params["vpc_id"] = module.params.get("vpc_id")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -229,7 +183,7 @@ def main():
 
     desired_state = json.dumps(params_to_set)
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("vpc_id")
 
     results = {"changed": False, "result": []}
 
@@ -247,7 +201,7 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/Path", "/properties/RoleName"]
+        create_only_params = ["/properties/CidrBlock"]
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )

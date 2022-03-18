@@ -12,63 +12,38 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage EC2 instances
-description: Manage EC2 instances (list, create, update, describe, delete).
+module: ec2_subnet
+short_description: Create and manage subnets in AWS virtual private clouds (VPCSs)
+description: Create and manage subnets in AWS VPCs (list, create, update, describe,
+    delete).
 options:
-    assume_role_policy_document:
-        description:
-        - The trust policy that is associated with this role.
-        required: true
-        type: dict
-    description:
-        description:
-        - A description of the role that you provide.
+    assign_ipv6_address_on_creation:
+        type: bool
+    availability_zone:
         type: str
-    managed_policy_arns:
-        description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
-        elements: str
-        type: list
-    max_session_duration:
-        description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        maximum: 43200
-        minimum: 3600
-        type: int
-    path:
-        description:
-        - The path to the role.
+    availability_zone_id:
         type: str
-    permissions_boundary:
-        description:
-        - The ARN of the policy used to set the permissions boundary for the role.
+    cidr_block:
         type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
-        elements: dict
+    enable_dns64:
+        type: bool
+    ipv6_cidr_block:
+        type: str
+    ipv6_native:
+        type: bool
+    map_public_ip_on_launch:
+        type: bool
+    outpost_arn:
+        type: str
+    private_dns_name_options_on_launch:
         suboptions:
-            policy_document:
-                description:
-                - The policy document.
-                required: true
+            enable_resource_name_dns_a_record:
+                type: bool
+            enable_resource_name_dns_aaaa_record:
+                type: bool
+            hostname_type:
                 type: str
-            policy_name:
-                description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
-                type: str
-        type: list
-    role_name:
-        description:
-        - A name for the IAM role, up to 64 characters in length.
-        type: str
+        type: dict
     state:
         choices:
         - create
@@ -86,30 +61,21 @@ options:
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
+    subnet_id:
+        type: str
     tags:
-        description:
-        - A key-value pair to associate with a resource.
         elements: dict
         suboptions:
             key:
-                description:
-                - The key name of the tag.
-                - You can specify a value that is 1 to 128 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
             value:
-                description:
-                - The value for the tag.
-                - You can specify a value that is 0 to 256 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., /, =, +, and -.'
                 required: true
                 type: str
         type: list
+    vpc_id:
+        required: true
+        type: str
     wait:
         default: false
         description:
@@ -160,31 +126,31 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {
-        "type": "int",
-        "minimum": 3600,
-        "maximum": 43200,
-    }
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
+    argument_spec["assign_ipv6_address_on_creation"] = {"type": "bool"}
+    argument_spec["vpc_id"] = {"type": "str", "required": True}
+    argument_spec["map_public_ip_on_launch"] = {"type": "bool"}
+    argument_spec["availability_zone"] = {"type": "str"}
+    argument_spec["availability_zone_id"] = {"type": "str"}
+    argument_spec["cidr_block"] = {"type": "str"}
+    argument_spec["subnet_id"] = {"type": "str"}
+    argument_spec["ipv6_cidr_block"] = {"type": "str"}
+    argument_spec["outpost_arn"] = {"type": "str"}
+    argument_spec["ipv6_native"] = {"type": "bool"}
+    argument_spec["enable_dns64"] = {"type": "bool"}
+    argument_spec["private_dns_name_options_on_launch"] = {
+        "type": "dict",
         "suboptions": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
+            "hostname_type": {"type": "str"},
+            "enable_resource_name_dns_a_record": {"type": "bool"},
+            "enable_resource_name_dns_aaaa_record": {"type": "bool"},
         },
     }
-    argument_spec["role_name"] = {"type": "str"}
     argument_spec["tags"] = {
         "type": "list",
         "elements": "dict",
         "suboptions": {
-            "key": {"type": "str", "required": True},
             "value": {"type": "str", "required": True},
+            "key": {"type": "str", "required": True},
         },
     }
     argument_spec["state"] = {
@@ -196,10 +162,10 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "create", ["role_name", "assume_role_policy_document"], True],
-        ["state", "update", ["role_name"], True],
-        ["state", "delete", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ["state", "create", ["subnet_id", "vpc_id"], True],
+        ["state", "update", ["subnet_id"], True],
+        ["state", "delete", ["subnet_id"], True],
+        ["state", "get", ["subnet_id"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -207,21 +173,27 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::EC2::Subnet"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
+    params["assign_ipv6_address_on_creation"] = module.params.get(
+        "assign_ipv6_address_on_creation"
     )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
+    params["availability_zone"] = module.params.get("availability_zone")
+    params["availability_zone_id"] = module.params.get("availability_zone_id")
+    params["cidr_block"] = module.params.get("cidr_block")
+    params["enable_dns64"] = module.params.get("enable_dns64")
+    params["ipv6_cidr_block"] = module.params.get("ipv6_cidr_block")
+    params["ipv6_native"] = module.params.get("ipv6_native")
+    params["map_public_ip_on_launch"] = module.params.get("map_public_ip_on_launch")
+    params["outpost_arn"] = module.params.get("outpost_arn")
+    params["private_dns_name_options_on_launch"] = module.params.get(
+        "private_dns_name_options_on_launch"
+    )
+    params["subnet_id"] = module.params.get("subnet_id")
     params["tags"] = module.params.get("tags")
+    params["vpc_id"] = module.params.get("vpc_id")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -229,7 +201,7 @@ def main():
 
     desired_state = json.dumps(params_to_set)
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("subnet_id")
 
     results = {"changed": False, "result": []}
 
@@ -247,7 +219,14 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/Path", "/properties/RoleName"]
+        create_only_params = [
+            "/properties/VpcId",
+            "/properties/AvailabilityZone",
+            "/properties/AvailabilityZoneId",
+            "/properties/CidrBlock",
+            "/properties/OutpostArn",
+            "/properties/Ipv6Native",
+        ]
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )

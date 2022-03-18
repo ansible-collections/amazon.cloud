@@ -12,44 +12,15 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: logs_log_group
-short_description: Create and manage log groups
-description: Create and manage log groups (list, create, update, describe, delete).
+module: ec2_subnet_route_table_association
+short_description: []
+description: []
 options:
-    kms_key_id:
-        description:
-        - The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.
+    id:
         type: str
-    log_group_name:
-        description:
-        - The name of the log group.
-        - If you dont specify a name, AWS CloudFormation generates a unique ID for
-            the log group.
+    route_table_id:
+        required: true
         type: str
-    retention_in_days:
-        choices:
-        - 1
-        - 3
-        - 5
-        - 7
-        - 14
-        - 30
-        - 60
-        - 90
-        - 120
-        - 150
-        - 180
-        - 365
-        - 400
-        - 545
-        - 731
-        - 1827
-        - 3653
-        description:
-        - The number of days to retain the log events in the specified log group.
-        - 'Possible values are: C(1), C(3), C(5), C(7), C(14), C(30), C(60), C(90),
-            C(120), C(150), C(180), C(365), C(400), C(545), C(731), C(1827), and C(3653).'
-        type: int
     state:
         choices:
         - create
@@ -67,29 +38,9 @@ options:
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
-    tags:
-        description:
-        - A key-value pair to associate with a resource.
-        elements: dict
-        suboptions:
-            key:
-                description:
-                - The key name of the tag.
-                - You can specify a value that is 1 to 128 Unicode characters in length
-                    and cannot be prefixed with aws:.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., :, /, =, +, - and @.'
-                required: true
-                type: str
-            value:
-                description:
-                - The value for the tag.
-                - You can specify a value that is 0 to 256 Unicode characters in length.
-                - 'You can use any of the following characters: the set of Unicode
-                    letters, digits, whitespace, _, ., :, /, =, +, - and @.'
-                required: true
-                type: str
-        type: list
+    subnet_id:
+        required: true
+        type: str
     wait:
         default: false
         description:
@@ -140,38 +91,9 @@ def main():
         ),
     )
 
-    argument_spec["log_group_name"] = {"type": "str"}
-    argument_spec["kms_key_id"] = {"type": "str"}
-    argument_spec["retention_in_days"] = {
-        "type": "int",
-        "choices": [
-            1,
-            3,
-            5,
-            7,
-            14,
-            30,
-            60,
-            90,
-            120,
-            150,
-            180,
-            365,
-            400,
-            545,
-            731,
-            1827,
-            3653,
-        ],
-    }
-    argument_spec["tags"] = {
-        "type": "list",
-        "elements": "dict",
-        "suboptions": {
-            "key": {"type": "str", "required": True},
-            "value": {"type": "str", "required": True},
-        },
-    }
+    argument_spec["id"] = {"type": "str"}
+    argument_spec["route_table_id"] = {"type": "str", "required": True}
+    argument_spec["subnet_id"] = {"type": "str", "required": True}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["create", "update", "delete", "list", "describe", "get"],
@@ -181,9 +103,10 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "update", ["log_group_name"], True],
-        ["state", "delete", ["log_group_name"], True],
-        ["state", "get", ["log_group_name"], True],
+        ["state", "create", ["id", "route_table_id", "subnet_id"], True],
+        ["state", "update", ["id"], True],
+        ["state", "delete", ["id"], True],
+        ["state", "get", ["id"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -191,14 +114,13 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::Logs::LogGroup"
+    type_name = "AWS::EC2::SubnetRouteTableAssociation"
 
     params = {}
 
-    params["kms_key_id"] = module.params.get("kms_key_id")
-    params["log_group_name"] = module.params.get("log_group_name")
-    params["retention_in_days"] = module.params.get("retention_in_days")
-    params["tags"] = module.params.get("tags")
+    params["id"] = module.params.get("id")
+    params["route_table_id"] = module.params.get("route_table_id")
+    params["subnet_id"] = module.params.get("subnet_id")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -206,7 +128,7 @@ def main():
 
     desired_state = json.dumps(params_to_set)
     state = module.params.get("state")
-    identifier = module.params.get("log_group_name")
+    identifier = module.params.get("id")
 
     results = {"changed": False, "result": []}
 
@@ -224,7 +146,7 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/LogGroupName"]
+        create_only_params = ["/properties/SubnetId", "/properties/RouteTableId"]
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )
