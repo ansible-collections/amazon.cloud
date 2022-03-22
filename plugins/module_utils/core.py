@@ -34,8 +34,8 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-import botocore
 import json
+import traceback
 from itertools import count
 from typing import Iterable, List, Dict
 
@@ -49,6 +49,15 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     to_sync,
     to_async,
 )
+
+BOTO3_IMP_ERR = None
+try:
+    import botocore
+
+    HAS_BOTO3 = True
+except ImportError:
+    BOTO3_IMP_ERR = traceback.format_exc()
+    HAS_BOTO3 = False
 
 
 class CloudControlResource(object):
@@ -201,7 +210,7 @@ class CloudControlResource(object):
         params = {
             "ResourceRequestStatusFilter": {
                 "Operations": ["CREATE", "DELETE", "UPDATE"],
-                "OperationStatuses": ["IN_PROGRESS",],
+                "OperationStatuses": ["IN_PROGRESS"],
             }
         }
 

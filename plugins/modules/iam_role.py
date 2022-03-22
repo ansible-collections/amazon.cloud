@@ -247,7 +247,7 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/Path", "/properties/RoleName"]
+        create_only_params = ["path", "role_name"]
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )

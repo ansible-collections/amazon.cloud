@@ -2010,6 +2010,7 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
+        ["state", "create", ["bucket_name"], True],
         ["state", "update", ["bucket_name"], True],
         ["state", "delete", ["bucket_name"], True],
         ["state", "get", ["bucket_name"], True],
@@ -2075,7 +2076,7 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/BucketName", "/properties/ObjectLockEnabled"]
+        create_only_params = ["bucket_name", "object_lock_enabled"]
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )

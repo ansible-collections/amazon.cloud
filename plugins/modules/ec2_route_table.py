@@ -124,7 +124,6 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "create", ["route_table_id", "vpc_id"], True],
         ["state", "update", ["route_table_id"], True],
         ["state", "delete", ["route_table_id"], True],
         ["state", "get", ["route_table_id"], True],
@@ -167,7 +166,7 @@ def main():
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["/properties/VpcId"]
+        create_only_params = ["vpc_id"]
         results["changed"] |= cloud.update_resource(
             type_name, identifier, params_to_set, create_only_params
         )
