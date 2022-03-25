@@ -5,7 +5,7 @@ readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
 description: null
-license_file: COPYING
+license_file: LICENSE
 tags: [amazon, cloud, aws]
 repository: https://github.com/ansible-collections/amazon.cloud
 documentation: https://github.com/ansible-collections/amazon.cloud/tree/main/docss
