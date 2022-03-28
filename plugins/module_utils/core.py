@@ -48,7 +48,10 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     scrub_keys,
     to_sync,
     to_async,
+    ansible_dict_to_boto3_tag_list,
+    snake_dict_to_camel_dict,
 )
+
 
 BOTO3_IMP_ERR = None
 try:
@@ -297,8 +300,7 @@ class CloudControlResource(object):
         properties = json.loads(properties)
 
         # Ignore createOnlyProperties that can be set only during resource creation
-        _create_only_params = [p.split("/")[-1].strip() for p in create_only_params]
-        params = scrub_keys(params_to_set, _create_only_params)
+        params = scrub_keys(params_to_set, create_only_params)
 
         patch = JsonPatch()
         for k, v in params.items():
