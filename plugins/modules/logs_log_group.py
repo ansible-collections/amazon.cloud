@@ -7,11 +7,10 @@
 # See: https://github.com/ansible-collections/amazon_cloud_code_generator
 
 from __future__ import absolute_import, division, print_function
-
 __metaclass__ = type
 
 
-DOCUMENTATION = r"""
+DOCUMENTATION = r'''
 module: logs_log_group
 short_description: Create and manage log groups
 description: Create and manage log groups (list, create, update, describe, delete).
@@ -103,132 +102,91 @@ options:
 author: Ansible Cloud Team (@ansible-collections)
 version_added: TODO
 requirements: []
-"""
+extends_documentation_fragment:
+- amazon.aws.aws
+- amazon.aws.ec2
+'''
 
-EXAMPLES = r"""
-"""
+EXAMPLES = r'''
+'''
 
-RETURN = r"""
+RETURN = r'''
 result:
-    identifier:
-        description: The unique identifier of the resource.
-        type: str
-    properties:
-        description: The resource properties.
-        type: complex
-"""
+    description: Dictionary containing resource information.
+    returned: always
+    type: dict
+    contains:
+        identifier:
+            description: The unique identifier of the resource.
+            type: str
+        properties:
+            description: The resource properties.
+            type: complex
+'''
 
 import json
 
 from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSModule
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    CloudControlResource,
-)
-from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
-    snake_dict_to_camel_dict,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import CloudControlResource
+from ansible_collections.amazon.cloud.plugins.module_utils.utils import snake_dict_to_camel_dict
 
 
 def main():
 
     argument_spec = dict(
-        client_token=dict(type="str", no_log=True),
-        state=dict(
-            type="str",
-            choices=["create", "update", "delete", "list", "describe", "get"],
-            default="create",
-        ),
+        client_token=dict(type='str', no_log=True),
+        state=dict(type='str', choices=['create', 'update', 'delete', 'list', 'describe', 'get'], default='create'),
     )
+        
+    argument_spec['log_group_name'] = {'type': 'str'}
+    argument_spec['kms_key_id'] = {'type': 'str'}
+    argument_spec['retention_in_days'] = {'type': 'int', 'choices': [1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653]}
+    argument_spec['tags'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'key': {'type': 'str', 'required': True}, 'value': {'type': 'str', 'required': True}}}
+    argument_spec['state'] = {'type': 'str', 'choices': ['create', 'update', 'delete', 'list', 'describe', 'get'], 'default': 'create'}
+    argument_spec['wait'] = {'type': 'bool', 'default': False}
+    argument_spec['wait_timeout'] = {'type': 'int', 'default': 320}
 
-    argument_spec["log_group_name"] = {"type": "str"}
-    argument_spec["kms_key_id"] = {"type": "str"}
-    argument_spec["retention_in_days"] = {
-        "type": "int",
-        "choices": [
-            1,
-            3,
-            5,
-            7,
-            14,
-            30,
-            60,
-            90,
-            120,
-            150,
-            180,
-            365,
-            400,
-            545,
-            731,
-            1827,
-            3653,
-        ],
-    }
-    argument_spec["tags"] = {
-        "type": "list",
-        "elements": "dict",
-        "suboptions": {
-            "key": {"type": "str", "required": True},
-            "value": {"type": "str", "required": True},
-        },
-    }
-    argument_spec["state"] = {
-        "type": "str",
-        "choices": ["create", "update", "delete", "list", "describe", "get"],
-        "default": "create",
-    }
-    argument_spec["wait"] = {"type": "bool", "default": False}
-    argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "create", ["log_group_name"], True],
-        ["state", "update", ["log_group_name"], True],
-        ["state", "delete", ["log_group_name"], True],
-        ["state", "get", ["log_group_name"], True],
+        ['state', 'create', ['log_group_name'], True],['state', 'update', ['log_group_name'], True],['state', 'delete', ['log_group_name'], True],['state', 'get', ['log_group_name'], True]
     ]
 
-    module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
-    )
+    module = AnsibleAWSModule(argument_spec=argument_spec, required_if=required_if, supports_check_mode=True)
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::Logs::LogGroup"
+    type_name = 'AWS::Logs::LogGroup'
 
     params = {}
-
-    params["kms_key_id"] = module.params.get("kms_key_id")
-    params["log_group_name"] = module.params.get("log_group_name")
-    params["retention_in_days"] = module.params.get("retention_in_days")
-    params["tags"] = module.params.get("tags")
+        
+    params['kms_key_id'] = module.params.get('kms_key_id')
+    params['log_group_name'] = module.params.get('log_group_name')
+    params['retention_in_days'] = module.params.get('retention_in_days')
+    params['tags'] = module.params.get('tags')
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-
+    
     desired_state = json.dumps(params_to_set)
-    state = module.params.get("state")
-    identifier = module.params.get("log_group_name")
+    state = module.params.get('state')
+    identifier = module.params.get('log_group_name')
 
     results = {"changed": False, "result": []}
-
+    
     if state == "list":
         results["result"] = cloud.list_resources(type_name)
-
+    
     if state in ("describe", "get"):
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
-        results["changed"] |= cloud.create_resource(
-            type_name, identifier, desired_state
-        )
+        results["changed"] |= cloud.create_resource(type_name, identifier, desired_state)
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["log_group_name"]
-        results["changed"] |= cloud.update_resource(
-            type_name, identifier, params_to_set, create_only_params
-        )
+        create_only_params = ['log_group_name']
+        results["changed"] |= cloud.update_resource(type_name, identifier, params_to_set, create_only_params)
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "delete":
@@ -237,5 +195,5 @@ def main():
     module.exit_json(**results)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

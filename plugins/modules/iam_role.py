@@ -7,11 +7,10 @@
 # See: https://github.com/ansible-collections/amazon_cloud_code_generator
 
 from __future__ import absolute_import, division, print_function
-
 __metaclass__ = type
 
 
-DOCUMENTATION = r"""
+DOCUMENTATION = r'''
 module: iam_role
 short_description: Create and manage EC2 instances
 description: Manage EC2 instances (list, create, update, describe, delete).
@@ -123,134 +122,101 @@ options:
 author: Ansible Cloud Team (@ansible-collections)
 version_added: TODO
 requirements: []
-"""
+extends_documentation_fragment:
+- amazon.aws.aws
+- amazon.aws.ec2
+'''
 
-EXAMPLES = r"""
-"""
+EXAMPLES = r'''
+'''
 
-RETURN = r"""
+RETURN = r'''
 result:
-    identifier:
-        description: The unique identifier of the resource.
-        type: str
-    properties:
-        description: The resource properties.
-        type: complex
-"""
+    description: Dictionary containing resource information.
+    returned: always
+    type: dict
+    contains:
+        identifier:
+            description: The unique identifier of the resource.
+            type: str
+        properties:
+            description: The resource properties.
+            type: complex
+'''
 
 import json
 
 from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSModule
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    CloudControlResource,
-)
-from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
-    snake_dict_to_camel_dict,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import CloudControlResource
+from ansible_collections.amazon.cloud.plugins.module_utils.utils import snake_dict_to_camel_dict
 
 
 def main():
 
     argument_spec = dict(
-        client_token=dict(type="str", no_log=True),
-        state=dict(
-            type="str",
-            choices=["create", "update", "delete", "list", "describe", "get"],
-            default="create",
-        ),
+        client_token=dict(type='str', no_log=True),
+        state=dict(type='str', choices=['create', 'update', 'delete', 'list', 'describe', 'get'], default='create'),
     )
+        
+    argument_spec['assume_role_policy_document'] = {'type': 'dict', 'required': True}
+    argument_spec['description'] = {'type': 'str'}
+    argument_spec['managed_policy_arns'] = {'type': 'list', 'elements': 'str'}
+    argument_spec['max_session_duration'] = {'type': 'int', 'minimum': 3600, 'maximum': 43200}
+    argument_spec['path'] = {'type': 'str'}
+    argument_spec['permissions_boundary'] = {'type': 'str'}
+    argument_spec['policies'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'policy_document': {'type': 'str', 'required': True}, 'policy_name': {'type': 'str', 'required': True}}}
+    argument_spec['role_name'] = {'type': 'str'}
+    argument_spec['tags'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'key': {'type': 'str', 'required': True}, 'value': {'type': 'str', 'required': True}}}
+    argument_spec['state'] = {'type': 'str', 'choices': ['create', 'update', 'delete', 'list', 'describe', 'get'], 'default': 'create'}
+    argument_spec['wait'] = {'type': 'bool', 'default': False}
+    argument_spec['wait_timeout'] = {'type': 'int', 'default': 320}
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {
-        "type": "int",
-        "minimum": 3600,
-        "maximum": 43200,
-    }
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
-        "suboptions": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
-        },
-    }
-    argument_spec["role_name"] = {"type": "str"}
-    argument_spec["tags"] = {
-        "type": "list",
-        "elements": "dict",
-        "suboptions": {
-            "key": {"type": "str", "required": True},
-            "value": {"type": "str", "required": True},
-        },
-    }
-    argument_spec["state"] = {
-        "type": "str",
-        "choices": ["create", "update", "delete", "list", "describe", "get"],
-        "default": "create",
-    }
-    argument_spec["wait"] = {"type": "bool", "default": False}
-    argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "create", ["role_name", "assume_role_policy_document"], True],
-        ["state", "update", ["role_name"], True],
-        ["state", "delete", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ['state', 'create', ['role_name', 'assume_role_policy_document'], True],['state', 'update', ['role_name'], True],['state', 'delete', ['role_name'], True],['state', 'get', ['role_name'], True]
     ]
 
-    module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
-    )
+    module = AnsibleAWSModule(argument_spec=argument_spec, required_if=required_if, supports_check_mode=True)
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = 'AWS::IAM::Role'
 
     params = {}
-
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
-    )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
-    params["tags"] = module.params.get("tags")
+        
+    params['assume_role_policy_document'] = module.params.get('assume_role_policy_document')
+    params['description'] = module.params.get('description')
+    params['managed_policy_arns'] = module.params.get('managed_policy_arns')
+    params['max_session_duration'] = module.params.get('max_session_duration')
+    params['path'] = module.params.get('path')
+    params['permissions_boundary'] = module.params.get('permissions_boundary')
+    params['policies'] = module.params.get('policies')
+    params['role_name'] = module.params.get('role_name')
+    params['tags'] = module.params.get('tags')
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-
+    
     desired_state = json.dumps(params_to_set)
-    state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    state = module.params.get('state')
+    identifier = module.params.get('role_name')
 
     results = {"changed": False, "result": []}
-
+    
     if state == "list":
         results["result"] = cloud.list_resources(type_name)
-
+    
     if state in ("describe", "get"):
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
-        results["changed"] |= cloud.create_resource(
-            type_name, identifier, desired_state
-        )
+        results["changed"] |= cloud.create_resource(type_name, identifier, desired_state)
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["path", "role_name"]
-        results["changed"] |= cloud.update_resource(
-            type_name, identifier, params_to_set, create_only_params
-        )
+        create_only_params = ['path', 'role_name']
+        results["changed"] |= cloud.update_resource(type_name, identifier, params_to_set, create_only_params)
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "delete":
@@ -259,5 +225,5 @@ def main():
     module.exit_json(**results)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
