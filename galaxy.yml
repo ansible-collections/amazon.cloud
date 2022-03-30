@@ -8,7 +8,7 @@ description: null
 license_file: LICENSE
 tags: [amazon, cloud, aws]
 repository: https://github.com/ansible-collections/amazon.cloud
-documentation: https://github.com/ansible-collections/amazon.cloud/tree/main/docss
+documentation: https://github.com/ansible-collections/amazon.cloud/tree/main/docs
 homepage: https://github.com/ansible-collections/amazon.cloud
 issues: https://github.com/ansible-collections/amazon.cloud/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc
 build_ignore:

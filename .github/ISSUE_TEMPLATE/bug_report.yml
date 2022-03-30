@@ -11,7 +11,7 @@ body:
       Where possible also test if the latest release and main branch are affected too.
       *Complete **all** sections as described, this form is processed automatically.*
 
-      [issue search]: https://github.com/ansible-collections/amazon.aws/search?q=is%3Aissue&type=issues
+      [issue search]: https://github.com/ansible-collections/amazon.cloud/search?q=is%3Aissue&type=issues
 
 - type: textarea
   attributes:
@@ -53,7 +53,7 @@ body:
     label: Ansible Version
     description: >-
       Paste verbatim output from `ansible --version` between
-      tripple backticks.
+      triple backticks.
     value: |
       ```console (paste below)
       $ ansible --version
@@ -67,7 +67,7 @@ body:
     label: Collection Versions
     description: >-
       Paste verbatim output from `ansible-galaxy collection list` between
-      tripple backticks.
+      triple backticks.
     value: |
       ```console (paste below)
       $ ansible-galaxy collection list
@@ -80,10 +80,10 @@ body:
     label: AWS SDK versions
     description: >-
       The AWS modules depend heavily on the Amazon AWS SDKs which are regularly updated.
-      Paste verbatim output from `pip show boto boto3 botocore` between quotes
+      Paste verbatim output from `pip show boto3 botocore` between quotes
     value: |
       ```console (paste below)
-      $ pip show boto boto3 botocore
+      $ pip show boto3 botocore
       ```
   validations:
     required: true
