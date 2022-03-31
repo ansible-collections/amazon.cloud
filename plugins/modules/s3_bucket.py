@@ -1286,7 +1286,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
 def main():
 
     argument_spec = dict(
-        client_token=dict(type="str", no_log=True),
         state=dict(
             type="str",
             choices=["create", "update", "delete", "list", "describe", "get"],
