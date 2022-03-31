@@ -48,7 +48,10 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     scrub_keys,
     to_sync,
     to_async,
+    ansible_dict_to_boto3_tag_list,
+    snake_dict_to_camel_dict,
 )
+
 
 BOTO3_IMP_ERR = None
 try:
@@ -75,6 +78,18 @@ class CloudControlResource(object):
         delay = min(10, self.module.params.get("wait_timeout"))
         max_attempts = self.module.params.get("wait_timeout") // delay
         return {"Delay": delay, "MaxAttempts": max_attempts}
+
+    def wait_until_resource_request_success(self, request_token):
+        try:
+            self.client.get_waiter("resource_request_success").wait(
+                RequestToken=request_token,
+                WaiterConfig=self._waiter_config,
+            )
+        except botocore.exceptions.WaiterError as e:
+            self.module.fail_json_aws(
+                e,
+                msg="An error occurred waiting for the resource request to become successful.",
+            )
 
     @to_sync
     async def list_resources(self, type_name: str) -> List:
@@ -187,21 +202,20 @@ class CloudControlResource(object):
                     response = self.client.create_resource(
                         TypeName=type_name, DesiredState=params
                     )
-                    self.client.get_waiter("resource_request_success").wait(
-                        RequestToken=response["ProgressEvent"]["RequestToken"],
-                        WaiterConfig=self._waiter_config,
+                    self.wait_until_resource_request_success(
+                        response["ProgressEvent"]["RequestToken"]
                     )
-                except botocore.exceptions.WaiterError as e:
-                    self.module.fail_json_aws(
-                        e,
-                        msg="An error occurred waiting for the resource request to become successful",
-                    )
+                except (
+                    botocore.exceptions.BotoCoreError,
+                    botocore.exceptions.ClientError,
+                ) as e:
+                    self.module.fail_json_aws(e, msg="Failed to create resource")
             changed: bool = True
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
         ) as e:
-            self.module.fail_json_aws(e, msg="Failed to created resource")
+            self.module.fail_json_aws(e, msg="Failed to create resource")
 
         return changed
 
@@ -230,9 +244,7 @@ class CloudControlResource(object):
                     f"There is one or more IN PROGRESS operations on {identifier}. Wait until there are no more IN PROGRESS operations before proceding."
                 )
                 for e in in_progress_requests:
-                    self.client.get_waiter("resource_request_success").wait(
-                        RequestToken=e["RequestToken"]
-                    )
+                    self.wait_until_resource_request_success(e["RequestToken"])
 
     def delete_resource(self, type_name: str, identifier: str) -> bool:
         changed: bool = False
@@ -253,16 +265,9 @@ class CloudControlResource(object):
                 )
 
                 if self.module.params.get("wait"):
-                    try:
-                        self.client.get_waiter("resource_request_success").wait(
-                            RequestToken=response["ProgressEvent"]["RequestToken"],
-                            WaiterConfig=self._waiter_config,
-                        )
-                    except botocore.exceptions.WaiterError as e:
-                        self.module.fail_json_aws(
-                            e,
-                            msg="An error occurred waiting for the resource request to become successful.",
-                        )
+                    self.wait_until_resource_request_success(
+                        response["ProgressEvent"]["RequestToken"]
+                    )
             changed = True
         except (
             botocore.exceptions.BotoCoreError,
@@ -297,8 +302,7 @@ class CloudControlResource(object):
         properties = json.loads(properties)
 
         # Ignore createOnlyProperties that can be set only during resource creation
-        _create_only_params = [p.split("/")[-1].strip() for p in create_only_params]
-        params = scrub_keys(params_to_set, _create_only_params)
+        params = scrub_keys(params_to_set, create_only_params)
 
         patch = JsonPatch()
         for k, v in params.items():
@@ -324,16 +328,9 @@ class CloudControlResource(object):
                     )
 
                     if self.module.params.get("wait"):
-                        try:
-                            self.client.get_waiter("resource_request_success").wait(
-                                RequestToken=response["ProgressEvent"]["RequestToken"],
-                                WaiterConfig=self._waiter_config,
-                            )
-                        except botocore.exceptions.WaiterError as e:
-                            self.module.fail_json_aws(
-                                e,
-                                msg="An error occurred waiting for the resource request to become successful.",
-                            )
+                        self.wait_until_resource_request_success(
+                            response["ProgressEvent"]["RequestToken"]
+                        )
                 changed = True
             except (
                 botocore.exceptions.BotoCoreError,

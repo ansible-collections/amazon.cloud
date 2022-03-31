@@ -8,6 +8,8 @@ from ansible.module_utils.common.dict_transformations import (
     snake_dict_to_camel_dict,
 )
 
+from ansible.module_utils._text import to_native
+
 
 def to_async(fn):
     """Turn a sync function into an async function using threads"""
@@ -93,6 +95,41 @@ def normalize_response(response: Iterable):
         result = [camel_dict_to_snake_dict(res) for res in result]
 
     return result
+
+
+def ansible_dict_to_boto3_tag_list(
+    tags_dict, tag_name_key_name="Key", tag_value_key_name="Value"
+):
+    """
+    Convert a flat dict of key:value pairs representing AWS resource tags to a boto3 list of dicts
+    Args:
+        tags_dict (dict): Dict representing AWS resource tags.
+        tag_name_key_name (str): Value to use as the key for all tag keys (useful because boto3 doesn't always use "Key")
+        tag_value_key_name (str): Value to use as the key for all tag values (useful because boto3 doesn't always use "Value")
+    Basic Usage:
+        >>> tags_dict = {'MyTagKey': 'MyTagValue'}
+        >>> ansible_dict_to_boto3_tag_list(tags_dict)
+        {
+            'MyTagKey': 'MyTagValue'
+        }
+    Returns:
+        List: List of dicts containing tag keys and values
+        [
+            {
+                'Key': 'MyTagKey',
+                'Value': 'MyTagValue'
+            }
+        ]
+    """
+
+    if not tags_dict:
+        return []
+
+    tags_list = []
+    for k, v in tags_dict.items():
+        tags_list.append({tag_name_key_name: k, tag_value_key_name: to_native(v)})
+
+    return tags_list
 
 
 class JsonPatch(list):

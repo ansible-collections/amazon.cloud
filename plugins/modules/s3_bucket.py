@@ -7,10 +7,11 @@
 # See: https://github.com/ansible-collections/amazon_cloud_code_generator
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-DOCUMENTATION = r'''
+DOCUMENTATION = r"""
 module: s3_bucket
 short_description: Manage S3 buckets
 description: Create and manage S3 buckets (list, create, update, describe, delete).
@@ -107,7 +108,6 @@ options:
                                 description:
                                 - The version of the output schema to use when exporting
                                     data.
-                                required: true
                                 type: str
                         type: dict
                 type: dict
@@ -223,7 +223,6 @@ options:
                         description:
                         - The time in seconds that your browser is to cache the preflight
                             response for the specified resource.
-                        minimum: 0
                         type: int
                 type: list
         type: dict
@@ -403,7 +402,6 @@ options:
                                 description:
                                 - Specifies the number of days after which Amazon
                                     S3 aborts an incomplete multipart upload.
-                                minimum: 0
                                 required: true
                                 type: int
                         type: dict
@@ -653,7 +651,6 @@ options:
                         description:
                         - Specifies whether to send notifications to Amazon EventBridge
                             when events occur in an Amazon S3 bucket.
-                        required: true
                         type: bool
                 type: dict
             lambda_configurations:
@@ -892,6 +889,12 @@ options:
                     is blocked.
                 type: bool
         type: dict
+    purge_tags:
+        default: true
+        description:
+        - Remove tags not listed in I(tags).
+        required: false
+        type: bool
     replication_configuration:
         description:
         - Configuration for replicating objects in an S3 bucket.A container for replication
@@ -937,7 +940,6 @@ options:
                                 suboptions:
                                     owner:
                                         default: Destination
-                                        required: true
                                         type: str
                                 type: dict
                             account:
@@ -1119,17 +1121,13 @@ options:
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
     tags:
+        aliases:
+        - resource_tags
         description:
-        - An arbitrary set of tags (key-value pairs) for this S3 bucket.
-        elements: dict
-        suboptions:
-            key:
-                required: true
-                type: str
-            value:
-                required: true
-                type: str
-        type: list
+        - A dict of tags to apply to the resource.
+        - To remove all tags set I(tags={}) and I(purge_tags=true).
+        required: false
+        type: dict
     versioning_configuration:
         description:
         - Describes the versioning state of an Amazon S3 bucket.
@@ -1141,7 +1139,6 @@ options:
                 default: Suspended
                 description:
                 - The versioning state of the bucket.
-                required: true
                 type: str
         type: dict
     wait:
@@ -1248,125 +1245,833 @@ options:
                 type: list
         type: dict
 author: Ansible Cloud Team (@ansible-collections)
-version_added: TODO
+version_added: 0.0.1
 requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
-'''
+"""
 
-EXAMPLES = r'''
-'''
+EXAMPLES = r"""
+"""
 
-RETURN = r'''
+RETURN = r"""
 result:
     description: Dictionary containing resource information.
     returned: always
-    type: dict
+    type: complex
     contains:
         identifier:
             description: The unique identifier of the resource.
             type: str
         properties:
             description: The resource properties.
-            type: complex
-'''
+            type: dict
+"""
 
 import json
 
 from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSModule
-from ansible_collections.amazon.cloud.plugins.module_utils.core import CloudControlResource
-from ansible_collections.amazon.cloud.plugins.module_utils.utils import snake_dict_to_camel_dict
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    CloudControlResource,
+)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    snake_dict_to_camel_dict,
+)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    ansible_dict_to_boto3_tag_list,
+)
 
 
 def main():
 
     argument_spec = dict(
-        client_token=dict(type='str', no_log=True),
-        state=dict(type='str', choices=['create', 'update', 'delete', 'list', 'describe', 'get'], default='create'),
+        client_token=dict(type="str", no_log=True),
+        state=dict(
+            type="str",
+            choices=["create", "update", "delete", "list", "describe", "get"],
+            default="create",
+        ),
     )
-        
-    argument_spec['accelerate_configuration'] = {'type': 'dict', 'suboptions': {'acceleration_status': {'type': 'str', 'choices': ['Enabled', 'Suspended'], 'required': True}}}
-    argument_spec['access_control'] = {'type': 'str', 'choices': ['AuthenticatedRead', 'AwsExecRead', 'BucketOwnerFullControl', 'BucketOwnerRead', 'LogDeliveryWrite', 'Private', 'PublicRead', 'PublicReadWrite']}
-    argument_spec['analytics_configurations'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'tag_filters': {'type': 'list', 'elements': 'dict', 'suboptions': {'value': {'type': 'str', 'required': True}, 'key': {'type': 'str', 'required': True}}}, 'storage_class_analysis': {'type': 'dict', 'suboptions': {'data_export': {'type': 'dict', 'suboptions': {'destination': {'type': 'dict', 'required': True, 'suboptions': {'bucket_arn': {'type': 'str'}, 'bucket_account_id': {'type': 'str'}, 'format': {'type': 'str', 'choices': ['CSV', 'ORC', 'Parquet']}, 'prefix': {'type': 'str'}}}, 'output_schema_version': {'type': 'str', 'default': 'V_1', 'required': True}}}}, 'required': True}, 'id': {'type': 'str', 'required': True}, 'prefix': {'type': 'str'}}}
-    argument_spec['bucket_encryption'] = {'type': 'dict', 'suboptions': {'server_side_encryption_configuration': {'type': 'list', 'required': True, 'elements': 'dict', 'suboptions': {'bucket_key_enabled': {'type': 'bool'}, 'server_side_encryption_by_default': {'type': 'dict', 'suboptions': {'kms_master_key_id': {'type': 'str'}, 'sse_algorithm': {'type': 'str', 'choices': ['AES256', 'aws:kms'], 'required': True}}}}}}}
-    argument_spec['bucket_name'] = {'type': 'str'}
-    argument_spec['cors_configuration'] = {'type': 'dict', 'suboptions': {'cors_rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'allowed_headers': {'type': 'list', 'elements': 'str'}, 'allowed_methods': {'type': 'list', 'required': True, 'elements': 'str', 'choices': ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']}, 'allowed_origins': {'type': 'list', 'required': True, 'elements': 'str'}, 'exposed_headers': {'type': 'list', 'elements': 'str'}, 'id': {'type': 'str'}, 'max_age': {'type': 'int', 'minimum': 0}}}}}
-    argument_spec['intelligent_tiering_configurations'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'id': {'type': 'str', 'required': True}, 'prefix': {'type': 'str'}, 'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}, 'tag_filters': {'type': 'list', 'elements': 'dict', 'suboptions': {'value': {'type': 'str', 'required': True}, 'key': {'type': 'str', 'required': True}}}, 'tierings': {'type': 'list', 'elements': 'dict', 'suboptions': {'access_tier': {'type': 'str', 'choices': ['ARCHIVE_ACCESS', 'DEEP_ARCHIVE_ACCESS'], 'required': True}, 'days': {'type': 'int', 'required': True}}}}}
-    argument_spec['inventory_configurations'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'destination': {'type': 'dict', 'required': True, 'suboptions': {'bucket_arn': {'type': 'str'}, 'bucket_account_id': {'type': 'str'}, 'format': {'type': 'str', 'choices': ['CSV', 'ORC', 'Parquet']}, 'prefix': {'type': 'str'}}}, 'enabled': {'type': 'bool', 'required': True}, 'id': {'type': 'str', 'required': True}, 'included_object_versions': {'type': 'str', 'choices': ['All', 'Current'], 'required': True}, 'optional_fields': {'type': 'list', 'elements': 'str', 'choices': ['BucketKeyStatus', 'ETag', 'EncryptionStatus', 'IntelligentTieringAccessTier', 'IsMultipartUploaded', 'LastModifiedDate', 'ObjectLockLegalHoldStatus', 'ObjectLockMode', 'ObjectLockRetainUntilDate', 'ReplicationStatus', 'Size', 'StorageClass']}, 'prefix': {'type': 'str'}, 'schedule_frequency': {'type': 'str', 'choices': ['Daily', 'Weekly'], 'required': True}}}
-    argument_spec['lifecycle_configuration'] = {'type': 'dict', 'suboptions': {'rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'abort_incomplete_multipart_upload': {'type': 'dict', 'suboptions': {'days_after_initiation': {'type': 'int', 'minimum': 0, 'required': True}}}, 'expiration_date': {'type': 'str'}, 'expiration_in_days': {'type': 'int'}, 'expired_object_delete_marker': {'type': 'bool'}, 'id': {'type': 'str'}, 'noncurrent_version_expiration_in_days': {'type': 'int'}, 'noncurrent_version_expiration': {'type': 'dict', 'suboptions': {'noncurrent_days': {'type': 'int', 'required': True}, 'newer_noncurrent_versions': {'type': 'int'}}}, 'noncurrent_version_transition': {'type': 'dict', 'suboptions': {'storage_class': {'type': 'str', 'choices': ['DEEP_ARCHIVE', 'GLACIER', 'GLACIER_IR', 'Glacier', 'INTELLIGENT_TIERING', 'ONEZONE_IA', 'STANDARD_IA'], 'required': True}, 'transition_in_days': {'type': 'int', 'required': True}, 'newer_noncurrent_versions': {'type': 'int'}}}, 'noncurrent_version_transitions': {'type': 'list', 'elements': 'dict', 'suboptions': {'storage_class': {'type': 'str', 'choices': ['DEEP_ARCHIVE', 'GLACIER', 'GLACIER_IR', 'Glacier', 'INTELLIGENT_TIERING', 'ONEZONE_IA', 'STANDARD_IA'], 'required': True}, 'transition_in_days': {'type': 'int', 'required': True}, 'newer_noncurrent_versions': {'type': 'int'}}}, 'prefix': {'type': 'str'}, 'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}, 'tag_filters': {'type': 'list', 'elements': 'dict', 'suboptions': {'value': {'type': 'str', 'required': True}, 'key': {'type': 'str', 'required': True}}}, 'object_size_greater_than': {'type': 'str'}, 'object_size_less_than': {'type': 'str'}, 'transition': {'type': 'dict', 'suboptions': {'storage_class': {'type': 'str', 'choices': ['DEEP_ARCHIVE', 'GLACIER', 'GLACIER_IR', 'Glacier', 'INTELLIGENT_TIERING', 'ONEZONE_IA', 'STANDARD_IA'], 'required': True}, 'transition_date': {'type': 'str'}, 'transition_in_days': {'type': 'int'}}}, 'transitions': {'type': 'list', 'elements': 'dict', 'suboptions': {'storage_class': {'type': 'str', 'choices': ['DEEP_ARCHIVE', 'GLACIER', 'GLACIER_IR', 'Glacier', 'INTELLIGENT_TIERING', 'ONEZONE_IA', 'STANDARD_IA'], 'required': True}, 'transition_date': {'type': 'str'}, 'transition_in_days': {'type': 'int'}}}}}}}
-    argument_spec['logging_configuration'] = {'type': 'dict', 'suboptions': {'destination_bucket_name': {'type': 'str'}, 'log_file_prefix': {'type': 'str'}}}
-    argument_spec['metrics_configurations'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'access_point_arn': {'type': 'str'}, 'id': {'type': 'str', 'required': True}, 'prefix': {'type': 'str'}, 'tag_filters': {'type': 'list', 'elements': 'dict', 'suboptions': {'value': {'type': 'str', 'required': True}, 'key': {'type': 'str', 'required': True}}}}}
-    argument_spec['notification_configuration'] = {'type': 'dict', 'suboptions': {'event_bridge_configuration': {'type': 'dict', 'suboptions': {'event_bridge_enabled': {'type': 'bool', 'default': 'true', 'required': True}}}, 'lambda_configurations': {'type': 'list', 'elements': 'dict', 'suboptions': {'event': {'type': 'str', 'required': True}, 'filter': {'type': 'dict', 'suboptions': {'s3_key': {'type': 'dict', 'required': True, 'suboptions': {'rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'name': {'type': 'str', 'required': True}, 'value': {'type': 'str', 'required': True}}}}}}}, 'function': {'type': 'str', 'required': True}}}, 'queue_configurations': {'type': 'list', 'elements': 'dict', 'suboptions': {'event': {'type': 'str', 'required': True}, 'filter': {'type': 'dict', 'suboptions': {'s3_key': {'type': 'dict', 'required': True, 'suboptions': {'rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'name': {'type': 'str', 'required': True}, 'value': {'type': 'str', 'required': True}}}}}}}, 'queue': {'type': 'str', 'required': True}}}, 'topic_configurations': {'type': 'list', 'elements': 'dict', 'suboptions': {'event': {'type': 'str', 'required': True}, 'filter': {'type': 'dict', 'suboptions': {'s3_key': {'type': 'dict', 'required': True, 'suboptions': {'rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'name': {'type': 'str', 'required': True}, 'value': {'type': 'str', 'required': True}}}}}}}, 'topic': {'type': 'str', 'required': True}}}}}
-    argument_spec['object_lock_configuration'] = {'type': 'dict', 'suboptions': {'object_lock_enabled': {'type': 'str', 'default': 'Enabled'}, 'rule': {'type': 'dict', 'suboptions': {'default_retention': {'type': 'dict', 'suboptions': {'years': {'type': 'int'}, 'days': {'type': 'int'}, 'mode': {'type': 'str', 'choices': ['COMPLIANCE', 'GOVERNANCE']}}}}}}}
-    argument_spec['object_lock_enabled'] = {'type': 'bool'}
-    argument_spec['ownership_controls'] = {'type': 'dict', 'suboptions': {'rules': {'type': 'list', 'required': True, 'elements': 'dict', 'suboptions': {'object_ownership': {'type': 'str', 'choices': ['BucketOwnerEnforced', 'BucketOwnerPreferred', 'ObjectWriter']}}}}}
-    argument_spec['public_access_block_configuration'] = {'type': 'dict', 'suboptions': {'block_public_acls': {'type': 'bool'}, 'block_public_policy': {'type': 'bool'}, 'ignore_public_acls': {'type': 'bool'}, 'restrict_public_buckets': {'type': 'bool'}}}
-    argument_spec['replication_configuration'] = {'type': 'dict', 'suboptions': {'role': {'type': 'str', 'required': True}, 'rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'delete_marker_replication': {'type': 'dict', 'suboptions': {'status': {'type': 'str', 'choices': ['Disabled', 'Enabled']}}}, 'destination': {'type': 'dict', 'required': True, 'suboptions': {'access_control_translation': {'type': 'dict', 'suboptions': {'owner': {'type': 'str', 'default': 'Destination', 'required': True}}}, 'account': {'type': 'str'}, 'bucket': {'type': 'str'}, 'encryption_configuration': {'type': 'dict', 'suboptions': {'replica_kms_key_id': {'type': 'str', 'required': True}}}, 'metrics': {'type': 'dict', 'suboptions': {'event_threshold': {'type': 'dict', 'suboptions': {'minutes': {'type': 'int', 'required': True}}}, 'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}}}, 'replication_time': {'type': 'dict', 'suboptions': {'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}, 'time': {'type': 'dict', 'required': True, 'suboptions': {'minutes': {'type': 'int', 'required': True}}}}}, 'storage_class': {'type': 'str', 'choices': ['DEEP_ARCHIVE', 'GLACIER', 'GLACIER_IR', 'INTELLIGENT_TIERING', 'ONEZONE_IA', 'REDUCED_REDUNDANCY', 'STANDARD', 'STANDARD_IA']}}}, 'filter': {'type': 'dict', 'suboptions': {'and': {'type': 'dict', 'suboptions': {'prefix': {'type': 'str'}, 'tag_filters': {'type': 'list', 'elements': 'dict', 'suboptions': {'value': {'type': 'str', 'required': True}, 'key': {'type': 'str', 'required': True}}}}}, 'prefix': {'type': 'str'}, 'tag_filter': {'type': 'dict', 'suboptions': {'value': {'type': 'str', 'required': True}, 'key': {'type': 'str', 'required': True}}}}}, 'id': {'type': 'str'}, 'prefix': {'type': 'str'}, 'priority': {'type': 'int'}, 'source_selection_criteria': {'type': 'dict', 'suboptions': {'replica_modifications': {'type': 'dict', 'suboptions': {'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}}}, 'sse_kms_encrypted_objects': {'type': 'dict', 'suboptions': {'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}}}}}, 'status': {'type': 'str', 'choices': ['Disabled', 'Enabled'], 'required': True}}}}}
-    argument_spec['tags'] = {'type': 'list', 'elements': 'dict', 'suboptions': {'key': {'type': 'str', 'required': True}, 'value': {'type': 'str', 'required': True}}}
-    argument_spec['versioning_configuration'] = {'type': 'dict', 'suboptions': {'status': {'type': 'str', 'default': 'Suspended', 'choices': ['Enabled', 'Suspended'], 'required': True}}}
-    argument_spec['website_configuration'] = {'type': 'dict', 'suboptions': {'error_document': {'type': 'str'}, 'index_document': {'type': 'str'}, 'routing_rules': {'type': 'list', 'elements': 'dict', 'suboptions': {'redirect_rule': {'type': 'dict', 'suboptions': {'host_name': {'type': 'str'}, 'http_redirect_code': {'type': 'str'}, 'protocol': {'type': 'str', 'choices': ['http', 'https']}, 'replace_key_prefix_with': {'type': 'str'}, 'replace_key_with': {'type': 'str'}}, 'required': True}, 'routing_rule_condition': {'type': 'dict', 'suboptions': {'key_prefix_equals': {'type': 'str'}, 'http_error_code_returned_equals': {'type': 'str'}}}}}, 'redirect_all_requests_to': {'type': 'dict', 'suboptions': {'host_name': {'type': 'str', 'required': True}, 'protocol': {'type': 'str', 'choices': ['http', 'https']}}}}}
-    argument_spec['state'] = {'type': 'str', 'choices': ['create', 'update', 'delete', 'list', 'describe', 'get'], 'default': 'create'}
-    argument_spec['wait'] = {'type': 'bool', 'default': False}
-    argument_spec['wait_timeout'] = {'type': 'int', 'default': 320}
 
+    argument_spec["accelerate_configuration"] = {
+        "type": "dict",
+        "options": {
+            "acceleration_status": {
+                "type": "str",
+                "choices": ["Enabled", "Suspended"],
+                "required": True,
+            }
+        },
+    }
+    argument_spec["access_control"] = {
+        "type": "str",
+        "choices": [
+            "AuthenticatedRead",
+            "AwsExecRead",
+            "BucketOwnerFullControl",
+            "BucketOwnerRead",
+            "LogDeliveryWrite",
+            "Private",
+            "PublicRead",
+            "PublicReadWrite",
+        ],
+    }
+    argument_spec["analytics_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "options": {
+            "tag_filters": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "value": {"type": "str", "required": True},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+            "storage_class_analysis": {
+                "type": "dict",
+                "options": {
+                    "data_export": {
+                        "type": "dict",
+                        "options": {
+                            "destination": {
+                                "type": "dict",
+                                "required": True,
+                                "options": {
+                                    "bucket_arn": {"type": "str"},
+                                    "bucket_account_id": {"type": "str"},
+                                    "format": {
+                                        "type": "str",
+                                        "choices": ["CSV", "ORC", "Parquet"],
+                                    },
+                                    "prefix": {"type": "str"},
+                                },
+                            },
+                            "output_schema_version": {"type": "str", "default": "V_1"},
+                        },
+                    }
+                },
+                "required": True,
+            },
+            "id": {"type": "str", "required": True},
+            "prefix": {"type": "str"},
+        },
+    }
+    argument_spec["bucket_encryption"] = {
+        "type": "dict",
+        "options": {
+            "server_side_encryption_configuration": {
+                "type": "list",
+                "required": True,
+                "elements": "dict",
+                "options": {
+                    "bucket_key_enabled": {"type": "bool"},
+                    "server_side_encryption_by_default": {
+                        "type": "dict",
+                        "options": {
+                            "kms_master_key_id": {"type": "str"},
+                            "sse_algorithm": {
+                                "type": "str",
+                                "choices": ["AES256", "aws:kms"],
+                                "required": True,
+                            },
+                        },
+                    },
+                },
+            }
+        },
+    }
+    argument_spec["bucket_name"] = {"type": "str"}
+    argument_spec["cors_configuration"] = {
+        "type": "dict",
+        "options": {
+            "cors_rules": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "allowed_headers": {"type": "list", "elements": "str"},
+                    "allowed_methods": {
+                        "type": "list",
+                        "required": True,
+                        "elements": "str",
+                        "choices": ["DELETE", "GET", "HEAD", "POST", "PUT"],
+                    },
+                    "allowed_origins": {
+                        "type": "list",
+                        "required": True,
+                        "elements": "str",
+                    },
+                    "exposed_headers": {"type": "list", "elements": "str"},
+                    "id": {"type": "str"},
+                    "max_age": {"type": "int"},
+                },
+            }
+        },
+    }
+    argument_spec["intelligent_tiering_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "options": {
+            "id": {"type": "str", "required": True},
+            "prefix": {"type": "str"},
+            "status": {
+                "type": "str",
+                "choices": ["Disabled", "Enabled"],
+                "required": True,
+            },
+            "tag_filters": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "value": {"type": "str", "required": True},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+            "tierings": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "access_tier": {
+                        "type": "str",
+                        "choices": ["ARCHIVE_ACCESS", "DEEP_ARCHIVE_ACCESS"],
+                        "required": True,
+                    },
+                    "days": {"type": "int", "required": True},
+                },
+            },
+        },
+    }
+    argument_spec["inventory_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "options": {
+            "destination": {
+                "type": "dict",
+                "required": True,
+                "options": {
+                    "bucket_arn": {"type": "str"},
+                    "bucket_account_id": {"type": "str"},
+                    "format": {"type": "str", "choices": ["CSV", "ORC", "Parquet"]},
+                    "prefix": {"type": "str"},
+                },
+            },
+            "enabled": {"type": "bool", "required": True},
+            "id": {"type": "str", "required": True},
+            "included_object_versions": {
+                "type": "str",
+                "choices": ["All", "Current"],
+                "required": True,
+            },
+            "optional_fields": {
+                "type": "list",
+                "elements": "str",
+                "choices": [
+                    "BucketKeyStatus",
+                    "ETag",
+                    "EncryptionStatus",
+                    "IntelligentTieringAccessTier",
+                    "IsMultipartUploaded",
+                    "LastModifiedDate",
+                    "ObjectLockLegalHoldStatus",
+                    "ObjectLockMode",
+                    "ObjectLockRetainUntilDate",
+                    "ReplicationStatus",
+                    "Size",
+                    "StorageClass",
+                ],
+            },
+            "prefix": {"type": "str"},
+            "schedule_frequency": {
+                "type": "str",
+                "choices": ["Daily", "Weekly"],
+                "required": True,
+            },
+        },
+    }
+    argument_spec["lifecycle_configuration"] = {
+        "type": "dict",
+        "options": {
+            "rules": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "abort_incomplete_multipart_upload": {
+                        "type": "dict",
+                        "options": {
+                            "days_after_initiation": {"type": "int", "required": True}
+                        },
+                    },
+                    "expiration_date": {"type": "str"},
+                    "expiration_in_days": {"type": "int"},
+                    "expired_object_delete_marker": {"type": "bool"},
+                    "id": {"type": "str"},
+                    "noncurrent_version_expiration_in_days": {"type": "int"},
+                    "noncurrent_version_expiration": {
+                        "type": "dict",
+                        "options": {
+                            "noncurrent_days": {"type": "int", "required": True},
+                            "newer_noncurrent_versions": {"type": "int"},
+                        },
+                    },
+                    "noncurrent_version_transition": {
+                        "type": "dict",
+                        "options": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_in_days": {"type": "int", "required": True},
+                            "newer_noncurrent_versions": {"type": "int"},
+                        },
+                    },
+                    "noncurrent_version_transitions": {
+                        "type": "list",
+                        "elements": "dict",
+                        "options": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_in_days": {"type": "int", "required": True},
+                            "newer_noncurrent_versions": {"type": "int"},
+                        },
+                    },
+                    "prefix": {"type": "str"},
+                    "status": {
+                        "type": "str",
+                        "choices": ["Disabled", "Enabled"],
+                        "required": True,
+                    },
+                    "tag_filters": {
+                        "type": "list",
+                        "elements": "dict",
+                        "options": {
+                            "value": {"type": "str", "required": True},
+                            "key": {"type": "str", "required": True},
+                        },
+                    },
+                    "object_size_greater_than": {"type": "str"},
+                    "object_size_less_than": {"type": "str"},
+                    "transition": {
+                        "type": "dict",
+                        "options": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_date": {"type": "str"},
+                            "transition_in_days": {"type": "int"},
+                        },
+                    },
+                    "transitions": {
+                        "type": "list",
+                        "elements": "dict",
+                        "options": {
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "Glacier",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "STANDARD_IA",
+                                ],
+                                "required": True,
+                            },
+                            "transition_date": {"type": "str"},
+                            "transition_in_days": {"type": "int"},
+                        },
+                    },
+                },
+            }
+        },
+    }
+    argument_spec["logging_configuration"] = {
+        "type": "dict",
+        "options": {
+            "destination_bucket_name": {"type": "str"},
+            "log_file_prefix": {"type": "str"},
+        },
+    }
+    argument_spec["metrics_configurations"] = {
+        "type": "list",
+        "elements": "dict",
+        "options": {
+            "access_point_arn": {"type": "str"},
+            "id": {"type": "str", "required": True},
+            "prefix": {"type": "str"},
+            "tag_filters": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "value": {"type": "str", "required": True},
+                    "key": {"type": "str", "required": True},
+                },
+            },
+        },
+    }
+    argument_spec["notification_configuration"] = {
+        "type": "dict",
+        "options": {
+            "event_bridge_configuration": {
+                "type": "dict",
+                "options": {
+                    "event_bridge_enabled": {"type": "bool", "default": "true"}
+                },
+            },
+            "lambda_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "event": {"type": "str", "required": True},
+                    "filter": {
+                        "type": "dict",
+                        "options": {
+                            "s3_key": {
+                                "type": "dict",
+                                "required": True,
+                                "options": {
+                                    "rules": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "options": {
+                                            "name": {"type": "str", "required": True},
+                                            "value": {"type": "str", "required": True},
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
+                    "function": {"type": "str", "required": True},
+                },
+            },
+            "queue_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "event": {"type": "str", "required": True},
+                    "filter": {
+                        "type": "dict",
+                        "options": {
+                            "s3_key": {
+                                "type": "dict",
+                                "required": True,
+                                "options": {
+                                    "rules": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "options": {
+                                            "name": {"type": "str", "required": True},
+                                            "value": {"type": "str", "required": True},
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
+                    "queue": {"type": "str", "required": True},
+                },
+            },
+            "topic_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "event": {"type": "str", "required": True},
+                    "filter": {
+                        "type": "dict",
+                        "options": {
+                            "s3_key": {
+                                "type": "dict",
+                                "required": True,
+                                "options": {
+                                    "rules": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "options": {
+                                            "name": {"type": "str", "required": True},
+                                            "value": {"type": "str", "required": True},
+                                        },
+                                    }
+                                },
+                            }
+                        },
+                    },
+                    "topic": {"type": "str", "required": True},
+                },
+            },
+        },
+    }
+    argument_spec["object_lock_configuration"] = {
+        "type": "dict",
+        "options": {
+            "object_lock_enabled": {"type": "str", "default": "Enabled"},
+            "rule": {
+                "type": "dict",
+                "options": {
+                    "default_retention": {
+                        "type": "dict",
+                        "options": {
+                            "years": {"type": "int"},
+                            "days": {"type": "int"},
+                            "mode": {
+                                "type": "str",
+                                "choices": ["COMPLIANCE", "GOVERNANCE"],
+                            },
+                        },
+                    }
+                },
+            },
+        },
+    }
+    argument_spec["object_lock_enabled"] = {"type": "bool"}
+    argument_spec["ownership_controls"] = {
+        "type": "dict",
+        "options": {
+            "rules": {
+                "type": "list",
+                "required": True,
+                "elements": "dict",
+                "options": {
+                    "object_ownership": {
+                        "type": "str",
+                        "choices": [
+                            "BucketOwnerEnforced",
+                            "BucketOwnerPreferred",
+                            "ObjectWriter",
+                        ],
+                    }
+                },
+            }
+        },
+    }
+    argument_spec["public_access_block_configuration"] = {
+        "type": "dict",
+        "options": {
+            "block_public_acls": {"type": "bool"},
+            "block_public_policy": {"type": "bool"},
+            "ignore_public_acls": {"type": "bool"},
+            "restrict_public_buckets": {"type": "bool"},
+        },
+    }
+    argument_spec["replication_configuration"] = {
+        "type": "dict",
+        "options": {
+            "role": {"type": "str", "required": True},
+            "rules": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "delete_marker_replication": {
+                        "type": "dict",
+                        "options": {
+                            "status": {
+                                "type": "str",
+                                "choices": ["Disabled", "Enabled"],
+                            }
+                        },
+                    },
+                    "destination": {
+                        "type": "dict",
+                        "required": True,
+                        "options": {
+                            "access_control_translation": {
+                                "type": "dict",
+                                "options": {
+                                    "owner": {"type": "str", "default": "Destination"}
+                                },
+                            },
+                            "account": {"type": "str"},
+                            "bucket": {"type": "str"},
+                            "encryption_configuration": {
+                                "type": "dict",
+                                "options": {
+                                    "replica_kms_key_id": {
+                                        "type": "str",
+                                        "required": True,
+                                    }
+                                },
+                            },
+                            "metrics": {
+                                "type": "dict",
+                                "options": {
+                                    "event_threshold": {
+                                        "type": "dict",
+                                        "options": {
+                                            "minutes": {"type": "int", "required": True}
+                                        },
+                                    },
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    },
+                                },
+                            },
+                            "replication_time": {
+                                "type": "dict",
+                                "options": {
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    },
+                                    "time": {
+                                        "type": "dict",
+                                        "required": True,
+                                        "options": {
+                                            "minutes": {"type": "int", "required": True}
+                                        },
+                                    },
+                                },
+                            },
+                            "storage_class": {
+                                "type": "str",
+                                "choices": [
+                                    "DEEP_ARCHIVE",
+                                    "GLACIER",
+                                    "GLACIER_IR",
+                                    "INTELLIGENT_TIERING",
+                                    "ONEZONE_IA",
+                                    "REDUCED_REDUNDANCY",
+                                    "STANDARD",
+                                    "STANDARD_IA",
+                                ],
+                            },
+                        },
+                    },
+                    "filter": {
+                        "type": "dict",
+                        "options": {
+                            "and": {
+                                "type": "dict",
+                                "options": {
+                                    "prefix": {"type": "str"},
+                                    "tag_filters": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "options": {
+                                            "value": {"type": "str", "required": True},
+                                            "key": {"type": "str", "required": True},
+                                        },
+                                    },
+                                },
+                            },
+                            "prefix": {"type": "str"},
+                            "tag_filter": {
+                                "type": "dict",
+                                "options": {
+                                    "value": {"type": "str", "required": True},
+                                    "key": {"type": "str", "required": True},
+                                },
+                            },
+                        },
+                    },
+                    "id": {"type": "str"},
+                    "prefix": {"type": "str"},
+                    "priority": {"type": "int"},
+                    "source_selection_criteria": {
+                        "type": "dict",
+                        "options": {
+                            "replica_modifications": {
+                                "type": "dict",
+                                "options": {
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    }
+                                },
+                            },
+                            "sse_kms_encrypted_objects": {
+                                "type": "dict",
+                                "options": {
+                                    "status": {
+                                        "type": "str",
+                                        "choices": ["Disabled", "Enabled"],
+                                        "required": True,
+                                    }
+                                },
+                            },
+                        },
+                    },
+                    "status": {
+                        "type": "str",
+                        "choices": ["Disabled", "Enabled"],
+                        "required": True,
+                    },
+                },
+            },
+        },
+    }
+    argument_spec["tags"] = {
+        "type": "dict",
+        "required": False,
+        "aliases": ["resource_tags"],
+    }
+    argument_spec["versioning_configuration"] = {
+        "type": "dict",
+        "options": {
+            "status": {
+                "type": "str",
+                "default": "Suspended",
+                "choices": ["Enabled", "Suspended"],
+            }
+        },
+    }
+    argument_spec["website_configuration"] = {
+        "type": "dict",
+        "options": {
+            "error_document": {"type": "str"},
+            "index_document": {"type": "str"},
+            "routing_rules": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "redirect_rule": {
+                        "type": "dict",
+                        "options": {
+                            "host_name": {"type": "str"},
+                            "http_redirect_code": {"type": "str"},
+                            "protocol": {"type": "str", "choices": ["http", "https"]},
+                            "replace_key_prefix_with": {"type": "str"},
+                            "replace_key_with": {"type": "str"},
+                        },
+                        "required": True,
+                    },
+                    "routing_rule_condition": {
+                        "type": "dict",
+                        "options": {
+                            "key_prefix_equals": {"type": "str"},
+                            "http_error_code_returned_equals": {"type": "str"},
+                        },
+                    },
+                },
+            },
+            "redirect_all_requests_to": {
+                "type": "dict",
+                "options": {
+                    "host_name": {"type": "str", "required": True},
+                    "protocol": {"type": "str", "choices": ["http", "https"]},
+                },
+            },
+        },
+    }
+    argument_spec["state"] = {
+        "type": "str",
+        "choices": ["create", "update", "delete", "list", "describe", "get"],
+        "default": "create",
+    }
+    argument_spec["wait"] = {"type": "bool", "default": False}
+    argument_spec["wait_timeout"] = {"type": "int", "default": 320}
+    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ['state', 'create', ['bucket_name'], True],['state', 'update', ['bucket_name'], True],['state', 'delete', ['bucket_name'], True],['state', 'get', ['bucket_name'], True]
+        ["state", "create", ["bucket_name"], True],
+        ["state", "update", ["bucket_name"], True],
+        ["state", "delete", ["bucket_name"], True],
+        ["state", "get", ["bucket_name"], True],
     ]
 
-    module = AnsibleAWSModule(argument_spec=argument_spec, required_if=required_if, supports_check_mode=True)
+    module = AnsibleAWSModule(
+        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+    )
     cloud = CloudControlResource(module)
 
-    type_name = 'AWS::S3::Bucket'
+    type_name = "AWS::S3::Bucket"
 
     params = {}
-        
-    params['accelerate_configuration'] = module.params.get('accelerate_configuration')
-    params['access_control'] = module.params.get('access_control')
-    params['analytics_configurations'] = module.params.get('analytics_configurations')
-    params['bucket_encryption'] = module.params.get('bucket_encryption')
-    params['bucket_name'] = module.params.get('bucket_name')
-    params['cors_configuration'] = module.params.get('cors_configuration')
-    params['intelligent_tiering_configurations'] = module.params.get('intelligent_tiering_configurations')
-    params['inventory_configurations'] = module.params.get('inventory_configurations')
-    params['lifecycle_configuration'] = module.params.get('lifecycle_configuration')
-    params['logging_configuration'] = module.params.get('logging_configuration')
-    params['metrics_configurations'] = module.params.get('metrics_configurations')
-    params['notification_configuration'] = module.params.get('notification_configuration')
-    params['object_lock_configuration'] = module.params.get('object_lock_configuration')
-    params['object_lock_enabled'] = module.params.get('object_lock_enabled')
-    params['ownership_controls'] = module.params.get('ownership_controls')
-    params['public_access_block_configuration'] = module.params.get('public_access_block_configuration')
-    params['replication_configuration'] = module.params.get('replication_configuration')
-    params['tags'] = module.params.get('tags')
-    params['versioning_configuration'] = module.params.get('versioning_configuration')
-    params['website_configuration'] = module.params.get('website_configuration')
+
+    params["accelerate_configuration"] = module.params.get("accelerate_configuration")
+    params["access_control"] = module.params.get("access_control")
+    params["analytics_configurations"] = module.params.get("analytics_configurations")
+    params["bucket_encryption"] = module.params.get("bucket_encryption")
+    params["bucket_name"] = module.params.get("bucket_name")
+    params["cors_configuration"] = module.params.get("cors_configuration")
+    params["intelligent_tiering_configurations"] = module.params.get(
+        "intelligent_tiering_configurations"
+    )
+    params["inventory_configurations"] = module.params.get("inventory_configurations")
+    params["lifecycle_configuration"] = module.params.get("lifecycle_configuration")
+    params["logging_configuration"] = module.params.get("logging_configuration")
+    params["metrics_configurations"] = module.params.get("metrics_configurations")
+    params["notification_configuration"] = module.params.get(
+        "notification_configuration"
+    )
+    params["object_lock_configuration"] = module.params.get("object_lock_configuration")
+    params["object_lock_enabled"] = module.params.get("object_lock_enabled")
+    params["ownership_controls"] = module.params.get("ownership_controls")
+    params["public_access_block_configuration"] = module.params.get(
+        "public_access_block_configuration"
+    )
+    params["replication_configuration"] = module.params.get("replication_configuration")
+    params["tags"] = module.params.get("tags")
+    params["versioning_configuration"] = module.params.get("versioning_configuration")
+    params["website_configuration"] = module.params.get("website_configuration")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
+
+    # Only if resource is taggable
+    if module.params.get("tags", None):
+        _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
+
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    
+
     desired_state = json.dumps(params_to_set)
-    state = module.params.get('state')
-    identifier = module.params.get('bucket_name')
+    state = module.params.get("state")
+    identifier = module.params.get("bucket_name")
 
     results = {"changed": False, "result": []}
-    
+
     if state == "list":
         results["result"] = cloud.list_resources(type_name)
-    
+
     if state in ("describe", "get"):
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "create":
-        results["changed"] |= cloud.create_resource(type_name, identifier, desired_state)
+        results["changed"] |= cloud.create_resource(
+            type_name, identifier, desired_state
+        )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "update":
         # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ['bucket_name', 'object_lock_enabled']
-        results["changed"] |= cloud.update_resource(type_name, identifier, params_to_set, create_only_params)
+        create_only_params = ["bucket_name", "object_lock_enabled"]
+        results["changed"] |= cloud.update_resource(
+            type_name, identifier, params_to_set, create_only_params
+        )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "delete":
@@ -1375,5 +2080,5 @@ def main():
     module.exit_json(**results)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
