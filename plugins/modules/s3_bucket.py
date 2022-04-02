@@ -117,9 +117,13 @@ options:
                 elements: dict
                 suboptions:
                     key:
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                     value:
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                 type: list
@@ -161,6 +165,8 @@ options:
                                 choices:
                                 - AES256
                                 - aws:kms
+                                description:
+                                - Not Provived.
                                 required: true
                                 type: str
                         type: dict
@@ -255,9 +261,13 @@ options:
                 elements: dict
                 suboptions:
                     key:
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                     value:
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                 type: list
@@ -411,10 +421,16 @@ options:
                         - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
                         type: str
                     expiration_in_days:
+                        description:
+                        - Not Provived.
                         type: int
                     expired_object_delete_marker:
+                        description:
+                        - Not Provived.
                         type: bool
                     id:
+                        description:
+                        - Not Provived.
                         type: str
                     noncurrent_version_expiration:
                         description:
@@ -439,6 +455,8 @@ options:
                                 type: int
                         type: dict
                     noncurrent_version_expiration_in_days:
+                        description:
+                        - Not Provived.
                         type: int
                     noncurrent_version_transition:
                         description:
@@ -520,15 +538,23 @@ options:
                                 type: int
                         type: list
                     object_size_greater_than:
+                        description:
+                        - Not Provived.
                         type: str
                     object_size_less_than:
+                        description:
+                        - Not Provived.
                         type: str
                     prefix:
+                        description:
+                        - Not Provived.
                         type: str
                     status:
                         choices:
                         - Disabled
                         - Enabled
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                     tag_filters:
@@ -538,9 +564,13 @@ options:
                         elements: dict
                         suboptions:
                             key:
+                                description:
+                                - Not Provived.
                                 required: true
                                 type: str
                             value:
+                                description:
+                                - Not Provived.
                                 required: true
                                 type: str
                         type: list
@@ -558,6 +588,8 @@ options:
                                 - INTELLIGENT_TIERING
                                 - ONEZONE_IA
                                 - STANDARD_IA
+                                description:
+                                - Not Provived.
                                 required: true
                                 type: str
                             transition_date:
@@ -566,6 +598,8 @@ options:
                                 - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
                                 type: str
                             transition_in_days:
+                                description:
+                                - Not Provived.
                                 type: int
                         type: dict
                     transitions:
@@ -583,6 +617,8 @@ options:
                                 - INTELLIGENT_TIERING
                                 - ONEZONE_IA
                                 - STANDARD_IA
+                                description:
+                                - Not Provived.
                                 required: true
                                 type: str
                             transition_date:
@@ -591,6 +627,8 @@ options:
                                 - The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)
                                 type: str
                             transition_in_days:
+                                description:
+                                - Not Provived.
                                 type: int
                         type: list
                 type: list
@@ -608,6 +646,8 @@ options:
                     property is defined.
                 type: str
             log_file_prefix:
+                description:
+                - Not Provived.
                 type: str
         type: dict
     metrics_configurations:
@@ -617,11 +657,17 @@ options:
         elements: dict
         suboptions:
             access_point_arn:
+                description:
+                - Not Provived.
                 type: str
             id:
+                description:
+                - Not Provived.
                 required: true
                 type: str
             prefix:
+                description:
+                - Not Provived.
                 type: str
             tag_filters:
                 description:
@@ -629,9 +675,13 @@ options:
                 elements: dict
                 suboptions:
                     key:
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                     value:
+                        description:
+                        - Not Provived.
                         required: true
                         type: str
                 type: list
@@ -685,9 +735,13 @@ options:
                                         elements: dict
                                         suboptions:
                                             name:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                             value:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                         type: list
@@ -731,9 +785,13 @@ options:
                                         elements: dict
                                         suboptions:
                                             name:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                             value:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                         type: list
@@ -777,9 +835,13 @@ options:
                                         elements: dict
                                         suboptions:
                                             name:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                             value:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                         type: list
@@ -800,6 +862,8 @@ options:
         suboptions:
             object_lock_enabled:
                 default: Enabled
+                description:
+                - Not Provived.
                 type: str
             rule:
                 description:
@@ -811,13 +875,19 @@ options:
                             objects placed in the specified bucket.
                         suboptions:
                             days:
+                                description:
+                                - Not Provived.
                                 type: int
                             mode:
                                 choices:
                                 - COMPLIANCE
                                 - GOVERNANCE
+                                description:
+                                - Not Provived.
                                 type: str
                             years:
+                                description:
+                                - Not Provived.
                                 type: int
                         type: dict
                 type: dict
@@ -831,6 +901,8 @@ options:
         - Specifies the container element for object ownership rules.
         suboptions:
             rules:
+                description:
+                - Not Provived.
                 elements: dict
                 required: true
                 suboptions:
@@ -915,11 +987,15 @@ options:
                 elements: dict
                 suboptions:
                     delete_marker_replication:
+                        description:
+                        - Not Provived.
                         suboptions:
                             status:
                                 choices:
                                 - Disabled
                                 - Enabled
+                                description:
+                                - Not Provived.
                                 type: str
                         type: dict
                     destination:
@@ -940,11 +1016,17 @@ options:
                                 suboptions:
                                     owner:
                                         default: Destination
+                                        description:
+                                        - Not Provived.
                                         type: str
                                 type: dict
                             account:
+                                description:
+                                - Not Provived.
                                 type: str
                             bucket:
+                                description:
+                                - Not Provived.
                                 type: str
                             encryption_configuration:
                                 description:
@@ -962,10 +1044,16 @@ options:
                                         type: str
                                 type: dict
                             metrics:
+                                description:
+                                - Not Provived.
                                 suboptions:
                                     event_threshold:
+                                        description:
+                                        - Not Provived.
                                         suboptions:
                                             minutes:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: int
                                         type: dict
@@ -973,21 +1061,31 @@ options:
                                         choices:
                                         - Disabled
                                         - Enabled
+                                        description:
+                                        - Not Provived.
                                         required: true
                                         type: str
                                 type: dict
                             replication_time:
+                                description:
+                                - Not Provived.
                                 suboptions:
                                     status:
                                         choices:
                                         - Disabled
                                         - Enabled
+                                        description:
+                                        - Not Provived.
                                         required: true
                                         type: str
                                     time:
+                                        description:
+                                        - Not Provived.
                                         required: true
                                         suboptions:
                                             minutes:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: int
                                         type: dict
@@ -1008,10 +1106,16 @@ options:
                                 type: str
                         type: dict
                     filter:
+                        description:
+                        - Not Provived.
                         suboptions:
                             and:
+                                description:
+                                - Not Provived.
                                 suboptions:
                                     prefix:
+                                        description:
+                                        - Not Provived.
                                         type: str
                                     tag_filters:
                                         description:
@@ -1020,14 +1124,20 @@ options:
                                         elements: dict
                                         suboptions:
                                             key:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                             value:
+                                                description:
+                                                - Not Provived.
                                                 required: true
                                                 type: str
                                         type: list
                                 type: dict
                             prefix:
+                                description:
+                                - Not Provived.
                                 type: str
                             tag_filter:
                                 description:
@@ -1035,9 +1145,13 @@ options:
                                     an Amazon S3 bucket.
                                 suboptions:
                                     key:
+                                        description:
+                                        - Not Provived.
                                         required: true
                                         type: str
                                     value:
+                                        description:
+                                        - Not Provived.
                                         required: true
                                         type: str
                                 type: dict
@@ -1052,6 +1166,8 @@ options:
                             objects to which the rule applies.
                         type: str
                     priority:
+                        description:
+                        - Not Provived.
                         type: int
                     source_selection_criteria:
                         description:
@@ -1105,18 +1221,17 @@ options:
         type: dict
     state:
         choices:
-        - create
-        - update
-        - delete
+        - present
+        - absent
         - list
         - describe
         - get
-        default: create
+        default: present
         description:
         - Goal state for resouirce.
-        - I(state=create) creates the resouce.
-        - I(state=update) updates the existing resouce.
-        - I(state=delete) ensures an existing instance is deleted.
+        - I(state=present) creates the resource if it doesn't exist, or updates to
+            the provided state if the resource already exists.
+        - I(state=absent) ensures an existing instance is deleted.
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
@@ -1988,8 +2103,8 @@ def main():
     }
     argument_spec["state"] = {
         "type": "str",
-        "choices": ["create", "update", "delete", "list", "describe", "get"],
-        "default": "create",
+        "choices": ["present", "absent", "list", "describe", "get"],
+        "default": "present",
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
@@ -2047,7 +2162,9 @@ def main():
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
-    desired_state = json.dumps(params_to_set)
+    # Ignore createOnlyProperties that can be set only during resource creation
+    create_only_params = ["bucket_name", "object_lock_enabled"]
+
     state = module.params.get("state")
     identifier = module.params.get("bucket_name")
 
@@ -2059,21 +2176,13 @@ def main():
     if state in ("describe", "get"):
         results["result"] = cloud.get_resource(type_name, identifier)
 
-    if state == "create":
-        results["changed"] |= cloud.create_resource(
-            type_name, identifier, desired_state
-        )
-        results["result"] = cloud.get_resource(type_name, identifier)
-
-    if state == "update":
-        # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["bucket_name", "object_lock_enabled"]
-        results["changed"] |= cloud.update_resource(
+    if state == "present":
+        results["changed"] |= cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
         results["result"] = cloud.get_resource(type_name, identifier)
 
-    if state == "delete":
+    if state == "absent":
         results["changed"] |= cloud.delete_resource(type_name, identifier)
 
     module.exit_json(**results)

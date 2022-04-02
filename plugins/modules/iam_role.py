@@ -75,18 +75,17 @@ options:
         type: str
     state:
         choices:
-        - create
-        - update
-        - delete
+        - present
+        - absent
         - list
         - describe
         - get
-        default: create
+        default: present
         description:
         - Goal state for resouirce.
-        - I(state=create) creates the resouce.
-        - I(state=update) updates the existing resouce.
-        - I(state=delete) ensures an existing instance is deleted.
+        - I(state=present) creates the resource if it doesn't exist, or updates to
+            the provided state if the resource already exists.
+        - I(state=absent) ensures an existing instance is deleted.
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
@@ -179,8 +178,8 @@ def main():
     }
     argument_spec["state"] = {
         "type": "str",
-        "choices": ["create", "update", "delete", "list", "describe", "get"],
-        "default": "create",
+        "choices": ["present", "absent", "list", "describe", "get"],
+        "default": "present",
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
@@ -223,7 +222,9 @@ def main():
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
-    desired_state = json.dumps(params_to_set)
+    # Ignore createOnlyProperties that can be set only during resource creation
+    create_only_params = ["path", "role_name"]
+
     state = module.params.get("state")
     identifier = module.params.get("role_name")
 
@@ -235,21 +236,13 @@ def main():
     if state in ("describe", "get"):
         results["result"] = cloud.get_resource(type_name, identifier)
 
-    if state == "create":
-        results["changed"] |= cloud.create_resource(
-            type_name, identifier, desired_state
-        )
-        results["result"] = cloud.get_resource(type_name, identifier)
-
-    if state == "update":
-        # Ignore createOnlyProperties that can be set only during resource creation
-        create_only_params = ["path", "role_name"]
-        results["changed"] |= cloud.update_resource(
+    if state == "present":
+        results["changed"] |= cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
         results["result"] = cloud.get_resource(type_name, identifier)
 
-    if state == "delete":
+    if state == "absent":
         results["changed"] |= cloud.delete_resource(type_name, identifier)
 
     module.exit_json(**results)

@@ -37,10 +37,10 @@ __metaclass__ = type
 import json
 import traceback
 from itertools import count
-from typing import Iterable, List, Dict
+from typing import Iterable, List, Dict, Optional
 
 from ansible_collections.amazon.aws.plugins.module_utils.ec2 import AWSRetry
-from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
+from .utils import (
     JsonPatch,
     make_op,
     op,
@@ -189,33 +189,45 @@ class CloudControlResource(object):
         result = normalize_response(response)
         return result
 
-    def create_resource(self, type_name: str, identifier: str, params: Dict) -> bool:
-        changed: bool = False
-
+    def present(
+        self,
+        type_name: str,
+        identifier: str,
+        params: Dict,
+        create_only_params: Optional[List] = None,
+    ) -> bool:
+        create_only_params = create_only_params or []
         try:
-            response = self.client.get_resource(
+            resource = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier
             )
+            return self.update_resource(resource, params, create_only_params)
         except self.client.exceptions.ResourceNotFoundException:
-            if not self.module.check_mode:
-                try:
-                    response = self.client.create_resource(
-                        TypeName=type_name, DesiredState=params
-                    )
-                    self.wait_until_resource_request_success(
-                        response["ProgressEvent"]["RequestToken"]
-                    )
-                except (
-                    botocore.exceptions.BotoCoreError,
-                    botocore.exceptions.ClientError,
-                ) as e:
-                    self.module.fail_json_aws(e, msg="Failed to create resource")
-            changed: bool = True
+            return self.create_resource(type_name, identifier, params)
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
         ) as e:
-            self.module.fail_json_aws(e, msg="Failed to create resource")
+            self.module.fail_json_aws(e, msg="Failed to modify resource")
+
+    def create_resource(self, type_name: str, identifier: str, params: Dict) -> bool:
+        changed: bool = False
+        params = json.dumps(params)
+
+        if not self.module.check_mode:
+            try:
+                response = self.client.create_resource(
+                    TypeName=type_name, DesiredState=params
+                )
+                self.wait_until_resource_request_success(
+                    response["ProgressEvent"]["RequestToken"]
+                )
+            except (
+                botocore.exceptions.BotoCoreError,
+                botocore.exceptions.ClientError,
+            ) as e:
+                self.module.fail_json_aws(e, msg="Failed to create resource")
+        changed: bool = True
 
         return changed
 
@@ -279,27 +291,14 @@ class CloudControlResource(object):
 
     def update_resource(
         self,
-        type_name: str,
-        identifier: str,
+        resource: Dict,
         params_to_set: Dict,
         create_only_params: List,
     ) -> bool:
+        identifier = resource["ResourceDescription"]["Identifier"]
+        type_name = resource["TypeName"]
+        properties = json.loads(resource["ResourceDescription"]["Properties"])
         changed: bool = False
-
-        try:
-            response = self.client.get_resource(
-                TypeName=type_name, Identifier=identifier
-            )
-        except self.client.exceptions.ResourceNotFoundException:
-            return changed
-        except (
-            botocore.exceptions.BotoCoreError,
-            botocore.exceptions.ClientError,
-        ) as e:
-            self.module.fail_json_aws(e, msg="Failed to retrieve resource")
-
-        properties = response.get("ResourceDescription", {}).get("Properties", {})
-        properties = json.loads(properties)
 
         # Ignore createOnlyProperties that can be set only during resource creation
         params = scrub_keys(params_to_set, create_only_params)
@@ -326,7 +325,6 @@ class CloudControlResource(object):
                         Identifier=identifier,
                         PatchDocument=str(patch),
                     )
-
                     if self.module.params.get("wait"):
                         self.wait_until_resource_request_success(
                             response["ProgressEvent"]["RequestToken"]
@@ -337,5 +335,4 @@ class CloudControlResource(object):
                 botocore.exceptions.ClientError,
             ) as e:
                 self.module.fail_json_aws(e, msg="Failed to update resource")
-
         return changed
