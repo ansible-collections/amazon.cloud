@@ -1,0 +1,8 @@
+botocore
+boto3
+
+coverage==4.5.4
+placebo
+mock
+pytest
+pytest-xdist
