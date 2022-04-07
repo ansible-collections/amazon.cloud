@@ -1,4 +1,11 @@
-- collections:
+- name: Logs group tests
+  module_defaults:
+    group/aws:
+      aws_access_key: '{{ aws_access_key }}'
+      aws_secret_key: '{{ aws_secret_key }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region }}'
+  collections:
     - amazon.cloud
 
   block:
@@ -8,7 +15,7 @@
 
     - name: Create log group (check mode)
       logs_log_group: &log_group
-        state: create
+        state: present
         log_group_name: "{{ log_group_name }}"
         retention_in_days: 7
         tags:
@@ -37,7 +44,7 @@
 
     - name: Update log group (check mode)
       logs_log_group: &log_group_update
-        state: update
+        state: present
         log_group_name: "{{ log_group_name }}"
         tags:
           - key: anotherkey
@@ -74,7 +81,7 @@
 
     - name: Delete log group (check mode)
       logs_log_group:
-        state: delete
+        state: absent
         log_group_name: "{{ log_group_name }}"
       check_mode: yes
       register: output
@@ -85,7 +92,7 @@
 
     - name: Delete log group
       logs_log_group:
-        state: delete
+        state: absent
         log_group_name: "{{ log_group_name }}"
       register: output
 
@@ -95,7 +102,7 @@
 
     - name: Delete log group (idempotence)
       logs_log_group:
-        state: delete
+        state: absent
         log_group_name: "{{ log_group_name }}"
       register: output
 
@@ -106,6 +113,6 @@
   always:
     - name: Cleanup log group
       logs_log_group:
-        state: delete
+        state: absent
         log_group_name: "{{ log_group_name }}"
       ignore_errors: yes
