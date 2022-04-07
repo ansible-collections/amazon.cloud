@@ -102,23 +102,6 @@ Additional tags can be specified with the "tags" parameter.::
 
 The data about the S3 bucket that has been created is being saved by the "register" keyword in the variable named "result".
 
-.. _ansible_collections.amazon.cloud.docsite.aws_pull:
-
-Autoscaling with Ansible Pull
-`````````````````````````````
-
-Amazon Autoscaling features automatically increase or decrease capacity based on load.  There are also Ansible modules shown in the cloud documentation that
-can configure autoscaling policy.
-
-When nodes come online, it may not be sufficient to wait for the next cycle of an ansible command to come along and configure that node.
-
-To do this, pre-bake machine images which contain the necessary ansible-pull invocation.  Ansible-pull is a command line tool that fetches a playbook from a git server and runs it locally.
-
-One of the challenges of this approach is that there needs to be a centralized way to store data about the results of pull commands in an autoscaling context.
-For this reason, the autoscaling solution provided below in the next section can be a better approach.
-
-Read :ref:`ansible-pull` for more information on pull-mode playbooks.
-
 .. _ansible_collections.amazon.cloud.docsite.aws_autoscale:
 
 Autoscaling with Ansible Tower
@@ -131,23 +114,6 @@ to reconfigure ephemeral nodes.  See the Tower install and product documentation
 A benefit of using the callback in Tower over pull mode is that job results are still centrally recorded and less information has to be shared
 with remote hosts.
 
-.. _ansible_collections.amazon.cloud.docsite.aws_cloudformation_example:
-
-Ansible With (And Versus) CloudFormation
-````````````````````````````````````````
-
-CloudFormation is a Amazon technology for defining a cloud stack as a JSON or YAML document.
-
-Ansible modules provide an easier to use interface than CloudFormation in many examples, without defining a complex JSON/YAML document.
-This is recommended for most users.
-
-However, for users that have decided to use CloudFormation, there is an Ansible module that can be used to apply a CloudFormation template
-to Amazon.
-
-When using Ansible with CloudFormation, typically Ansible will be used with a tool like Packer to build images, and CloudFormation will launch
-those images, or ansible will be invoked through user data once the image comes online, or a combination of the two.
-
-Please see the examples in the Ansible CloudFormation module for more details.
 
 .. _ansible_collections.amazon.cloud.docsite.aws_next_steps:
 

@@ -19,7 +19,7 @@ This collection requires Python 3.9 or greater.
 
 ## AWS SDK version compatibility
 
-Version 0.1.0 of this collection supports `boto3 >= 1.29.0` and `botocore >= 1.23.0`
+Version 0.1.0 of this collection supports `boto3 >= 1.20.0` and `botocore >= 1.23.0`
 
 ## Included content
 
