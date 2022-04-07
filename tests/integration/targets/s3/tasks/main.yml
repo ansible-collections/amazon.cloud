@@ -1,0 +1,43 @@
+- name: S3 bucket tests
+  module_defaults:
+    group/aws:
+      aws_access_key: '{{ aws_access_key }}'
+      aws_secret_key: '{{ aws_secret_key }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region }}'
+  collections:
+    - amazon.cloud
+
+  block:
+    - name: Set S3 bucket name 
+      set_fact:
+        bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
+
+    - name: Create S3 bucket
+      amazon.cloud.s3_bucket:
+        bucket_name: "{{ bucket_name }}"
+      register: output
+
+    - name: Get S3 bucket
+      amazon.cloud.s3_bucket:
+        state: describe
+        bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+
+    - name: Modify S3 bucket
+      amazon.cloud.s3_bucket:
+        state: present
+        bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+        tags:
+          - mykey: myval
+
+    - name: Delete S3 bucket
+      amazon.cloud.s3_bucket:
+        state: absent
+        bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+  
+  always:
+    - name: Delete S3 bucket
+      amazon.cloud.s3_bucket:
+        state: absent
+        bucket_name: "{{ bucket_name }}"
+      ignore_errors: yes
