@@ -1360,7 +1360,7 @@ options:
                 type: list
         type: dict
 author: Ansible Cloud Team (@ansible-collections)
-version_added: TODO
+version_added: 0.1.0
 requirements: []
 extends_documentation_fragment:
 - amazon.cloud.aws
