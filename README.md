@@ -1,17 +1,130 @@
-# collection_template
-You can build a new repository for an Ansible Collection using this template by following [Creating a repository from a template](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template). This README.md contains recommended headings for your collection README.md, with comments describing what each section should contain. Once you have created your collection repository, delete this paragraph and the title above it from your README.md.
+# AWS Cloud Control Collection for Ansible
+The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services. 
 
-# Foo Collection for Ansible
-<!-- Add CI and code coverage badges here. Samples included below. -->
-[![CI](https://github.com/ansible-collections/REPONAMEHERE/workflows/CI/badge.svg?event=push)](https://github.com/ansible-collections/REPONAMEHERE/actions) [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/REPONAMEHERE)](https://codecov.io/gh/ansible-collections/REPONAMEHERE)
+This content is not intended for production in its current state.
 
-<!-- Describe the collection and why a user would want to use it. What does the collection do? -->
+<!--start requires_ansible-->
+## Ansible version compatibility
 
-## Code of Conduct
+This collection has been tested against following Ansible versions: **>=2.9.10**.
 
-We follow the [Ansible Code of Conduct](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html) in all our interactions within this project.
+Plugins and modules within a collection may be tested with only specific Ansible versions.
+A collection may contain metadata that identifies these versions.
+PEP440 is the schema used to describe the versions of Ansible.
+<!--end requires_ansible-->
 
-If you encounter abusive behavior, please refer to the [policy violations](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html#policy-violations) section of the Code for information on how to raise a complaint.
+## Python version compatibility
+
+This collection requires Python 3.9 or greater.
+
+## AWS SDK version compatibility
+
+Version 0.1.0 of this collection supports `boto3 >= 1.29.0` and `botocore >= 1.23.0`
+
+## Included content
+
+<!--start collection content-->
+### Modules
+Name | Description
+--- | ---
+
+<!--end collection content-->
+
+## Installing this collection
+
+You can install the AWS Cloud Control Collection with the Ansible Galaxy CLI:
+
+    ansible-galaxy collection install amazon.cloud
+
+You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
+
+```yaml
+---
+collections:
+  - name: amazon.cloud
+```
+
+The python module dependencies are not installed by `ansible-galaxy`.  They can
+be manually installed using pip:
+
+    pip install requirements.txt
+
+or:
+
+    pip install boto3 botocore
+
+Note that if you install the collection from Ansible Galaxy, it will not be upgraded automatically when you upgrade the `ansible` package. To upgrade the collection to the latest available version, run the following command:
+```bash
+ansible-galaxy collection install amazon.cloud --upgrade
+```
+
+You can also install a specific version of the collection, for example, if you need to downgrade when something is broken in the latest version (please report an issue in this repository). Use the following syntax to install version `0.1.0`:
+
+```bash
+ansible-galaxy collection install amazon.cloud==0.1.0
+```
+
+See [Ansible Using collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
+
+
+## Using this collection
+
+You can either call modules by their Fully Qualified Collection Namespace (FQCN), such as `amazon.cloud.logs_log_group`, or you can call modules by their short name if you list the `amazon.cloud` collection in the playbook's `collections` keyword:
+
+```yaml
+---
+  - name: Create log group (check mode)
+    amazon.cloud.logs_log_group:
+      state: present
+      log_group_name: "{{ log_group_name }}"
+      retention_in_days: 7
+      tags:
+        testkey: "testvalue"
+    register: log_group
+```
+
+### See Also:
+
+* [Amazon Web Services Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_aws.html)
+* [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
+
+
+## Contributing to this collection
+
+We welcome community contributions to this collection. Because this collection is auto-generated using the [amazon_cloud_code_generator](https://github.com/ansible-collections/amazon_cloud_code_generator) tool, if you find problems, please open an issue or create a Pull Request against the [amazon_cloud_code_generator repository](https://github.com/ansible-collections/amazon_cloud_code_generator).
+
+You can also join us on:
+
+- IRC - the ``#ansible-aws`` [irc.libera.chat](https://libera.chat/) channel
+
+You don't know how to start? Refer to our [contribution guide](CONTRIBUTING.md)!
+
+We use the following guidelines:
+
+* [CONTRIBUTING.md](CONTRIBUTING.md)
+* [REVIEW_CHECKLIST.md](REVIEW_CHECKLIST.md)
+* [Ansible Community Guide](https://docs.ansible.com/ansible/latest/community/index.html)
+* [Ansible Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/index.html)
+* [Ansible Collection Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/developing_collections.html#contributing-to-collections)
+
+
+## Collection maintenance
+
+The current maintainers are listed in the [MAINTAINERS](MAINTAINERS) file. If you have questions or need help, feel free to mention them in the proposals.
+
+To learn how to maintain / become a maintainer of this collection, refer to the [Maintainer guidelines](MAINTAINING.md).
+
+
+## Governance
+
+The process of decision making in this collection is based on discussing and finding consensus among participants.
+Every voice is important. If you have something on your mind, create an issue or dedicated discussion and let's discuss it!
+
+
+## Release notes
+
+See the [changelog](https://github.com/ansible-collections/amazon.cloud/tree/main/CHANGELOG.rst).
+
 
 ## Communication
 
@@ -25,93 +138,12 @@ We take part in the global quarterly [Ansible Contributor Summit](https://github
 
 For more information about communication, refer to the [Ansible Communication guide](https://docs.ansible.com/ansible/devel/community/communication.html).
 
-## Contributing to this collection
+## Code of Conduct
 
-<!--Describe how the community can contribute to your collection. At a minimum, fill up and include the CONTRIBUTING.md file containing how and where users can create issues to report problems or request features for this collection. List contribution requirements, including preferred workflows and necessary testing, so you can benefit from community PRs. If you are following general Ansible contributor guidelines, you can link to - [Ansible Community Guide](https://docs.ansible.com/ansible/devel/community/index.html). List the current maintainers (contributors with write or higher access to the repository). The following can be included:-->
+We follow the [Ansible Code of Conduct](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html) in all our interactions within this project.
 
-The content of this collection is made by people like you, a community of individuals collaborating on making the world better through developing automation software.
+If you encounter abusive behavior, please refer to the [policy violations](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html#policy-violations) section of the Code for information on how to raise a complaint.
 
-We are actively accepting new contributors.
-
-Any kind of contribution is very welcome.
-
-You don't know how to start? Refer to our [contribution guide](CONTRIBUTING.md)!
-
-We use the following guidelines:
-
-* [CONTRIBUTING.md](CONTRIBUTING.md)
-* [REVIEW_CHECKLIST.md](REVIEW_CHECKLIST.md)
-* [Ansible Community Guide](https://docs.ansible.com/ansible/latest/community/index.html)
-* [Ansible Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/index.html)
-* [Ansible Collection Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/developing_collections.html#contributing-to-collections)
-
-## Collection maintenance
-
-The current maintainers are listed in the [MAINTAINERS](MAINTAINERS) file. If you have questions or need help, feel free to mention them in the proposals.
-
-To learn how to maintain / become a maintainer of this collection, refer to the [Maintainer guidelines](MAINTAINING.md).
-
-## Governance
-
-<!--Describe how the collection is governed. Here can be the following text:-->
-
-The process of decision making in this collection is based on discussing and finding consensus among participants.
-
-Every voice is important. If you have something on your mind, create an issue or dedicated discussion and let's discuss it!
-
-## Tested with Ansible
-
-<!-- List the versions of Ansible the collection has been tested with. Must match what is in galaxy.yml. -->
-
-## External requirements
-
-<!-- List any external resources the collection depends on, for example minimum versions of an OS, libraries, or utilities. Do not list other Ansible collections here. -->
-
-### Supported connections
-<!-- Optional. If your collection supports only specific connection types (such as HTTPAPI, netconf, or others), list them here. -->
-
-## Included content
-
-<!-- Galaxy will eventually list the module docs within the UI, but until that is ready, you may need to either describe your plugins etc here, or point to an external docsite to cover that information. -->
-
-## Using this collection
-
-<!--Include some quick examples that cover the most common use cases for your collection content. It can include the following examples of installation and upgrade (change NAMESPACE.COLLECTION_NAME correspondingly):-->
-
-### Installing the Collection from Ansible Galaxy
-
-Before using this collection, you need to install it with the Ansible Galaxy command-line tool:
-```bash
-ansible-galaxy collection install NAMESPACE.COLLECTION_NAME
-```
-
-You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
-```yaml
----
-collections:
-  - name: NAMESPACE.COLLECTION_NAME
-```
-
-Note that if you install the collection from Ansible Galaxy, it will not be upgraded automatically when you upgrade the `ansible` package. To upgrade the collection to the latest available version, run the following command:
-```bash
-ansible-galaxy collection install NAMESPACE.COLLECTION_NAME --upgrade
-```
-
-You can also install a specific version of the collection, for example, if you need to downgrade when something is broken in the latest version (please report an issue in this repository). Use the following syntax to install version `0.1.0`:
-
-```bash
-ansible-galaxy collection install NAMESPACE.COLLECTION_NAME:==0.1.0
-```
-
-See [Ansible Using collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
-
-## Release notes
-
-See the [changelog](https://github.com/ansible-collections/REPONAMEHERE/tree/main/CHANGELOG.rst).
-
-## Roadmap
-
-<!-- Optional. Include the roadmap for this collection, and the proposed release/versioning strategy so users can anticipate the upgrade/update cycle. -->
 
 ## More information
 
