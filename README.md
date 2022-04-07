@@ -25,8 +25,6 @@ Version 0.1.0 of this collection supports `boto3 >= 1.29.0` and `botocore >= 1.2
 
 <!--start collection content-->
 ### Modules
-Name | Description
---- | ---
 
 <!--end collection content-->
 
