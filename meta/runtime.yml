@@ -1,2 +1,6 @@
----
 requires_ansible: '>=2.9.10'
+action_groups:
+  aws:
+  - s3_bucket
+  - logs_log_group
+  - iam_role

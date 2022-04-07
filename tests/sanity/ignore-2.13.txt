@@ -1,0 +1,4 @@
+plugins/modules/s3_bucket.py validate-modules:no-log-needed
+plugins/modules/s3_bucket.py validate-modules:parameter-state-invalid-choice
+plugins/modules/logs_log_group.py validate-modules:parameter-state-invalid-choice
+plugins/modules/iam_role.py validate-modules:parameter-state-invalid-choice
