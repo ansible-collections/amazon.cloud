@@ -88,7 +88,7 @@ Additional tags can be specified with the "tags" parameter.::
 
       tasks:
 
-        - name: Provision an EC2 instance with a public IP address
+        - name: Provision an S3 bucket with a with public added block configguration
           amazon.aws.s3_bucket:
             bucket_name: Demo
             public_access_block_configuration:

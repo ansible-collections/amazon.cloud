@@ -20,7 +20,7 @@ The AWS Cloud Control Collection is an experimental alpha collection of generate
 The `amazon.cloud` collection is an [Ansible-maintained collection](https://docs.ansible.com/ansible/devel/community/contributing_maintained_collections.html).
 
 ### amazon.aws
-This collection contains the `module_utils` (shared libraries) used by all the collections.
+This collection contains the `module_utils` (shared libraries) used by all the AWS collections.
 Content in this collection is included downstream in Red Hat Ansible Automation Platform.
 
 Code standards, test coverage, and other supportability criteria may be higher in this collection. 
