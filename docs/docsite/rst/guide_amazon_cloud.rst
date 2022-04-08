@@ -1,7 +1,7 @@
 .. _ansible_collections.amazon.cloud.docsite.aws_intro:
 
 *************************
-Amazon Web Services Guide
+Amazon.Cloud Collection Guide
 *************************
 
 The AWS Cloud Control Collection ``amazon.cloud`` is an experimental alpha collection that contains a number of generated modules using the Cloud Control API for controlling Amazon Web Services (AWS). This guide explains how to use the modules to automate your AWS resources with Ansible.
