@@ -1,6 +1,6 @@
 - name: Logs group tests
   module_defaults:
-    group/aws:
+    group/amazon.cloud.aws:
       aws_access_key: '{{ aws_access_key }}'
       aws_secret_key: '{{ aws_secret_key }}'
       security_token: '{{ security_token | default(omit) }}'
