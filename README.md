@@ -31,8 +31,9 @@ Version 0.1.0 of this collection supports `boto3 >= 1.20.0` and `botocore >= 1.2
 ## Installing this collection
 
 You can install the AWS Cloud Control Collection with the Ansible Galaxy CLI:
-
+```bash
     ansible-galaxy collection install amazon.cloud
+```
 
 You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
 
@@ -56,12 +57,6 @@ Note that if you install the collection from Ansible Galaxy, it will not be upgr
 ansible-galaxy collection install amazon.cloud --upgrade
 ```
 
-You can also install a specific version of the collection, for example, if you need to downgrade when something is broken in the latest version (please report an issue in this repository). Use the following syntax to install version `0.1.0`:
-
-```bash
-ansible-galaxy collection install amazon.cloud==0.1.0
-```
-
 See [Ansible Using collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
 
 
@@ -81,36 +76,45 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
     register: log_group
 ```
 
+Because modules may keep the same name in the `amazon.cloud`, `amazon.aws` and `community.aws` collections, we recommend using the FQCN. 
+
+For example, if you want to use the s3_bucket module without specyfing the FQDN, it will use the order the collections are listed and take the first matching module it finds (in this case, s3_bucket from `amazon.aws`).
+
+```yaml
+---
+  - hosts: localhost
+    collections:
+      - amazon.aws
+      - amazon.cloud
+    tasks:
+      - s3_bucket:
+          bucket_name: "..."
+```
+
 ### See Also:
 
-* [Amazon Web Services Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_aws.html)
+* [Amazon.Cloud Collection Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_amazon_cloud.html)
 * [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
-
 
 ## Contributing to this collection
 
 We welcome community contributions to this collection. Because this collection is auto-generated using the [amazon_cloud_code_generator](https://github.com/ansible-collections/amazon_cloud_code_generator) tool, if you find problems, please open an issue or create a Pull Request against the [amazon_cloud_code_generator repository](https://github.com/ansible-collections/amazon_cloud_code_generator).
 
-You can also join us on:
+You can also join us in the:
 
-- IRC - the ``#ansible-aws`` [irc.libera.chat](https://libera.chat/) channel
+- `#ansible-aws` [irc.libera.chat](https://libera.chat/) channel
+- `#ansible` (general use questions and support), `#ansible-community` (community and collection development questions), and other [IRC channels](https://docs.ansible.com/ansible/devel/community/communication.html#irc-channels).
+
+The Amazon Web Services Working groups is holding a monthly community meeting at `#ansible-aws` IRC channel at 17:30 UTC every fourth Thursday of the month. If you have something to discuss (e.g. a PR that needs help), add your request to the [meeting agenda](https://github.com/ansible/community/issues/654) and join the IRC `#ansible-aws` channel. Invite (import by URL): [ics file](https://raw.githubusercontent.com/ansible/community/main/meetings/ical/aws.ics)
 
 You don't know how to start? Refer to our [contribution guide](CONTRIBUTING.md)!
 
 We use the following guidelines:
 
 * [CONTRIBUTING.md](CONTRIBUTING.md)
-* [REVIEW_CHECKLIST.md](REVIEW_CHECKLIST.md)
 * [Ansible Community Guide](https://docs.ansible.com/ansible/latest/community/index.html)
 * [Ansible Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/index.html)
 * [Ansible Collection Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/developing_collections.html#contributing-to-collections)
-
-
-## Collection maintenance
-
-The current maintainers are listed in the [MAINTAINERS](MAINTAINERS) file. If you have questions or need help, feel free to mention them in the proposals.
-
-To learn how to maintain / become a maintainer of this collection, refer to the [Maintainer guidelines](MAINTAINING.md).
 
 
 ## Governance

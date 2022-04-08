@@ -37,6 +37,7 @@ Content in this collection that is stable and meets other acceptance criteria ha
 to be promoted and migrated into `amazon.aws`.
 
 ## Submitting Issues 
+
 All software has bugs, and the `amazon.cloud` collection is no exception.  When you find a bug, 
 you can help tremendously by [telling us about it](https://github.com/ansible-collections/amazon.cloud/issues/new/choose).
 
@@ -46,41 +47,16 @@ issue, or by reporting any additional information
 
 ## Pull Requests
 
-Because this collection is auto-generated using the [amazon_cloud_code_generator](https://github.com/ansible-collections/amazon_cloud_code_generator) tool, if you find problems, please, don't open Pull Requests against the this repository. Pull Requests needs to be created gainst the [amazon_cloud_code_generator repository](https://github.com/ansible-collections/amazon_cloud_code_generator).
+Because this collection is auto-generated using the [amazon_cloud_code_generator](https://github.com/ansible-collections/amazon_cloud_code_generator) tool, if you find problems, please, don't open Pull Requests against this repository. Pull Requests needs to be created gainst the [amazon_cloud_code_generator repository](https://github.com/ansible-collections/amazon_cloud_code_generator).
 
-All modules MUST have integration tests for new features.
-Bug fixes for modules that currently have integration tests SHOULD have tests added.  
-New modules should be submitted to the [community.aws](https://github.com/ansible-collections/community.aws) collection
-and MUST have integration tests.
+You don't know how to start? Refer to our [amazon_cloud_code_generator contribution guidelines](https://github.com/ansible-collections/amazon_cloud_code_generator/blob/main/CONTRIBUTING.md)!
 
-Expected test criteria:
-* Resource creation under check mode
-* Resource creation
-* Resource creation again (idempotency) under check mode
-* Resource creation again (idempotency)
-* Resource modification under check mode
-* Resource modification
-* Resource modification again (idempotency) under check mode
-* Resource modification again (idempotency)
-* Resource deletion under check mode
-* Resource deletion
-* Resource deletion (of a non-existent resource) under check mode
-* Resource deletion (of a non-existent resource)
-
-Where modules have multiple parameters we recommend running through the 4-step modification cycle for each parameter the module accepts, as well as a modification cycle where as most, if not all, parameters are modified at the same time.
-
-For general information on running the integration tests see the
-[Integration Tests page of the Module Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/testing_integration.html#testing-integration),
-especially the section on configuration for cloud tests.  For questions about writing tests the Ansible AWS community can
-be found on Libera.Chat IRC as detailed below.
-
-
-### Code of Conduct
+## Code of Conduct
 The `amazon.cloud` collection follows the Ansible project's 
 [Code of Conduct](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html). 
 Please read and familiarize yourself with this document.
 
-### IRC
+## IRC
 Our IRC channels may require you to register your nickname. If you receive an error when you connect, see 
 [Libera.Chat's Nickname Registration guide](https://libera.chat/guides/registration) for instructions.
 
