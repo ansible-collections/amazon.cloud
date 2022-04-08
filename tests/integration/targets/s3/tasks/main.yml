@@ -21,19 +21,19 @@
     - name: Get S3 bucket
       amazon.cloud.s3_bucket:
         state: describe
-        bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+        bucket_name: "{{ output.result[0].identifier }}"
 
     - name: Modify S3 bucket
       amazon.cloud.s3_bucket:
         state: present
-        bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+        bucket_name:  "{{ output.result[0].identifier }}"
         tags:
-          - mykey: myval
+          mykey: "myval"
 
     - name: Delete S3 bucket
       amazon.cloud.s3_bucket:
         state: absent
-        bucket_name: "{{ output.result.ResourceDescription.Identifier }}"
+        bucket_name:  "{{ output.result[0].identifier }}"
   
   always:
     - name: Delete S3 bucket

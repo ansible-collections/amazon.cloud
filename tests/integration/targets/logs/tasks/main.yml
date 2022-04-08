@@ -19,8 +19,7 @@
         log_group_name: "{{ log_group_name }}"
         retention_in_days: 7
         tags:
-          - key: testkey
-            value: testvalue
+          "testkey": "testvalue"
       check_mode: yes
 
     - name: Create log group
@@ -47,8 +46,7 @@
         state: present
         log_group_name: "{{ log_group_name }}"
         tags:
-          - key: anotherkey
-            value: anothervalue
+          anotherkey: "anothervalue"
       check_mode: yes
       register: output
 
@@ -59,14 +57,15 @@
     - name: Update log group
       logs_log_group:
         <<: *log_group_update
+        purge_tags: false
         wait: yes
       register: output
 
     - assert:
         that:
           - output is changed
-          - "'testkey' in output.result[0].properties.tags|map(attribute='key')"
-          - "'anotherkey' in output.result[0].properties.tags|map(attribute='key')"
+          - "'testkey' in output.result[0].properties.tags"
+          - "'anotherkey' in output.result[0].properties.tags"
 
     - name: Update log group (idempotence)
       logs_log_group:
