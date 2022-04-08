@@ -12,68 +12,73 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage roles
-description: Creates and manages new roles for your AWS account (list, create, update,
-    describe, delete).
+module: s3_object_lambda_access_point
+short_description: []
+description: []
 options:
-    assume_role_policy_document:
+    name:
         description:
-        - The trust policy that is associated with this role.
+        - The name you want to assign to this Object lambda Access Point.
+        type: str
+    object_lambda_configuration:
+        description:
+        - The Object lambda Access Point Configuration that configures transformations
+            to be applied on the objects on specified S3 I(actions_configuration)
+            to be applied to this Object lambda Access Point.
+        - It specifies Supporting Access Point, Transformation Configurations.
+        - Customers can also set if they like to enable Cloudwatch metrics for accesses
+            to this Object lambda Access Point.
+        - Default setting for Cloudwatch metrics is disable.
         required: true
-        type: dict
-    description:
-        description:
-        - A description of the role that you provide.
-        type: str
-    managed_policy_arns:
-        description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
-        elements: str
-        type: list
-    max_session_duration:
-        description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        type: int
-    path:
-        description:
-        - The path to the role.
-        type: str
-    permissions_boundary:
-        description:
-        - The ARN of the policy used to set the permissions boundary for the role.
-        type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
-        elements: dict
         suboptions:
-            policy_document:
+            allowed_features:
                 description:
-                - The policy document.
+                - Not Provived.
+                elements: str
+                type: list
+            cloud_watch_metrics_enabled:
+                description:
+                - Not Provived.
+                type: bool
+            supporting_access_point:
+                description:
+                - Not Provived.
                 required: true
                 type: str
-            policy_name:
+            transformation_configurations:
                 description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
-                type: str
-        type: list
-    purge_tags:
-        default: true
-        description:
-        - Remove tags not listed in I(tags).
-        required: false
-        type: bool
-    role_name:
-        description:
-        - A name for the IAM role, up to 64 characters in length.
-        type: str
+                - Configuration to define what content transformation will be applied
+                    on which S3 Action.
+                elements: dict
+                suboptions:
+                    actions:
+                        description:
+                        - Not Provived.
+                        elements: str
+                        required: true
+                        type: list
+                    content_transformation:
+                        description:
+                        - Not Provived.
+                        required: true
+                        suboptions:
+                            aws_lambda:
+                                description:
+                                - Not Provived.
+                                suboptions:
+                                    function_arn:
+                                        description:
+                                        - Not Provived.
+                                        required: true
+                                        type: str
+                                    function_payload:
+                                        description:
+                                        - Not Provived.
+                                        type: str
+                                type: dict
+                        type: dict
+                type: list
+        type: dict
     state:
         choices:
         - present
@@ -90,14 +95,6 @@ options:
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
-    tags:
-        aliases:
-        - resource_tags
-        description:
-        - A dict of tags to apply to the resource.
-        - To remove all tags set I(tags={}) and I(purge_tags=true).
-        required: false
-        type: dict
     wait:
         default: false
         description:
@@ -157,25 +154,35 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {"type": "int"}
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
-        "options": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
-        },
-    }
-    argument_spec["role_name"] = {"type": "str"}
-    argument_spec["tags"] = {
+    argument_spec["name"] = {"type": "str"}
+    argument_spec["object_lambda_configuration"] = {
         "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
+        "options": {
+            "supporting_access_point": {"type": "str", "required": True},
+            "allowed_features": {"type": "list", "elements": "str"},
+            "cloud_watch_metrics_enabled": {"type": "bool"},
+            "transformation_configurations": {
+                "type": "list",
+                "elements": "dict",
+                "options": {
+                    "actions": {"type": "list", "required": True, "elements": "str"},
+                    "content_transformation": {
+                        "type": "dict",
+                        "options": {
+                            "aws_lambda": {
+                                "type": "dict",
+                                "options": {
+                                    "function_arn": {"type": "str", "required": True},
+                                    "function_payload": {"type": "str"},
+                                },
+                            }
+                        },
+                        "required": True,
+                    },
+                },
+            },
+        },
+        "required": True,
     }
     argument_spec["state"] = {
         "type": "str",
@@ -184,12 +191,11 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
-    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "present", ["role_name", "assume_role_policy_document"], True],
-        ["state", "absent", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ["state", "present", ["name", "object_lambda_configuration"], True],
+        ["state", "absent", ["name"], True],
+        ["state", "get", ["name"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -197,21 +203,14 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::S3ObjectLambda::AccessPoint"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
+    params["name"] = module.params.get("name")
+    params["object_lambda_configuration"] = module.params.get(
+        "object_lambda_configuration"
     )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
-    params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -223,10 +222,10 @@ def main():
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["path", "role_name"]
+    create_only_params = ["name"]
 
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("name")
 
     results = {"changed": False, "result": []}
 

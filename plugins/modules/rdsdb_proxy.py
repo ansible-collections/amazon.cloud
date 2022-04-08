@@ -12,67 +12,89 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage roles
-description: Creates and manages new roles for your AWS account (list, create, update,
-    describe, delete).
+module: rdsdb_proxy
+short_description: Create and manage DB proxies
+description: Creates and manage DB proxies (list, create, update, describe, delete).
 options:
-    assume_role_policy_document:
+    auth:
         description:
-        - The trust policy that is associated with this role.
-        required: true
-        type: dict
-    description:
-        description:
-        - A description of the role that you provide.
-        type: str
-    managed_policy_arns:
-        description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
-        elements: str
-        type: list
-    max_session_duration:
-        description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        type: int
-    path:
-        description:
-        - The path to the role.
-        type: str
-    permissions_boundary:
-        description:
-        - The ARN of the policy used to set the permissions boundary for the role.
-        type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
+        - The authorization mechanism that the proxy uses.
         elements: dict
+        required: true
         suboptions:
-            policy_document:
+            auth_scheme:
+                choices:
+                - SECRETS
                 description:
-                - The policy document.
-                required: true
+                - The type of authentication that the proxy uses for connections from
+                    the proxy to the underlying database.
                 type: str
-            policy_name:
+            description:
                 description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
+                - A user-specified description about the authentication used by a
+                    proxy to log in as a specific database user.
+                type: str
+            iam_auth:
+                choices:
+                - DISABLED
+                - REQUIRED
+                description:
+                - Whether to require or disallow AWS Identity and Access Management
+                    (IAM) authentication for connections to the proxy.
+                type: str
+            secret_arn:
+                description:
+                - The Amazon Resource Name (ARN) representing the secret that the
+                    proxy uses to authenticate to the RDS DB instance or Aurora DB
+                    cluster.
+                - These secrets are stored within Amazon Secrets Manager.
+                type: str
+            user_name:
+                description:
+                - The name of the database user to which the proxy connects.
                 type: str
         type: list
+    db_proxy_name:
+        description:
+        - The identifier for the proxy.
+        - This name must be unique for all proxies owned by your AWS account in the
+            specified AWS Region.
+        required: true
+        type: str
+    debug_logging:
+        description:
+        - Whether the proxy includes detailed information about SQL statements in
+            its logs.
+        type: bool
+    engine_family:
+        choices:
+        - MYSQL
+        - POSTGRESQL
+        description:
+        - The kinds of databases that the proxy can connect to.
+        required: true
+        type: str
+    idle_client_timeout:
+        description:
+        - The number of seconds that a connection to the proxy can be inactive before
+            the proxy disconnects it.
+        type: int
     purge_tags:
         default: true
         description:
         - Remove tags not listed in I(tags).
         required: false
         type: bool
-    role_name:
+    require_tls:
         description:
-        - A name for the IAM role, up to 64 characters in length.
+        - A Boolean parameter that specifies whether Transport Layer Security (TLS)
+            encryption is required for connections to the proxy.
+        type: bool
+    role_arn:
+        description:
+        - The Amazon Resource Name (ARN) of the IAM role that the proxy uses to access
+            secrets in AWS Secrets Manager.
+        required: true
         type: str
     state:
         choices:
@@ -98,6 +120,17 @@ options:
         - To remove all tags set I(tags={}) and I(purge_tags=true).
         required: false
         type: dict
+    vpc_security_group_ids:
+        description:
+        - VPC security group IDs to associate with the new proxy.
+        elements: str
+        type: list
+    vpc_subnet_ids:
+        description:
+        - VPC subnet IDs to associate with the new proxy.
+        elements: str
+        required: true
+        type: list
     wait:
         default: false
         description:
@@ -157,25 +190,37 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {"type": "int"}
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
+    argument_spec["auth"] = {
         "type": "list",
         "elements": "dict",
         "options": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
+            "auth_scheme": {"type": "str", "choices": ["SECRETS"]},
+            "iam_auth": {"type": "str", "choices": ["DISABLED", "REQUIRED"]},
+            "secret_arn": {"type": "str"},
+            "user_name": {"type": "str"},
         },
+        "required": True,
     }
-    argument_spec["role_name"] = {"type": "str"}
+    argument_spec["db_proxy_name"] = {"type": "str", "required": True}
+    argument_spec["debug_logging"] = {"type": "bool"}
+    argument_spec["engine_family"] = {
+        "type": "str",
+        "choices": ["MYSQL", "POSTGRESQL"],
+        "required": True,
+    }
+    argument_spec["idle_client_timeout"] = {"type": "int"}
+    argument_spec["require_tls"] = {"type": "bool"}
+    argument_spec["role_arn"] = {"type": "str", "required": True}
     argument_spec["tags"] = {
         "type": "dict",
         "required": False,
         "aliases": ["resource_tags"],
+    }
+    argument_spec["vpc_security_group_ids"] = {"type": "list", "elements": "str"}
+    argument_spec["vpc_subnet_ids"] = {
+        "type": "list",
+        "elements": "str",
+        "required": True,
     }
     argument_spec["state"] = {
         "type": "str",
@@ -187,9 +232,14 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "present", ["role_name", "assume_role_policy_document"], True],
-        ["state", "absent", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        [
+            "state",
+            "present",
+            ["auth", "role_arn", "engine_family", "db_proxy_name", "vpc_subnet_ids"],
+            True,
+        ],
+        ["state", "absent", ["db_proxy_name"], True],
+        ["state", "get", ["db_proxy_name"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -197,21 +247,20 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::RDS::DBProxy"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
-    )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
+    params["auth"] = module.params.get("auth")
+    params["db_proxy_name"] = module.params.get("db_proxy_name")
+    params["debug_logging"] = module.params.get("debug_logging")
+    params["engine_family"] = module.params.get("engine_family")
+    params["idle_client_timeout"] = module.params.get("idle_client_timeout")
+    params["require_tls"] = module.params.get("require_tls")
+    params["role_arn"] = module.params.get("role_arn")
     params["tags"] = module.params.get("tags")
+    params["vpc_security_group_ids"] = module.params.get("vpc_security_group_ids")
+    params["vpc_subnet_ids"] = module.params.get("vpc_subnet_ids")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = {k: v for k, v in params.items() if v is not None}
@@ -223,10 +272,10 @@ def main():
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["path", "role_name"]
+    create_only_params = ["db_proxy_name", "engine_family", "vpc_subnet_ids"]
 
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("db_proxy_name")
 
     results = {"changed": False, "result": []}
 

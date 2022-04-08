@@ -1,6 +1,24 @@
 requires_ansible: '>=2.9.10'
 action_groups:
   aws:
-  - s3_bucket
-  - logs_log_group
+  - backup_backup_vault
+  - backup_framework
+  - backup_report_plan
+  - eks_cluster
   - iam_role
+  - lambda_code_signing_config
+  - lambda_event_source_mapping
+  - lambda_function
+  - logs_log_group
+  - logs_query_definition
+  - logs_resource_policy
+  - rdsdb_proxy
+  - redshift_cluster
+  - redshift_event_subscription
+  - s3_access_point
+  - s3_bucket
+  - s3_multi_region_access_point
+  - s3_multi_region_access_point_policy
+  - s3_storage_lens
+  - s3_object_lambda_access_point
+  - s3_object_lambda_access_point_policy

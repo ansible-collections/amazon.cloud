@@ -12,68 +12,68 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage roles
-description: Creates and manages new roles for your AWS account (list, create, update,
-    describe, delete).
+module: backup_backup_vault
+short_description: Create and manage logical containers where backups are stored
+description: Creates and manages logical containers where backups are stored (list,
+    create, update, describe, delete).
 options:
-    assume_role_policy_document:
+    access_policy:
         description:
-        - The trust policy that is associated with this role.
-        required: true
+        - Not Provived.
         type: dict
-    description:
+    backup_vault_name:
         description:
-        - A description of the role that you provide.
+        - Not Provived.
+        required: true
         type: str
-    managed_policy_arns:
+    backup_vault_tags:
         description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
-        elements: str
-        type: list
-    max_session_duration:
+        - Not Provived.
+        type: dict
+    encryption_key_arn:
         description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        type: int
-    path:
-        description:
-        - The path to the role.
+        - Not Provived.
         type: str
-    permissions_boundary:
+    lock_configuration:
         description:
-        - The ARN of the policy used to set the permissions boundary for the role.
-        type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
-        elements: dict
+        - Not Provived.
         suboptions:
-            policy_document:
+            changeable_for_days:
                 description:
-                - The policy document.
+                - Not Provived.
+                type: int
+            max_retention_days:
+                description:
+                - Not Provived.
+                type: int
+            min_retention_days:
+                description:
+                - Not Provived.
+                required: true
+                type: int
+        type: dict
+    notifications:
+        description:
+        - Not Provived.
+        suboptions:
+            backup_vault_events:
+                description:
+                - Not Provived.
+                elements: str
+                required: true
+                type: list
+            sns_topic_arn:
+                description:
+                - Not Provived.
                 required: true
                 type: str
-            policy_name:
-                description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
-                type: str
-        type: list
+        type: dict
     purge_tags:
         default: true
         description:
         - Remove tags not listed in I(tags).
         required: false
         type: bool
-    role_name:
-        description:
-        - A name for the IAM role, up to 64 characters in length.
-        type: str
     state:
         choices:
         - present
@@ -157,25 +157,28 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {"type": "int"}
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
+    argument_spec["access_policy"] = {"type": "dict"}
+    argument_spec["backup_vault_name"] = {"type": "str", "required": True}
+    argument_spec["backup_vault_tags"] = {"type": "dict"}
+    argument_spec["encryption_key_arn"] = {"type": "str"}
+    argument_spec["notifications"] = {
+        "type": "dict",
         "options": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
+            "backup_vault_events": {
+                "type": "list",
+                "required": True,
+                "elements": "str",
+            },
+            "sns_topic_arn": {"type": "str", "required": True},
         },
     }
-    argument_spec["role_name"] = {"type": "str"}
-    argument_spec["tags"] = {
+    argument_spec["lock_configuration"] = {
         "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
+        "options": {
+            "min_retention_days": {"type": "int", "required": True},
+            "max_retention_days": {"type": "int"},
+            "changeable_for_days": {"type": "int"},
+        },
     }
     argument_spec["state"] = {
         "type": "str",
@@ -184,12 +187,17 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
+    argument_spec["tags"] = {
+        "type": "dict",
+        "required": False,
+        "aliases": ["resource_tags"],
+    }
     argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "present", ["role_name", "assume_role_policy_document"], True],
-        ["state", "absent", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ["state", "present", ["backup_vault_name"], True],
+        ["state", "absent", ["backup_vault_name"], True],
+        ["state", "get", ["backup_vault_name"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -197,20 +205,16 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::Backup::BackupVault"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
-    )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
+    params["access_policy"] = module.params.get("access_policy")
+    params["backup_vault_name"] = module.params.get("backup_vault_name")
+    params["backup_vault_tags"] = module.params.get("backup_vault_tags")
+    params["encryption_key_arn"] = module.params.get("encryption_key_arn")
+    params["lock_configuration"] = module.params.get("lock_configuration")
+    params["notifications"] = module.params.get("notifications")
     params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
@@ -223,10 +227,10 @@ def main():
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["path", "role_name"]
+    create_only_params = ["backup_vault_name", "encryption_key_arn"]
 
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("backup_vault_name")
 
     results = {"changed": False, "result": []}
 

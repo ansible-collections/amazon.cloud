@@ -12,57 +12,27 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: iam_role
-short_description: Create and manage roles
-description: Creates and manages new roles for your AWS account (list, create, update,
-    describe, delete).
+module: redshift_event_subscription
+short_description: Create and manage Amazon Redshift event notification subscriptions
+description: Creates and manage Amazon Redshift event notification subscriptions (list,
+    create, update, describe, delete).
 options:
-    assume_role_policy_document:
+    enabled:
         description:
-        - The trust policy that is associated with this role.
-        required: true
-        type: dict
-    description:
+        - A boolean value; set to true to activate the subscription, and set to false
+            to create the subscription but not activate it.
+        type: bool
+    event_categories:
+        choices:
+        - configuration
+        - management
+        - monitoring
+        - pending
+        - security
         description:
-        - A description of the role that you provide.
-        type: str
-    managed_policy_arns:
-        description:
-        - A list of Amazon Resource Names (ARNs) of the IAM managed policies that
-            you want to attach to the role.
+        - Specifies the Amazon Redshift event categories to be published by the event
+            notification subscription.
         elements: str
-        type: list
-    max_session_duration:
-        description:
-        - The maximum session duration (in seconds) that you want to set for the specified
-            role.
-        - If you do not specify a value for this setting, the default maximum of one
-            hour is applied.
-        - This setting can have a value from 1 hour to 12 hours.
-        type: int
-    path:
-        description:
-        - The path to the role.
-        type: str
-    permissions_boundary:
-        description:
-        - The ARN of the policy used to set the permissions boundary for the role.
-        type: str
-    policies:
-        description:
-        - The inline policy document that is embedded in the specified IAM role.
-        elements: dict
-        suboptions:
-            policy_document:
-                description:
-                - The policy document.
-                required: true
-                type: str
-            policy_name:
-                description:
-                - The friendly name (not ARN) identifying the policy.
-                required: true
-                type: str
         type: list
     purge_tags:
         default: true
@@ -70,9 +40,33 @@ options:
         - Remove tags not listed in I(tags).
         required: false
         type: bool
-    role_name:
+    severity:
+        choices:
+        - ERROR
+        - INFO
         description:
-        - A name for the IAM role, up to 64 characters in length.
+        - Specifies the Amazon Redshift event severity to be published by the event
+            notification subscription.
+        type: str
+    sns_topic_arn:
+        description:
+        - The Amazon Resource Name (ARN) of the Amazon SNS topic used to transmit
+            the event notifications.
+        type: str
+    source_ids:
+        description:
+        - A list of one or more identifiers of Amazon Redshift source objects.
+        elements: str
+        type: list
+    source_type:
+        choices:
+        - cluster
+        - cluster-parameter-group
+        - cluster-security-group
+        - cluster-snapshot
+        - scheduled-action
+        description:
+        - The type of source that will be generating the events.
         type: str
     state:
         choices:
@@ -89,6 +83,11 @@ options:
         - I(state=absent) ensures an existing instance is deleted.
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
+        type: str
+    subscription_name:
+        description:
+        - The name of the Amazon Redshift event notification subscription
+        required: true
         type: str
     tags:
         aliases:
@@ -157,21 +156,26 @@ def main():
         ),
     )
 
-    argument_spec["assume_role_policy_document"] = {"type": "dict", "required": True}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["managed_policy_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["max_session_duration"] = {"type": "int"}
-    argument_spec["path"] = {"type": "str"}
-    argument_spec["permissions_boundary"] = {"type": "str"}
-    argument_spec["policies"] = {
-        "type": "list",
-        "elements": "dict",
-        "options": {
-            "policy_document": {"type": "str", "required": True},
-            "policy_name": {"type": "str", "required": True},
-        },
+    argument_spec["subscription_name"] = {"type": "str", "required": True}
+    argument_spec["sns_topic_arn"] = {"type": "str"}
+    argument_spec["source_type"] = {
+        "type": "str",
+        "choices": [
+            "cluster",
+            "cluster-parameter-group",
+            "cluster-security-group",
+            "cluster-snapshot",
+            "scheduled-action",
+        ],
     }
-    argument_spec["role_name"] = {"type": "str"}
+    argument_spec["source_ids"] = {"type": "list", "elements": "str"}
+    argument_spec["event_categories"] = {
+        "type": "list",
+        "elements": "str",
+        "choices": ["configuration", "management", "monitoring", "pending", "security"],
+    }
+    argument_spec["severity"] = {"type": "str", "choices": ["ERROR", "INFO"]}
+    argument_spec["enabled"] = {"type": "bool"}
     argument_spec["tags"] = {
         "type": "dict",
         "required": False,
@@ -187,9 +191,9 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "present", ["role_name", "assume_role_policy_document"], True],
-        ["state", "absent", ["role_name"], True],
-        ["state", "get", ["role_name"], True],
+        ["state", "present", ["subscription_name"], True],
+        ["state", "absent", ["subscription_name"], True],
+        ["state", "get", ["subscription_name"], True],
     ]
 
     module = AnsibleAWSModule(
@@ -197,20 +201,17 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::IAM::Role"
+    type_name = "AWS::Redshift::EventSubscription"
 
     params = {}
 
-    params["assume_role_policy_document"] = module.params.get(
-        "assume_role_policy_document"
-    )
-    params["description"] = module.params.get("description")
-    params["managed_policy_arns"] = module.params.get("managed_policy_arns")
-    params["max_session_duration"] = module.params.get("max_session_duration")
-    params["path"] = module.params.get("path")
-    params["permissions_boundary"] = module.params.get("permissions_boundary")
-    params["policies"] = module.params.get("policies")
-    params["role_name"] = module.params.get("role_name")
+    params["enabled"] = module.params.get("enabled")
+    params["event_categories"] = module.params.get("event_categories")
+    params["severity"] = module.params.get("severity")
+    params["sns_topic_arn"] = module.params.get("sns_topic_arn")
+    params["source_ids"] = module.params.get("source_ids")
+    params["source_type"] = module.params.get("source_type")
+    params["subscription_name"] = module.params.get("subscription_name")
     params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
@@ -223,10 +224,10 @@ def main():
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["path", "role_name"]
+    create_only_params = ["subscription_name"]
 
     state = module.params.get("state")
-    identifier = module.params.get("role_name")
+    identifier = module.params.get("subscription_name")
 
     results = {"changed": False, "result": []}
 

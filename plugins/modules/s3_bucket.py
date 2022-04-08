@@ -13,7 +13,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: s3_bucket
-short_description: Manage S3 buckets
+short_description: Create and manage S3 buckets
 description: Create and manage S3 buckets (list, create, update, describe, delete).
 options:
     accelerate_configuration:
@@ -108,6 +108,7 @@ options:
                                 description:
                                 - The version of the output schema to use when exporting
                                     data.
+                                required: true
                                 type: str
                         type: dict
                 type: dict
@@ -701,6 +702,7 @@ options:
                         description:
                         - Specifies whether to send notifications to Amazon EventBridge
                             when events occur in an Amazon S3 bucket.
+                        required: true
                         type: bool
                 type: dict
             lambda_configurations:
@@ -1018,6 +1020,7 @@ options:
                                         default: Destination
                                         description:
                                         - Not Provived.
+                                        required: true
                                         type: str
                                 type: dict
                             account:
@@ -1228,7 +1231,7 @@ options:
         - get
         default: present
         description:
-        - Goal state for resouirce.
+        - Goal state for resource.
         - I(state=present) creates the resource if it doesn't exist, or updates to
             the provided state if the resource already exists.
         - I(state=absent) ensures an existing instance is deleted.
@@ -1254,6 +1257,7 @@ options:
                 default: Suspended
                 description:
                 - The versioning state of the bucket.
+                required: true
                 type: str
         type: dict
     wait:
@@ -1462,7 +1466,11 @@ def main():
                                     "prefix": {"type": "str"},
                                 },
                             },
-                            "output_schema_version": {"type": "str", "default": "V_1"},
+                            "output_schema_version": {
+                                "type": "str",
+                                "default": "V_1",
+                                "required": True,
+                            },
                         },
                     }
                 },
@@ -1760,7 +1768,11 @@ def main():
             "event_bridge_configuration": {
                 "type": "dict",
                 "options": {
-                    "event_bridge_enabled": {"type": "bool", "default": "true"}
+                    "event_bridge_enabled": {
+                        "type": "bool",
+                        "default": "true",
+                        "required": True,
+                    }
                 },
             },
             "lambda_configurations": {
@@ -1922,7 +1934,11 @@ def main():
                             "access_control_translation": {
                                 "type": "dict",
                                 "options": {
-                                    "owner": {"type": "str", "default": "Destination"}
+                                    "owner": {
+                                        "type": "str",
+                                        "default": "Destination",
+                                        "required": True,
+                                    }
                                 },
                             },
                             "account": {"type": "str"},
@@ -2060,6 +2076,7 @@ def main():
                 "type": "str",
                 "default": "Suspended",
                 "choices": ["Enabled", "Suspended"],
+                "required": True,
             }
         },
     }
@@ -2111,9 +2128,8 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "create", ["bucket_name"], True],
-        ["state", "update", ["bucket_name"], True],
-        ["state", "delete", ["bucket_name"], True],
+        ["state", "present", ["bucket_name"], True],
+        ["state", "absent", ["bucket_name"], True],
         ["state", "get", ["bucket_name"], True],
     ]
 
