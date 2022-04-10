@@ -13,8 +13,10 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: s3_object_lambda_access_point
-short_description: []
-description: []
+short_description: Create and manage Object Lambda Access Points used to access S3
+    buckets
+description: Create and manage Object Lambda Access Points used to access S3 buckets
+    (list, create, update, describe, delete).
 options:
     name:
         description:

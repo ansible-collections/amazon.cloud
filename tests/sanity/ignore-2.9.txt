@@ -158,14 +158,6 @@ plugins/modules/s3_multi_region_access_point_policy.py future-import-boilerplate
 plugins/modules/s3_multi_region_access_point_policy.py metaclass-boilerplate!skip
 plugins/modules/s3_multi_region_access_point_policy.py compile-2.6!skip
 plugins/modules/s3_multi_region_access_point_policy.py import-2.6!skip
-plugins/modules/s3_storage_lens.py compile-2.7!skip
-plugins/modules/s3_storage_lens.py compile-3.5!skip
-plugins/modules/s3_storage_lens.py import-2.7!skip
-plugins/modules/s3_storage_lens.py import-3.5!skip
-plugins/modules/s3_storage_lens.py future-import-boilerplate!skip
-plugins/modules/s3_storage_lens.py metaclass-boilerplate!skip
-plugins/modules/s3_storage_lens.py compile-2.6!skip
-plugins/modules/s3_storage_lens.py import-2.6!skip
 plugins/modules/s3_object_lambda_access_point.py compile-2.7!skip
 plugins/modules/s3_object_lambda_access_point.py compile-3.5!skip
 plugins/modules/s3_object_lambda_access_point.py import-2.7!skip

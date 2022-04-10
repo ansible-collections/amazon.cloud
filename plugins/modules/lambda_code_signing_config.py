@@ -13,8 +13,9 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: lambda_code_signing_config
-short_description: []
-description: []
+short_description: Code signing for AWS Lambda
+description: Creates and manage code signing for AWS Lambda (list, create, update,
+    describe, delete).
 options:
     allowed_publishers:
         description:
@@ -49,7 +50,6 @@ options:
                 - Indicates how Lambda operations involve updating the code artifact
                     will operate.
                 - Default to Warn if not provided
-                required: true
                 type: str
         type: dict
     description:
@@ -150,7 +150,6 @@ def main():
                 "type": "str",
                 "default": "Warn",
                 "choices": ["Enforce", "Warn"],
-                "required": True,
             }
         },
     }

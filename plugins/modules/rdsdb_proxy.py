@@ -195,6 +195,7 @@ def main():
         "elements": "dict",
         "options": {
             "auth_scheme": {"type": "str", "choices": ["SECRETS"]},
+            "description": {"type": "str"},
             "iam_auth": {"type": "str", "choices": ["DISABLED", "REQUIRED"]},
             "secret_arn": {"type": "str"},
             "user_name": {"type": "str"},
@@ -235,7 +236,7 @@ def main():
         [
             "state",
             "present",
-            ["auth", "role_arn", "engine_family", "db_proxy_name", "vpc_subnet_ids"],
+            ["role_arn", "db_proxy_name", "engine_family", "auth", "vpc_subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],

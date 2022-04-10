@@ -13,8 +13,8 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: lambda_event_source_mapping
-short_description: []
-description: []
+short_description: Create a mapping between an event source and an AWS Lambda function
+description: Create a mapping between an event source and an AWS Lambda function.
 options:
     batch_size:
         description:

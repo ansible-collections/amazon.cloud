@@ -13,8 +13,8 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: s3_object_lambda_access_point_policy
-short_description: []
-description: []
+short_description: Specifies the Object Lambda Access Point resource policy document
+description: Create and manage Object Lambda Access Point resource policy document.
 options:
     object_lambda_access_point:
         description:

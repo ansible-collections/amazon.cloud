@@ -124,7 +124,7 @@ def main():
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
 
     required_if = [
-        ["state", "present", ["query_string", "name"], True],
+        ["state", "present", ["name", "query_string"], True],
         ["state", "absent", [], True],
         ["state", "get", [], True],
     ]

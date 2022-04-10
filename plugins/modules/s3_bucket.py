@@ -108,7 +108,6 @@ options:
                                 description:
                                 - The version of the output schema to use when exporting
                                     data.
-                                required: true
                                 type: str
                         type: dict
                 type: dict
@@ -702,7 +701,6 @@ options:
                         description:
                         - Specifies whether to send notifications to Amazon EventBridge
                             when events occur in an Amazon S3 bucket.
-                        required: true
                         type: bool
                 type: dict
             lambda_configurations:
@@ -1020,7 +1018,6 @@ options:
                                         default: Destination
                                         description:
                                         - Not Provived.
-                                        required: true
                                         type: str
                                 type: dict
                             account:
@@ -1257,7 +1254,6 @@ options:
                 default: Suspended
                 description:
                 - The versioning state of the bucket.
-                required: true
                 type: str
         type: dict
     wait:
@@ -1466,11 +1462,7 @@ def main():
                                     "prefix": {"type": "str"},
                                 },
                             },
-                            "output_schema_version": {
-                                "type": "str",
-                                "default": "V_1",
-                                "required": True,
-                            },
+                            "output_schema_version": {"type": "str", "default": "V_1"},
                         },
                     }
                 },
@@ -1768,11 +1760,7 @@ def main():
             "event_bridge_configuration": {
                 "type": "dict",
                 "options": {
-                    "event_bridge_enabled": {
-                        "type": "bool",
-                        "default": "true",
-                        "required": True,
-                    }
+                    "event_bridge_enabled": {"type": "bool", "default": "true"}
                 },
             },
             "lambda_configurations": {
@@ -1934,11 +1922,7 @@ def main():
                             "access_control_translation": {
                                 "type": "dict",
                                 "options": {
-                                    "owner": {
-                                        "type": "str",
-                                        "default": "Destination",
-                                        "required": True,
-                                    }
+                                    "owner": {"type": "str", "default": "Destination"}
                                 },
                             },
                             "account": {"type": "str"},
@@ -2076,7 +2060,6 @@ def main():
                 "type": "str",
                 "default": "Suspended",
                 "choices": ["Enabled", "Suspended"],
-                "required": True,
             }
         },
     }

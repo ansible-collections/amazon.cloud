@@ -13,8 +13,9 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: s3_multi_region_access_point_policy
-short_description: []
-description: []
+short_description: Manage Amazon S3 access policies
+description: Applie and manage Amazon S3 access policies to an Amazon S3 Multi-Region
+    Access Points.
 options:
     mrap_name:
         description:

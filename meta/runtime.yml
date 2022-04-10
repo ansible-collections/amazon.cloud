@@ -19,6 +19,5 @@ action_groups:
   - s3_bucket
   - s3_multi_region_access_point
   - s3_multi_region_access_point_policy
-  - s3_storage_lens
   - s3_object_lambda_access_point
   - s3_object_lambda_access_point_policy
