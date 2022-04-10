@@ -89,7 +89,7 @@ Additional tags can be specified with the "tags" parameter.::
       tasks:
 
         - name: Provision an S3 bucket with a with public added block configuration
-          amazon.aws.s3_bucket:
+          amazon.cloud.s3_bucket:
             bucket_name: Demo
             public_access_block_configuration:
                 block_public_acls: true

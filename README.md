@@ -1,7 +1,7 @@
 # AWS Cloud Control Collection for Ansible
 The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services. 
 
-This content is not intended for production in its current state.
+This work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state. 
 
 <!--start requires_ansible-->
 ## Ansible version compatibility
@@ -95,6 +95,17 @@ For example, if you want to use the s3_bucket module without specyfing the FQDN,
 
 * [Amazon.Cloud Collection Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_amazon_cloud.html)
 * [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
+
+
+## Known issues
+
+* Modules are only as good as the API and its schema. Documentation may not be complete for all the modules' options and suboptions.
+* Missing supportability for important AWS resources like, EC2 instance, RDS instance, EC2 volume, Elastic Load Balancer, RDS Snapshot, EC2 snapshot, etc.
+* Idempotency is a function of the API and may not be fully supported.
+* Missing server-side pagination. This may have severe impact on performance.
+* Name-based identification filtering to support desired state (idempotency) logic is absent. This limitation has made us to exclude several resources and reduce the numebr of modules. A client-side filtering will definitely have a large impact on performance.
+* Not all the resurces support the available states. In practice this means that some resources cannot be updated or listed.
+
 
 ## Contributing to this collection
 
