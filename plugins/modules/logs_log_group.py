@@ -65,7 +65,7 @@ options:
         - get
         default: present
         description:
-        - Goal state for resouirce.
+        - Goal state for resource.
         - I(state=present) creates the resource if it doesn't exist, or updates to
             the provided state if the resource already exists.
         - I(state=absent) ensures an existing instance is deleted.
@@ -178,9 +178,8 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "create", ["log_group_name"], True],
-        ["state", "update", ["log_group_name"], True],
-        ["state", "delete", ["log_group_name"], True],
+        ["state", "present", ["log_group_name"], True],
+        ["state", "absent", ["log_group_name"], True],
         ["state", "get", ["log_group_name"], True],
     ]
 

@@ -13,7 +13,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: s3_bucket
-short_description: Manage S3 buckets
+short_description: Create and manage S3 buckets
 description: Create and manage S3 buckets (list, create, update, describe, delete).
 options:
     accelerate_configuration:
@@ -1228,7 +1228,7 @@ options:
         - get
         default: present
         description:
-        - Goal state for resouirce.
+        - Goal state for resource.
         - I(state=present) creates the resource if it doesn't exist, or updates to
             the provided state if the resource already exists.
         - I(state=absent) ensures an existing instance is deleted.
@@ -2111,9 +2111,8 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
 
     required_if = [
-        ["state", "create", ["bucket_name"], True],
-        ["state", "update", ["bucket_name"], True],
-        ["state", "delete", ["bucket_name"], True],
+        ["state", "present", ["bucket_name"], True],
+        ["state", "absent", ["bucket_name"], True],
         ["state", "get", ["bucket_name"], True],
     ]
 
