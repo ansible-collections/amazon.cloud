@@ -8,6 +8,8 @@ This work is being made available for research purposes on the Cloud Control API
 
 This collection has been tested against following Ansible versions: **>=2.9.10**.
 
+For collections that support Ansible 2.9, please ensure you update your `network_os` to use the 
+fully qualified collection name (for example, `cisco.ios.ios`). 
 Plugins and modules within a collection may be tested with only specific Ansible versions.
 A collection may contain metadata that identifies these versions.
 PEP440 is the schema used to describe the versions of Ansible.
@@ -25,6 +27,28 @@ Version 0.1.0 of this collection supports `boto3 >= 1.20.0` and `botocore >= 1.2
 
 <!--start collection content-->
 ### Modules
+Name | Description
+--- | ---
+[amazon.cloud.backup_backup_vault](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.backup_backup_vault_module.rst)|Create and manage logical containers where backups are stored
+[amazon.cloud.backup_framework](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.backup_framework_module.rst)|Create and manage frameworks with one or more controls
+[amazon.cloud.backup_report_plan](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.backup_report_plan_module.rst)|Create and manage report plans
+[amazon.cloud.eks_cluster](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.eks_cluster_module.rst)|Create and manages Amazon EKS control planes
+[amazon.cloud.iam_role](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.iam_role_module.rst)|Create and manage roles
+[amazon.cloud.lambda_code_signing_config](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.lambda_code_signing_config_module.rst)|Code signing for AWS Lambda
+[amazon.cloud.lambda_event_source_mapping](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.lambda_event_source_mapping_module.rst)|Create a mapping between an event source and an AWS Lambda function
+[amazon.cloud.lambda_function](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.lambda_function_module.rst)|Create and manage Lambda functions
+[amazon.cloud.logs_log_group](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.logs_log_group_module.rst)|Create and manage log groups
+[amazon.cloud.logs_query_definition](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.logs_query_definition_module.rst)|Create and manage query definitions
+[amazon.cloud.logs_resource_policy](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.logs_resource_policy_module.rst)|Create and manage resource policies
+[amazon.cloud.rdsdb_proxy](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.rdsdb_proxy_module.rst)|Create and manage DB proxies
+[amazon.cloud.redshift_cluster](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.redshift_cluster_module.rst)|Create and manage clusters
+[amazon.cloud.redshift_event_subscription](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.redshift_event_subscription_module.rst)|Create and manage Amazon Redshift event notification subscriptions
+[amazon.cloud.s3_access_point](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.s3_access_point_module.rst)|Create and manage Amazon S3 access points to use to access S3 buckets
+[amazon.cloud.s3_bucket](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.s3_bucket_module.rst)|Create and manage S3 buckets
+[amazon.cloud.s3_multi_region_access_point](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.s3_multi_region_access_point_module.rst)|Create and manage Amazon S3 Multi-Region Access Points
+[amazon.cloud.s3_multi_region_access_point_policy](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.s3_multi_region_access_point_policy_module.rst)|Manage Amazon S3 access policies
+[amazon.cloud.s3_object_lambda_access_point](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.s3_object_lambda_access_point_module.rst)|Create and manage Object Lambda Access Points used to access S3 buckets
+[amazon.cloud.s3_object_lambda_access_point_policy](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.s3_object_lambda_access_point_policy_module.rst)|Specifies the Object Lambda Access Point resource policy document
 
 <!--end collection content-->
 

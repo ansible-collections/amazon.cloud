@@ -42,9 +42,11 @@ def to_sync(fn):
 
 def _jsonify(data: Dict) -> Dict:
     identifier = data.get("Identifier", None)
-    properties = data.get("Properties", None)
     # Convert the Resource Properties from a str back to json
-    data = {"identifier": identifier, "properties": json.loads(properties)}
+    properties = json.loads(data.get("Properties", None))
+    if properties and "Tags" in properties:
+        properties["tags"] = boto3_tag_list_to_ansible_dict(properties["Tags"])
+    data = {"identifier": identifier, "properties": properties}
     return data
 
 
@@ -130,6 +132,48 @@ def ansible_dict_to_boto3_tag_list(
         tags_list.append({tag_name_key_name: k, tag_value_key_name: to_native(v)})
 
     return tags_list
+
+
+def boto3_tag_list_to_ansible_dict(
+    tags_list, tag_name_key_name=None, tag_value_key_name=None
+):
+
+    """Convert a boto3 list of resource tags to a flat dict of key:value pairs
+    Args:
+        tags_list (list): List of dicts representing AWS tags.
+        tag_name_key_name (str): Value to use as the key for all tag keys (useful because boto3 doesn't always use "Key")
+        tag_value_key_name (str): Value to use as the key for all tag values (useful because boto3 doesn't always use "Value")
+    Basic Usage:
+        >>> tags_list = [{'Key': 'MyTagKey', 'Value': 'MyTagValue'}]
+        >>> boto3_tag_list_to_ansible_dict(tags_list)
+        [
+            {
+                'Key': 'MyTagKey',
+                'Value': 'MyTagValue'
+            }
+        ]
+    Returns:
+        Dict: Dict of key:value pairs representing AWS tags
+         {
+            'MyTagKey': 'MyTagValue',
+        }
+    """
+
+    if tag_name_key_name and tag_value_key_name:
+        tag_candidates = {tag_name_key_name: tag_value_key_name}
+    else:
+        tag_candidates = {"key": "value", "Key": "Value"}
+
+    # minio seems to return [{}] as an empty tags_list
+    if not tags_list or not any(tag for tag in tags_list):
+        return {}
+    for k, v in tag_candidates.items():
+        if k in tags_list[0] and v in tags_list[0]:
+            return dict((tag[k], tag[v]) for tag in tags_list)
+    raise ValueError(
+        "Couldn't find tag key (candidates %s) in tag list %s"
+        % (str(tag_candidates), str(tags_list))
+    )
 
 
 class JsonPatch(list):
