@@ -104,7 +104,7 @@ For example, if you want to use the s3_bucket module without specyfing the FQDN,
 * Idempotency is a function of the API and may not be fully supported.
 * Missing server-side pagination. This may have severe impact on performance.
 * Name-based identification filtering to support desired state (idempotency) logic is absent. This limitation has made us to exclude several resources and reduce the numebr of modules. A client-side filtering will definitely have a large impact on performance.
-* Not all the resurces support the available states. In practice this means that some resources cannot be updated or listed.
+* Not all the resources support the available states. In practice this means that some resources cannot be updated or listed.
 
 
 ## Contributing to this collection
