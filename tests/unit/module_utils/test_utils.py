@@ -10,7 +10,6 @@ __metaclass__ = type
 from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     ansible_dict_to_boto3_tag_list,
     boto3_tag_list_to_ansible_dict,
-    list_merge,
     scrub_keys,
 )
 
@@ -56,25 +55,6 @@ def test_boto3_tag_list_to_ansible_dict_empty():
     assert boto3_tag_list_to_ansible_dict([]) == {}
     # Minio returns [{}] when there are no tags
     assert boto3_tag_list_to_ansible_dict([{}]) == {}
-
-
-def test_list_merge():
-    old = [1, 2, 3]
-    new = [2, 6, 1, 8, 9]
-    expected = [1, 2, 3, 6, 8, 9]
-    assert list_merge(old, new) == expected
-
-
-def test_list_merge_empty_new():
-    old = list(range(3))
-    new = []
-    assert list_merge(old, new) == old
-
-
-def test_list_merge_empty_old():
-    old = []
-    new = list(range(3))
-    assert list_merge(old, new) == new
 
 
 def test_scrub_keys_empty_dict():

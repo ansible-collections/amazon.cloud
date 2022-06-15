@@ -182,10 +182,6 @@ class JsonPatch(list):
         return json.dumps(self)
 
 
-def list_merge(old, new):
-    return list(set(old + new))
-
-
 def op(operation, path, value):
     path = "/{0}".format(path.lstrip("/"))
     return {"op": operation, "path": path, "value": value}
@@ -199,5 +195,5 @@ def make_op(path, old, new, strategy):
             new = dict(old, **new)
     elif isinstance(old, list):
         if strategy == "merge":
-            new = list_merge(old, new)
+            new = list(set(old + new))
     return op("replace", path, new)
