@@ -57,40 +57,47 @@ def test_boto3_tag_list_to_ansible_dict_empty():
     # Minio returns [{}] when there are no tags
     assert boto3_tag_list_to_ansible_dict([{}]) == {}
 
+
 def test_list_merge():
     old = [1, 2, 3]
     new = [2, 6, 1, 8, 9]
     expected = [1, 2, 3, 6, 8, 9]
     assert list_merge(old, new) == expected
 
+
 def test_list_merge_empty_new():
-    old = [ i for i in range(3) ]
+    old = list(range(3))
     new = []
     assert list_merge(old, new) == old
 
+
 def test_list_merge_empty_old():
     old = []
-    new = [ i for i in range(3) ]
+    new = list(range(3))
     assert list_merge(old, new) == new
+
 
 def test_scrub_keys_empty_dict():
     dict = {}
-    keys_to_remove = [ i for i in range(10) ]
+    keys_to_remove = list(range(3))
     assert scrub_keys(dict, keys_to_remove) == dict
 
+
 def test_scrub_keys_empty_keys_to_remove():
-    dict = { i:i for i in range(10) }
+    dict = {i: i for i in range(10)}
     keys_to_remove = []
     assert scrub_keys(dict, keys_to_remove) == dict
 
+
 def test_scrub_keys_remove_keys_not_in_dict():
-    dict = { i:i for i in range(10) }
-    keys_to_remove = [ i for i in range(20) if i % 2 == 0 ]
-    expected = { i:i for i in range(10) if i % 2 == 1 }
+    dict = {i: i for i in range(10)}
+    keys_to_remove = [i for i in range(20) if i % 2 == 0]
+    expected = {i: i for i in range(10) if i % 2 == 1}
     assert scrub_keys(dict, keys_to_remove) == expected
 
+
 def test_scrub_keys_duplicate_keys():
-    dict = { i: i for i in range(10) }
-    keys_to_remove = [ i for i in range(20) if i % 2 == 0 ] * 2
-    expected = { i:i for i in range(10) if i % 2 == 1 }
+    dict = {i: i for i in range(10)}
+    keys_to_remove = [i for i in range(20) if i % 2 == 0] * 2
+    expected = {i: i for i in range(10) if i % 2 == 1}
     assert scrub_keys(dict, keys_to_remove) == expected
