@@ -79,7 +79,8 @@ def scrub_keys(a_dict: Dict, list_of_keys_to_remove: List[str]) -> Dict:
     """Filter a_dict by removing unwanted key: values listed in list_of_keys_to_remove"""
     if not isinstance(a_dict, dict):
         return a_dict
-    return {k: v for k, v in a_dict.items() if k not in list_of_keys_to_remove}
+    [a_dict.pop(key, None) for key in list_of_keys_to_remove]
+    return a_dict
 
 
 def normalize_response(response: Iterable):
@@ -182,11 +183,7 @@ class JsonPatch(list):
 
 
 def list_merge(old, new):
-    l = []
-    for i in old + new:
-        if i not in l:
-            l.append(i)
-    return l
+    return list(set(old + new))
 
 
 def op(operation, path, value):
