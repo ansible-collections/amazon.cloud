@@ -1,15 +1,16 @@
-# Copyright: (c) 2022, Ansible, Inc
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2014, Will Thames <will@thames.id.au>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
+from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 
 class ModuleDocFragment(object):
 
     # AWS only documentation fragment
-    DOCUMENTATION = r"""
+    DOCUMENTATION = r'''
 options:
   debug_botocore_endpoint_logs:
     description:
@@ -28,25 +29,19 @@ options:
   aws_secret_key:
     description:
       - C(AWS secret key). If not set then the value of the C(AWS_SECRET_ACCESS_KEY), C(AWS_SECRET_KEY), or C(EC2_SECRET_KEY) environment variable is used.
-      - If I(profile) is set this parameter is ignored.
-      - Passing the I(aws_secret_key) and I(profile) options at the same time has been deprecated
-        and the options will be made mutually exclusive after 2022-06-01.
+      - The I(aws_secret_key) and I(profile) options are mutually exclusive.
     type: str
     aliases: [ ec2_secret_key, secret_key ]
   aws_access_key:
     description:
       - C(AWS access key). If not set then the value of the C(AWS_ACCESS_KEY_ID), C(AWS_ACCESS_KEY) or C(EC2_ACCESS_KEY) environment variable is used.
-      - If I(profile) is set this parameter is ignored.
-      - Passing the I(aws_access_key) and I(profile) options at the same time has been deprecated
-        and the options will be made mutually exclusive after 2022-06-01.
+      - The I(aws_access_key) and I(profile) options are mutually exclusive.
     type: str
     aliases: [ ec2_access_key, access_key ]
   security_token:
     description:
       - C(AWS STS security token). If not set then the value of the C(AWS_SECURITY_TOKEN) or C(EC2_SECURITY_TOKEN) environment variable is used.
-      - If I(profile) is set this parameter is ignored.
-      - Passing the I(security_token) and I(profile) options at the same time has been deprecated
-        and the options will be made mutually exclusive after 2022-06-01.
+      - The I(security_token) and I(profile) options are mutually exclusive.
       - Aliases I(aws_session_token) and I(session_token) have been added in version 3.2.0.
     type: str
     aliases: [ aws_session_token, session_token, aws_security_token, access_token ]
@@ -63,9 +58,7 @@ options:
     default: yes
   profile:
     description:
-      - Using I(profile) will override I(aws_access_key), I(aws_secret_key) and I(security_token)
-        and support for passing them at the same time as I(profile) has been deprecated.
-      - I(aws_access_key), I(aws_secret_key) and I(security_token) will be made mutually exclusive with I(profile) after 2022-06-01.
+      - The I(profile) option is mutually exclusive with the I(aws_access_key), I(aws_secret_key) and I(security_token) options.
     type: str
     aliases: [ aws_profile ]
   aws_config:
@@ -95,4 +88,4 @@ notes:
   - C(AWS_REGION) or C(EC2_REGION) can be typically be used to specify the
     AWS region, when required, but this can also be defined in the
     configuration files.
-"""
+'''
