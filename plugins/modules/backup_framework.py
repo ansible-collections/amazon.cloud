@@ -66,7 +66,7 @@ options:
                     compliance_resource_types:
                         description:
                         - Describes whether the control scope includes one or more
-                            types of resources, such as `EFS` or `RDS`.
+                            types of resources, such as EFS or RDS.
                         elements: str
                         type: list
                     tags:

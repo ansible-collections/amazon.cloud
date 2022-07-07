@@ -99,8 +99,8 @@ options:
                 description:
                 - Identifies the report template for the report.
                 - Reports are built using a report template.
-                - 'The report templates are: `C(BACKUP_JOB_REPORT) | C(COPY_JOB_REPORT)
-                    | C(RESTORE_JOB_REPORT)`'
+                - 'The report templates are: C(BACKUP_JOB_REPORT) | C(COPY_JOB_REPORT)
+                    | C(RESTORE_JOB_REPORT)'
                 required: true
                 type: str
         type: dict
