@@ -99,8 +99,8 @@ options:
                 description:
                 - Identifies the report template for the report.
                 - Reports are built using a report template.
-                - 'The report templates are: `C(BACKUP_JOB_REPORT) | C(COPY_JOB_REPORT)
-                    | C(RESTORE_JOB_REPORT)`'
+                - 'The report templates are: C(BACKUP_JOB_REPORT) | C(COPY_JOB_REPORT)
+                    | C(RESTORE_JOB_REPORT)'
                 required: true
                 type: str
         type: dict
@@ -142,8 +142,8 @@ author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
 requirements: []
 extends_documentation_fragment:
-- amazon.cloud.aws
-- amazon.cloud.ec2
+- amazon.aws.aws
+- amazon.aws.ec2
 """
 
 EXAMPLES = r"""

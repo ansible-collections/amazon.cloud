@@ -66,7 +66,7 @@ options:
                     compliance_resource_types:
                         description:
                         - Describes whether the control scope includes one or more
-                            types of resources, such as `EFS` or `RDS`.
+                            types of resources, such as EFS or RDS.
                         elements: str
                         type: list
                     tags:
@@ -177,8 +177,8 @@ author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
 requirements: []
 extends_documentation_fragment:
-- amazon.cloud.aws
-- amazon.cloud.ec2
+- amazon.aws.aws
+- amazon.aws.ec2
 """
 
 EXAMPLES = r"""
