@@ -72,10 +72,6 @@ be manually installed using pip:
 
     pip install requirements.txt
 
-or:
-
-    pip install boto3 botocore
-
 Note that if you install the collection from Ansible Galaxy, it will not be upgraded automatically when you upgrade the `ansible` package. To upgrade the collection to the latest available version, run the following command:
 ```bash
 ansible-galaxy collection install amazon.cloud --upgrade
