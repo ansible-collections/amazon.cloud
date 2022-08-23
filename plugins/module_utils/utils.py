@@ -1,14 +1,27 @@
 import re
+import copy
 import json
 import functools
-from typing import Iterable, List, Dict
+import traceback
+from typing import Iterable, List, Dict, Union
+
+JSON_PATCH_IMPORT_ERR = None
+try:
+    import jsonpatch
+
+    HAS_JSON_PATCH = True
+except ImportError:
+    HAS_JSON_PATCH = False
+    JSON_PATCH_IMPORT_ERR = traceback.format_exc()
 
 from ansible.module_utils.common.dict_transformations import (
     camel_dict_to_snake_dict,
     snake_dict_to_camel_dict,
+    recursive_diff,
 )
 
 from ansible.module_utils._text import to_native
+from ansible.module_utils.basic import missing_required_lib
 
 
 def to_async(fn):
@@ -44,8 +57,6 @@ def _jsonify(data: Dict) -> Dict:
     identifier = data.get("Identifier", None)
     # Convert the Resource Properties from a str back to json
     properties = json.loads(data.get("Properties", None))
-    if properties and "Tags" in properties:
-        properties["tags"] = boto3_tag_list_to_ansible_dict(properties["Tags"])
     data = {"identifier": identifier, "properties": properties}
     return data
 
@@ -75,6 +86,15 @@ def camel_to_snake(name: str, reversible: bool = False) -> str:
     return re.sub(all_cap_pattern, r"\1_\2", s2).lower()
 
 
+def snake_to_camel(snake, capitalize_first=False):
+    if capitalize_first:
+        return "".join(x.capitalize() or "_" for x in snake.split("_"))
+    else:
+        return snake.split("_")[0] + "".join(
+            x.capitalize() or "_" for x in snake.split("_")[1:]
+        )
+
+
 def scrub_keys(a_dict: Dict, list_of_keys_to_remove: List[str]) -> Dict:
     """Filter a_dict by removing unwanted key: values listed in list_of_keys_to_remove"""
     if not isinstance(a_dict, dict):
@@ -83,20 +103,23 @@ def scrub_keys(a_dict: Dict, list_of_keys_to_remove: List[str]) -> Dict:
 
 
 def normalize_response(response: Iterable):
-    result: List = []
-
     resource_descriptions = response.get("ResourceDescription", {}) or response.get(
         "ResourceDescriptions", []
     )
-    if isinstance(resource_descriptions, list):
-        res = [_jsonify(r_d) for r_d in resource_descriptions]
-        _result = [camel_dict_to_snake_dict(r) for r in res]
-        result.append(_result)
-    else:
-        result.append(_jsonify(resource_descriptions))
-        result = [camel_dict_to_snake_dict(res) for res in result]
 
-    return result
+    def _normalize_response(resource_description):
+        json_res = _jsonify(resource_description)
+        snaked_res = camel_dict_to_snake_dict(json_res)
+        if "tags" in snaked_res["properties"]:
+            snaked_res["properties"]["tags"] = boto3_tag_list_to_ansible_dict(
+                snaked_res["properties"]["tags"]
+            )
+        return snaked_res
+
+    if isinstance(resource_descriptions, list):
+        return [_normalize_response(resource) for resource in resource_descriptions]
+    else:
+        return _normalize_response(resource_descriptions)
 
 
 def ansible_dict_to_boto3_tag_list(
@@ -176,17 +199,58 @@ def boto3_tag_list_to_ansible_dict(
     )
 
 
+def diff_dicts(existing: Dict, new: Dict) -> Union[bool, Dict]:
+    result: Dict = {}
+
+    diff = recursive_diff(existing, new)
+
+    if not diff:
+        return True, {}
+
+    result["before"] = diff[0]
+    result["after"] = diff[1]
+
+    return False, result
+
+
+def json_patch(existing, patch):
+    if not HAS_JSON_PATCH:
+        error = {
+            "msg": missing_required_lib("jsonpatch"),
+            "exception": JSON_PATCH_IMPORT_ERR,
+        }
+        return None, error
+    try:
+        patch = jsonpatch.JsonPatch(patch)
+        patched = patch.apply(existing)
+        return patched, None
+    except jsonpatch.InvalidJsonPatch as e:
+        error = {"msg": "Invalid JSON patch", "exception": e}
+        return None, error
+    except jsonpatch.JsonPatchConflict as e:
+        error = {"msg": "Patch could not be applied due to a conflict", "exception": e}
+        return None, error
+
+
 class JsonPatch(list):
     def __str__(self):
         return json.dumps(self)
 
 
-def list_merge(old, new):
-    l = []
-    for i in old + new:
-        if i not in l:
-            l.append(i)
-    return l
+def find_tag_by_key(key, tags):
+    for tag in tags:
+        if tag["Key"] == key:
+            return tag
+
+
+def tag_merge(t1, t2):
+    for tag in t2:
+        existing = find_tag_by_key(tag["Key"], t1)
+        if existing:
+            existing["Value"] = tag["Value"]
+        else:
+            t1.append(tag)
+    return t1
 
 
 def op(operation, path, value):
@@ -194,13 +258,45 @@ def op(operation, path, value):
     return {"op": operation, "path": path, "value": value}
 
 
-# This is a rather naive implementation. Dictionaries within
-# lists and lists within dictionaries will not be merged.
 def make_op(path, old, new, strategy):
+    _new_cpy = copy.deepcopy(new)
+
     if isinstance(old, dict):
         if strategy == "merge":
-            new = dict(old, **new)
+            _new_cpy = dict(old, **new)
     elif isinstance(old, list):
         if strategy == "merge":
-            new = list_merge(old, new)
-    return op("replace", path, new)
+            _old_cpy = copy.deepcopy(old)
+            _new_cpy = tag_merge(_old_cpy, new)
+
+    return op("replace", path, _new_cpy)
+
+
+def get_patch(module, params, properties):
+    patch = JsonPatch()
+
+    for k, v_in in params.items():
+        strategy = "merge"
+        if k in properties:
+            v_exisiting = properties.get(k)
+            # Continue loop if both values are equal
+            if v_in == v_exisiting:
+                continue
+            # Compare lists contents, not order (i.e. list of tag dicts)
+            if isinstance(v_in, list) and isinstance(v_exisiting, list):
+                if [tag for tag in v_in if tag not in v_exisiting] == [] and [
+                    tag for tag in v_exisiting if tag not in v_in
+                ] == []:
+                    continue
+            # If purge, then replace old resource
+            if module.params.get("purge_{0}".format(k.lower())):
+                strategy = "replace"
+            # Add difference to JSON patch
+            patch.append(make_op(k, v_exisiting, v_in, strategy))
+        else:
+            # Add patch if key isnt in properties - dont add tags if tags = {} and no tags on resource
+            if k == "Tags" and v_in == [] and "tags" not in properties:
+                continue
+            patch.append(op("add", k, v_in))
+
+    return patch

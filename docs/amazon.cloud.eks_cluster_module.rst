@@ -17,7 +17,7 @@ Version added: 0.1.0
 
 Synopsis
 --------
-- Create and manage Amazon EKS control planes (list, create, update, describe, delete).
+- Create and manage Amazon EKS control planes.
 
 
 
@@ -54,8 +54,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS access key</code>. If not set then the value of the <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_ACCESS_KEY</code> or <code>EC2_ACCESS_KEY</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>aws_access_key</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>aws_access_key</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: ec2_access_key, access_key</div>
                 </td>
             </tr>
@@ -104,8 +103,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS secret key</code>. If not set then the value of the <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_SECRET_KEY</code>, or <code>EC2_SECRET_KEY</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>aws_secret_key</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>aws_secret_key</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: ec2_secret_key, secret_key</div>
                 </td>
             </tr>
@@ -157,7 +155,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The encryption configuration for the cluster</div>
+                        <div>The encryption configuration for the cluster.</div>
                 </td>
             </tr>
                                 <tr>
@@ -217,6 +215,26 @@ Parameters
             <tr>
                 <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>force</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Cancel IN_PROGRESS and PENDING resource requestes.</div>
+                        <div>Because you can only perform a single operation on a given resource at a time, there might be cases where you need to cancel the current resource operation to make the resource available so that another operation may be performed on it.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>kubernetes_network_config</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -247,7 +265,7 @@ Parameters
                 </td>
                 <td>
                         <div>Ipv4 or Ipv6.</div>
-                        <div>You can only specify ipv6 for 1.21 and later clusters that use version 1.10.1 or later of the Amazon VPC CNI add-on</div>
+                        <div>You can only specify ipv6 for 1.21 and later clusters that use version 1.10.1 or later of the Amazon VPC CNI add-on.</div>
                 </td>
             </tr>
             <tr>
@@ -317,7 +335,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Enabled Logging Type</div>
+                        <div>Enabled Logging Type.</div>
                 </td>
             </tr>
                                 <tr>
@@ -342,7 +360,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>name of the log type</div>
+                        <div>name of the log type.</div>
                 </td>
             </tr>
 
@@ -375,8 +393,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Using <em>profile</em> will override <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> and support for passing them at the same time as <em>profile</em> has been deprecated.</div>
-                        <div><em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> will be made mutually exclusive with <em>profile</em> after 2022-06-01.</div>
+                        <div>The <em>profile</em> option is mutually exclusive with the <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> options.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: aws_profile</div>
                 </td>
             </tr>
@@ -422,7 +439,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -451,7 +467,7 @@ Parameters
                         <div>Set this value to true to enable private access for your clusters Kubernetes API server endpoint.</div>
                         <div>If you enable private access, Kubernetes API requests from within your clusters VPC use the private VPC endpoint.</div>
                         <div>The default value for this parameter is false, which disables private access for your Kubernetes API server.</div>
-                        <div>If you disable private access and you have nodes or AWS Fargate pods in the cluster, then ensure that public<em>access_cidrs</em> includes the necessary CIDR blocks for communication with the nodes or Fargate pods.</div>
+                        <div>If you disable private access and you have nodes or AWS Fargate pods in the cluster, then ensure that publicAccessCidrs includes the necessary CIDR blocks for communication with the nodes or Fargate pods.</div>
                 </td>
             </tr>
             <tr>
@@ -522,7 +538,6 @@ Parameters
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
                          / <span style="color: purple">elements=string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -540,7 +555,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -562,8 +576,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS STS security token</code>. If not set then the value of the <code>AWS_SECURITY_TOKEN</code> or <code>EC2_SECURITY_TOKEN</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>security_token</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>security_token</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div>Aliases <em>aws_session_token</em> and <em>session_token</em> have been added in version 3.2.0.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: aws_session_token, session_token, aws_security_token, access_token</div>
                 </td>
@@ -695,6 +708,37 @@ Notes
 
 
 
+Examples
+--------
+
+.. code-block:: yaml
+
+    - name: Create EKS cluster
+      amazon.cloud.eks_cluster:
+        name: '{{ eks_cluster_name }}'
+        resources_vpc_config:
+          security_group_ids: "{{ _result_create_security_groups.results | map(attribute='group_id') }}"
+          subnet_ids: "{{ _result_create_subnets.results | map(attribute='subnet.id') }}"
+          endpoint_public_access: true
+          endpoint_private_access: false
+          public_access_cidrs:
+          - 0.0.0.0/0
+        role_arn: '{{ _result_create_iam_role.arn }}'
+        tags:
+          Name: '{{ _resource_prefix }}-eks-cluster'
+        wait_timeout: 900
+      register: _result_create_cluster
+
+    - name: Describe EKS cluster
+      amazon.cloud.eks_cluster:
+        name: '{{ eks_cluster_name }}'
+        state: describe
+      register: _result_get_cluster
+
+    - name: List EKS clusters
+      amazon.cloud.eks_cluster:
+        state: list
+      register: _result_list_clusters
 
 
 
@@ -721,7 +765,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>Dictionary containing resource information.</div>
+                            <div>When <em>state=list</em>, it is a list containing dictionaries of resource information.</div>
+                            <div>Otherwise, it is a dictionary of resource information.</div>
+                            <div>When <em>state=absent</em>, it is an empty dictionary.</div>
                     <br/>
                 </td>
             </tr>

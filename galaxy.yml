@@ -2,7 +2,7 @@
 
 namespace: amazon
 name: cloud
-version: 0.1.0
+version: 0.2.0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
@@ -10,7 +10,7 @@ description: null
 license_file: LICENSE
 tags: [amazon, cloud, aws]
 dependencies:
-  amazon.aws: '>=3.0.0'
+  amazon.aws: '>=4.1.0'
 repository: https://github.com/ansible-collections/amazon.cloud
 documentation: https://github.com/ansible-collections/amazon.cloud/tree/main/docs
 homepage: https://github.com/ansible-collections/amazon.cloud

@@ -1,0 +1,102 @@
+- name: Delete IAM role
+  iam_role:
+    name: "{{ _result_create_iam_role.role_name }}"
+    state: absent
+  ignore_errors: true
+
+- name: Delete IAM role
+  iam_role:
+    name: "{{ _result_create_iam_role_fp.role_name }}"
+    state: absent
+  ignore_errors: true
+
+- name: Delete a Fargate Profile b 
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+
+- name: Delete a Fargate Profile a
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+
+- name: Remove EKS cluster
+  amazon.cloud.eks_cluster:
+    name: '{{ eks_cluster_name }}'
+    state: absent
+    wait: true
+    wait_timeout: 900
+  ignore_errors: true
+
+- name: Create list of all additional EKS security groups
+  set_fact:
+    additional_eks_sg:
+      - name: '{{ eks_cluster_name }}-workers-sg'
+
+- name: Set all security group rule lists to empty to remove circular dependency
+  ec2_group:
+    name: '{{ item.name }}'
+    description: '{{ item.description }}'
+    state: present
+    rules: []
+    rules_egress: []
+    purge_rules: true
+    purge_rules_egress: true
+    vpc_id: '{{ _result_create_vpc.vpc.id }}'
+  with_items: '{{ eks_security_groups }}'
+  ignore_errors: true
+
+- name: Remove security groups
+  ec2_group:
+    name: '{{ item.name }}'
+    state: absent
+    vpc_id: '{{ _result_create_vpc.vpc.id }}'
+  with_items: '{{ eks_security_groups | reverse | list + additional_eks_sg }}'
+  ignore_errors: true
+
+- name: Remove route tables
+  ec2_vpc_route_table:
+    state: absent
+    vpc_id: '{{ _result_create_vpc.vpc.id }}'
+    route_table_id: '{{ item }}'
+    lookup: id
+  ignore_errors: true
+  with_items:
+    - '{{ _result_create_public_route_table.route_table.route_table_id }}'
+    - '{{ _result_create_nat_route_table.route_table.route_table_id }}'
+
+- name: Remove NAT Gateway
+  amazon.aws.ec2_vpc_nat_gateway:
+    state: absent
+    nat_gateway_id: '{{ _result_create_nat_gateway.nat_gateway_id}}'
+    release_eip: true
+    wait: true
+  ignore_errors: true
+
+- name: Remove subnets
+  ec2_vpc_subnet:
+    az: '{{ aws_region }}{{ item.zone }}'
+    vpc_id: '{{ _result_create_vpc.vpc.id }}'
+    cidr: '{{ item.cidr}}'
+    state: absent
+  with_items: '{{ eks_subnets }}'
+  ignore_errors: true
+
+- name: Remove Internet Gateway
+  amazon.aws.ec2_vpc_igw:
+    state: absent
+    vpc_id: '{{ _result_create_vpc.vpc.id}}'
+  ignore_errors: true
+    
+- name: Remove VPC
+  ec2_vpc_net:
+    cidr_block: 10.0.0.0/16
+    state: absent
+    name: "{{ _resource_prefix }}-vpc"
+  ignore_errors: true

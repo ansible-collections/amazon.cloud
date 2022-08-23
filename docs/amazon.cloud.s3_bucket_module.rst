@@ -17,7 +17,7 @@ Version added: 0.1.0
 
 Synopsis
 --------
-- Create and manage S3 buckets (list, create, update, describe, delete).
+- Create and manage S3 buckets.
 
 
 
@@ -64,7 +64,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -127,7 +126,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -160,7 +158,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -196,7 +193,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -335,7 +331,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -353,7 +348,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -377,8 +371,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS access key</code>. If not set then the value of the <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_ACCESS_KEY</code> or <code>EC2_ACCESS_KEY</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>aws_access_key</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>aws_access_key</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: ec2_access_key, access_key</div>
                 </td>
             </tr>
@@ -427,8 +420,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS secret key</code>. If not set then the value of the <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_SECRET_KEY</code>, or <code>EC2_SECRET_KEY</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>aws_secret_key</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>aws_secret_key</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: ec2_secret_key, secret_key</div>
                 </td>
             </tr>
@@ -456,7 +448,6 @@ Parameters
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
                          / <span style="color: purple">elements=dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -522,7 +513,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div><em>kms_master_key</em>ID can only be used when you set the value of <em>sse_algorithm</em> as aws:kms.</div>
+                        <div>KMSMasterKeyID can only be used when you set the value of <em>sse_algorithm</em> as aws:kms.</div>
                 </td>
             </tr>
             <tr>
@@ -535,7 +526,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -628,7 +618,6 @@ Parameters
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
                          / <span style="color: purple">elements=string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -654,7 +643,6 @@ Parameters
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
                          / <span style="color: purple">elements=string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -755,6 +743,26 @@ Parameters
             <tr>
                 <td colspan="6">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>force</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Cancel IN_PROGRESS and PENDING resource requestes.</div>
+                        <div>Because you can only perform a single operation on a given resource at a time, there might be cases where you need to cancel the current resource operation to make the resource available so that another operation may be performed on it.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>intelligent_tiering_configurations</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -776,7 +784,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -809,7 +816,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -848,7 +854,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -866,7 +871,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -904,7 +908,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -927,7 +930,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -964,7 +966,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1056,7 +1057,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">boolean</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1077,7 +1077,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1094,7 +1093,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1162,7 +1160,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1235,7 +1232,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1260,7 +1256,7 @@ Parameters
                 </td>
                 <td>
                         <div>The date value in ISO 8601 format.</div>
-                        <div>The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)</div>
+                        <div>The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ).</div>
                 </td>
             </tr>
             <tr>
@@ -1333,7 +1329,7 @@ Parameters
                 </td>
                 <td>
                         <div>Container for the expiration rule that describes when noncurrent objects are expired.</div>
-                        <div>If your bucket is versioning-enabled (or versioning is suspended), you can set this action to request that Amazon S3 expire noncurrent object versions at a specific period in the objects lifetime</div>
+                        <div>If your bucket is versioning-enabled (or versioning is suspended), you can set this action to request that Amazon S3 expire noncurrent object versions at a specific period in the objects lifetime.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1351,7 +1347,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Specified the number of newer noncurrent and current versions that must exists before performing the associated action</div>
+                        <div>Specified the number of newer noncurrent and current versions that must exists before performing the associated action.</div>
                 </td>
             </tr>
             <tr>
@@ -1364,13 +1360,12 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Specified the number of days an object is noncurrent before Amazon S3 can perform the associated action</div>
+                        <div>Specified the number of days an object is noncurrent before Amazon S3 can perform the associated action.</div>
                 </td>
             </tr>
 
@@ -1424,7 +1419,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Specified the number of newer noncurrent and current versions that must exists before performing the associated action</div>
+                        <div>Specified the number of newer noncurrent and current versions that must exists before performing the associated action.</div>
                 </td>
             </tr>
             <tr>
@@ -1437,7 +1432,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1465,7 +1459,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1509,7 +1502,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Specified the number of newer noncurrent and current versions that must exists before performing the associated action</div>
+                        <div>Specified the number of newer noncurrent and current versions that must exists before performing the associated action.</div>
                 </td>
             </tr>
             <tr>
@@ -1522,7 +1515,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1550,7 +1542,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1620,7 +1611,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1661,7 +1651,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1680,7 +1669,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1704,7 +1692,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>You must specify at least one of <em>transition_date</em> and <em>transition_in_days</em></div>
+                        <div>You must specify at least one of <em>transition_date</em> and <em>transition_in_days</em>.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1717,7 +1705,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1751,7 +1738,7 @@ Parameters
                 </td>
                 <td>
                         <div>The date value in ISO 8601 format.</div>
-                        <div>The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)</div>
+                        <div>The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ).</div>
                 </td>
             </tr>
             <tr>
@@ -1788,7 +1775,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>You must specify at least one of <em>transition_date</em> and <em>transition_in_days</em></div>
+                        <div>You must specify at least one of <em>transition_date</em> and <em>transition_in_days</em>.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1801,7 +1788,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -1835,7 +1821,7 @@ Parameters
                 </td>
                 <td>
                         <div>The date value in ISO 8601 format.</div>
-                        <div>The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ)</div>
+                        <div>The timezone is always UTC. (YYYY-MM-DDThh:mm:ssZ).</div>
                 </td>
             </tr>
             <tr>
@@ -1949,7 +1935,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2000,7 +1985,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2018,7 +2002,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2109,7 +2092,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2145,7 +2127,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2186,7 +2167,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2207,7 +2187,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2228,7 +2207,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2264,7 +2242,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2300,7 +2277,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2341,7 +2317,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2362,7 +2337,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2383,7 +2357,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2419,7 +2392,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2455,7 +2427,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2496,7 +2467,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2517,7 +2487,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2538,7 +2507,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2718,7 +2686,6 @@ Parameters
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
                          / <span style="color: purple">elements=dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -2763,8 +2730,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Using <em>profile</em> will override <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> and support for passing them at the same time as <em>profile</em> has been deprecated.</div>
-                        <div><em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> will be made mutually exclusive with <em>profile</em> after 2022-06-01.</div>
+                        <div>The <em>profile</em> option is mutually exclusive with the <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> options.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: aws_profile</div>
                 </td>
             </tr>
@@ -2801,7 +2767,7 @@ Parameters
                 </td>
                 <td>
                         <div>Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.</div>
-                        <div>Setting this element to <code>True</code> causes the following behavior:</div>
+                        <div>Setting this element to <code>True</code> causes the following behavior:.</div>
                         <div>- PUT Bucket acl and PUT Object acl calls fail if the specified ACL is public.</div>
                         <div>- PUT Object calls fail if the request includes a public ACL.</div>
                         <div>Enabling this setting doesnt affect existing policies or ACLs.</div>
@@ -2934,7 +2900,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3009,7 +2974,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3123,7 +3087,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3182,7 +3145,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3203,7 +3165,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3246,7 +3207,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3270,7 +3230,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3291,7 +3250,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3417,7 +3375,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3438,7 +3395,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3496,7 +3452,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3516,7 +3471,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3624,7 +3578,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3667,7 +3620,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3691,7 +3643,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3719,8 +3670,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS STS security token</code>. If not set then the value of the <code>AWS_SECURITY_TOKEN</code> or <code>EC2_SECURITY_TOKEN</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>security_token</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>security_token</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div>Aliases <em>aws_session_token</em> and <em>session_token</em> have been added in version 3.2.0.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: aws_session_token, session_token, aws_security_token, access_token</div>
                 </td>
@@ -3930,7 +3880,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -3988,7 +3937,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -4093,7 +4041,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The specific object key to use in the redirect request.d</div>
+                        <div>The specific object key to use in the redirect request.d.</div>
                 </td>
             </tr>
 
@@ -4111,7 +4059,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>A container for describing a condition that must be met for the specified redirect to apply.You must specify at least one of <em>http_error_code_returned_equals</em> and <em>key_prefix_equals</em></div>
+                        <div>A container for describing a condition that must be met for the specified redirect to apply.You must specify at least one of <em>http_error_code_returned_equals</em> and <em>key_prefix_equals</em>.</div>
                 </td>
             </tr>
                                 <tr>
@@ -4167,6 +4115,41 @@ Notes
 
 
 
+Examples
+--------
+
+.. code-block:: yaml
+
+    - name: Create S3 bucket
+      amazon.cloud.s3_bucket:
+        bucket_name: '{{ bucket_name }}'
+        state: present
+      register: output
+
+    - name: Describe S3 bucket
+      amazon.cloud.s3_bucket:
+        state: describe
+        bucket_name: '{{ output.result.identifier }}'
+      register: _result
+
+    - name: List S3 buckets
+      amazon.cloud.s3_bucket:
+        state: list
+      register: _result
+
+    - name: Update S3 bucket public access block configuration and tags (diff=true)
+      amazon.cloud.s3_bucket:
+        bucket_name: '{{ output.result.identifier }}'
+        state: present
+        public_access_block_configuration:
+          block_public_acls: false
+          block_public_policy: false
+          ignore_public_acls: false
+          restrict_public_buckets: false
+        tags:
+          mykey: myval
+      diff: true
+      register: _result
 
 
 
@@ -4193,7 +4176,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>Dictionary containing resource information.</div>
+                            <div>When <em>state=list</em>, it is a list containing dictionaries of resource information.</div>
+                            <div>Otherwise, it is a dictionary of resource information.</div>
+                            <div>When <em>state=absent</em>, it is an empty dictionary.</div>
                     <br/>
                 </td>
             </tr>

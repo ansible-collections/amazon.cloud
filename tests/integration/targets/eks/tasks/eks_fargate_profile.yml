@@ -1,0 +1,514 @@
+# Creating dependencies
+- name: Delete Fargate Profile b (if present)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+  register: _result_delete_fp
+
+- name: Delete Fargate Profile b (if present) using identifier option
+  amazon.cloud.eks_fargate_profile:
+    identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_b }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+  register: _result_delete_fp
+
+- name: Delete Fargate Profile a (if present)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+  register: _result_delete_fp
+
+- name: Create IAM instance role
+  iam_role:
+    name: "{{ _resource_prefix }}-fp-role"
+    assume_role_policy_document: "{{ lookup('file', 'eks_fargate_profile-policy.json') }}"
+    state: present
+    create_instance_profile: no
+    managed_policies:
+      - AmazonEKSFargatePodExecutionRolePolicy
+  register: _result_create_iam_role_fp
+
+- name: Pause a few seconds to ensure IAM role is available to next task
+  pause:
+    seconds: 10
+
+- name: Attempt to create Fargate Profile a in non existent EKS
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: '{{ eks_fargate_profile_name_a }}'
+    state: present
+    cluster_name: fake_cluster
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: '{{ selectors }}'
+  ignore_errors: true
+  register: _result_create_non_existent_cluster
+
+- name: Check that Fargate Profile did nothing
+  assert:
+    that:
+      - _result_create_non_existent_cluster is failed
+      - "'No cluster found for name: fake_cluster.' in _result_create_non_existent_cluster.msg"
+
+- name: Delete an as yet non-existent Fargate Profile
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: fake_profile
+    cluster_name: '{{ eks_cluster_name }}'
+    state: absent
+    pod_execution_role_arn: '{{ _result_create_iam_role_fp.arn }}'
+    subnets: >-
+      {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: '{{ selectors }}'
+  register: _result_delete_non_existent_fp
+
+- name: Check that delete an as yet non-existent Fargate Profile did nothing
+  assert:
+    that:
+      - _result_delete_non_existent_fp is not changed
+
+- name: Try create a Fargate Profile a with public subnets (expected to fail)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ _result_create_cluster.result.identifier }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
+      'public') | map(attribute='subnet.id') }}
+    selectors: '{{ selectors }}'
+    wait: true
+  ignore_errors: true
+  register: _result_create_fp
+
+- name: Check that create Fargate Profile a with public subnets failed
+  assert:
+    that:
+      - _result_create_fp is failed
+      - "'provided in Fargate Profile is not a private subnet' in _result_create_fp.msg"
+
+- name: Create Fargate Profile a with wait (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags: "{{ tags }}"
+  check_mode: true
+  register: _result_create_fp
+
+- name: Assert Fargate Profile a is created (check mode)
+  assert:
+    that:
+      - _result_create_fp.changed
+
+- name: Create Fargate Profile with fargate_profile_name option only (expected to fail)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags: "{{ tags }}"
+  register: _result_create_fp
+  ignore_errors: true
+
+- name: Create Fargate Profile with identifier option only (expected to fail)
+  amazon.cloud.eks_fargate_profile:
+    identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_b }}"
+    state: present
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags: "{{ tags }}"
+  register: _result_create_fp
+  ignore_errors: true
+
+- name: Create Fargate Profile a with wait
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags: "{{ tags }}"
+  register: _result_create_fp
+  tags:
+    - docs
+
+- name: Assert Fargate Profile a is created
+  assert:
+    that:
+      - _result_create_fp.changed
+
+- name: Try create same Fargate Profile with wait - idempotency (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags: "{{ tags }}"
+    purge_tags: false
+  check_mode: true
+  register: _result_create_fp
+
+- name: Assert result is not changed - idempotency (check mode)
+  assert:
+    that:
+      - not _result_create_fp.changed
+
+- name: Try create same Fargate Profile with wait - idempotency
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags: "{{ tags }}"
+  register: _result_create_fp
+
+- name: Assert result is not changed - idempotency (check mode)
+  assert:
+    that:
+      - not _result_create_fp.changed
+
+- name: List Fargate Profiles
+  amazon.cloud.eks_fargate_profile:
+    state: list
+    cluster_name: "{{ eks_cluster_name }}"
+  register: _result_list_fp
+  tags:
+    - docs
+
+- name: Update tags in Fargate Profile a with wait (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags:
+      env: test
+      test: foo
+  check_mode: True
+  register: _result_update_tags_fp
+  tags:
+    - docs
+
+- name: Assert result is changed (check mode)
+  assert:
+    that:
+      - _result_update_tags_fp.changed
+
+- name: Update tags in Fargate Profile a with wait and identifier option (check mode)
+  amazon.cloud.eks_fargate_profile:
+    identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_a }}"
+    state: present
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags:
+      env: test
+      test: foo
+  check_mode: True
+  register: _result_update_tags_fp
+
+- name: Assert result is changed (check mode)
+  assert:
+    that:
+      - _result_update_tags_fp.changed
+
+- name: Update tags in Fargate Profile a with wait
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags:
+      env: test
+      test: foo
+  register: _result_update_tags_fp
+  ignore_errors: true
+
+- name: Assert result is changed
+  assert:
+    that:
+      - _result_update_tags_fp.changed
+
+- name: Try update tags again in Fargate Profile a with wait - idempotency (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags:
+      env: test
+      test: foo
+  register: _result_update_tags_fp
+  ignore_errors: true
+  check_mode: True
+
+- name: Assert result is not changed - idempotency (check mode)
+  assert:
+    that:
+      - not _result_update_tags_fp.changed
+
+- name: Try update tags again in Fargate Profile a with wait - idempotency
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    wait: true
+    tags:
+      env: test
+      test: foo
+  register: _result_update_tags_fp
+  ignore_errors: true
+
+- name: Assert result is not changed - idempotency
+  assert:
+    that:
+      - not _result_update_tags_fp.changed
+
+- name: Try update tags again in Fargate Profile a without wait
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    tags:
+      env: test
+      newTag: New Tag
+  register: _result_update_tags_fp
+  ignore_errors: true
+
+- name: Assert result is changed
+  assert:
+    that:
+      - _result_update_tags_fp.changed
+
+- name: Try update tags again in Fargate Profile a without wait
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+    tags:
+      env: test
+      newTag_1: New Tag 1
+  register: _result_update_tags_fp
+  ignore_errors: true
+
+- name: Assert result is not changed
+  assert:
+    that:
+      - _result_update_tags_fp.changed
+
+- name: Create Fargate Profile b without wait (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+  ignore_errors: true
+  check_mode: true
+  register: _result_create_fp
+
+- name: Assert Fargate Profile b is created (check mode)
+  assert:
+    that:
+      - _result_create_fp.changed
+
+- name: Create Fargate Profile b without wait
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    state: present
+    cluster_name: "{{ eks_cluster_name }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    subnets: >-
+      {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
+      'private') | map(attribute='subnet.id') }}
+    selectors: "{{ selectors }}"
+  register: _result_create_fp
+  ignore_errors: true
+
+- name: Assert Fargate Profile b is created (check mode)
+  assert:
+    that:
+      - _result_create_fp.changed
+
+- name: Delete Fargate Profile a (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+  register: _result_delete_fp
+  check_mode: true
+
+- name: Assert Fargate Profile a is deleted (check mode)
+  assert:
+    that:
+      - _result_delete_fp.changed
+
+- name: Delete Fargate Profile a
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+    wait_timeout: 900
+  register: _result_delete_fp
+  tags:
+    - docs
+
+- name: Assert Fargate Profile a is deleted
+  assert:
+    that:
+      - _result_delete_fp.changed
+
+- name: Delete Fargate Profile a - idempotency (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+  register: _result_delete_fp
+  check_mode: true
+
+- name: Assert result is not changed - idempotency (check mode)
+  assert:
+    that:
+      - not _result_delete_fp.changed
+
+- name: Delete Fargate Profile a (idempotency)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+  register: _result_delete_fp
+
+- name: Assert result is not changed - idempotency
+  assert:
+    that:
+      - not _result_delete_fp.changed
+
+- name: Delete Fargate Profile b (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  register: _result_delete_fp
+  check_mode: true
+
+- name: Assert Fargate Profile b is deleted (check_mode)
+  assert:
+    that:
+      - _result_delete_fp.changed
+
+- name: Delete Fargate Profile b using identifier
+  amazon.cloud.eks_fargate_profile:
+    identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_b }}"
+    state: absent
+    wait: true
+    wait_timeout: 900
+  ignore_errors: true
+  register: _result_delete_fp
+
+- name: Assert Fargate Profile b is deleted
+  assert:
+    that:
+      - _result_delete_fp.changed
+
+- name: Delete Fargate Profile b - idempotency (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+  register: _result_delete_fp
+
+- name: Assert result is not changed - idempotency (check mode)
+  assert:
+    that:
+      - not _result_delete_fp.changed
+
+- name: Delete Fargate Profile b - idempotency
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
+    cluster_name: "{{ eks_cluster_name }}"
+    state: absent
+    wait: true
+  ignore_errors: true
+  register: _result_delete_fp
+
+- name: Assert result is not changed - idempotency
+  assert:
+    that:
+      - not _result_delete_fp.changed

@@ -17,7 +17,7 @@ Version added: 0.1.0
 
 Synopsis
 --------
-- Creates and manage clusters (list, create, update, describe, delete).
+- Creates and manage clusters.
 
 
 
@@ -58,7 +58,7 @@ Parameters
                 </td>
                 <td>
                         <div>Major version upgrades can be applied during the maintenance window to the Amazon Redshift engine that is running on the cluster.</div>
-                        <div>Default value is True</div>
+                        <div>Default value is True.</div>
                 </td>
             </tr>
             <tr>
@@ -94,7 +94,7 @@ Parameters
                 <td>
                         <div>The number of days that automated snapshots are retained.</div>
                         <div>If the value is 0, automated snapshots are disabled.</div>
-                        <div>Default value is 1</div>
+                        <div>Default value is 1.</div>
                 </td>
             </tr>
             <tr>
@@ -109,8 +109,8 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The <code>EC2</code> Availability Zone (AZ) in which you want Amazon Redshift to provision the cluster.</div>
-                        <div>Default: A random, system-chosen Availability Zone in the region that is specified by the endpoint</div>
+                        <div>The EC2 Availability Zone (AZ) in which you want Amazon Redshift to provision the cluster.</div>
+                        <div>Default: A random, system-chosen Availability Zone in the region that is specified by the endpoint.</div>
                 </td>
             </tr>
             <tr>
@@ -144,7 +144,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The availability zone relocation status of the cluster</div>
+                        <div>The availability zone relocation status of the cluster.</div>
                 </td>
             </tr>
             <tr>
@@ -160,8 +160,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS access key</code>. If not set then the value of the <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_ACCESS_KEY</code> or <code>EC2_ACCESS_KEY</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>aws_access_key</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>aws_access_key</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: ec2_access_key, access_key</div>
                 </td>
             </tr>
@@ -210,8 +209,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS secret key</code>. If not set then the value of the <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_SECRET_KEY</code>, or <code>EC2_SECRET_KEY</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>aws_secret_key</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>aws_secret_key</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: ec2_secret_key, secret_key</div>
                 </td>
             </tr>
@@ -250,7 +248,7 @@ Parameters
                         <div>A unique identifier for the cluster.</div>
                         <div>You use this identifier to refer to the cluster for any subsequent cluster operations such as deleting or modifying.</div>
                         <div>All alphabetical characters must be lower case, no hypens at the end, no two consecutive hyphens.</div>
-                        <div>Cluster name should be unique for all clusters within an AWS account</div>
+                        <div>Cluster name should be unique for all clusters within an AWS account.</div>
                 </td>
             </tr>
             <tr>
@@ -306,14 +304,13 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
                         <div>The type of the cluster.</div>
-                        <div>When cluster type is specified as single-node, the <em>number_of_nodes</em> parameter is not required and if multi-node, the <em>number_of_nodes</em> parameter is required</div>
+                        <div>When cluster type is specified as single-node, the NumberOfNodes parameter is not required and if multi-node, the NumberOfNodes parameter is required.</div>
                 </td>
             </tr>
             <tr>
@@ -338,7 +335,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -448,7 +444,7 @@ Parameters
                 <td>
                         <div>The destination AWS Region that you want to copy snapshots to.</div>
                         <div>Constraints: Must be the name of a valid AWS Region.</div>
-                        <div>For more information, see Regions and Endpoints in the Amazon Web Services ) General Reference</div>
+                        <div>For more information, see Regions and Endpoints in the Amazon Web Services ) General Reference.</div>
                 </td>
             </tr>
             <tr>
@@ -535,7 +531,27 @@ Parameters
                         <div>An option that specifies whether to create the cluster with enhanced VPC routing enabled.</div>
                         <div>To create a cluster that uses enhanced VPC routing, the cluster must be in a VPC. For more information, see Enhanced VPC Routing in the Amazon Redshift Cluster Management Guide.</div>
                         <div>If this option is true , enhanced VPC routing is enabled.</div>
-                        <div>Default: false</div>
+                        <div>Default: false.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>force</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Cancel IN_PROGRESS and PENDING resource requestes.</div>
+                        <div>Because you can only perform a single operation on a given resource at a time, there might be cases where you need to cancel the current resource operation to make the resource available so that another operation may be performed on it.</div>
                 </td>
             </tr>
             <tr>
@@ -550,7 +566,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Specifies the name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM</div>
+                        <div>Specifies the name of the HSM client certificate the Amazon Redshift cluster uses to retrieve the data encryption keys stored in an HSM.</div>
                 </td>
             </tr>
             <tr>
@@ -583,7 +599,7 @@ Parameters
                 <td>
                         <div>A list of AWS Identity and Access Management (IAM) roles that can be used by the cluster to access other AWS services.</div>
                         <div>You must supply the IAM roles in their Amazon Resource Name (ARN) format.</div>
-                        <div>You can supply up to 10 IAM roles in a single request</div>
+                        <div>You can supply up to 10 IAM roles in a single request.</div>
                 </td>
             </tr>
             <tr>
@@ -624,7 +640,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -664,7 +679,7 @@ Parameters
                 <td>
                         <div>The name for the maintenance track that you want to assign for the cluster.</div>
                         <div>This name change is asynchronous.</div>
-                        <div>The new track name stays in the <em>pending_modified_values</em> for the cluster until the next maintenance window.</div>
+                        <div>The new track name stays in the PendingModifiedValues for the cluster until the next maintenance window.</div>
                         <div>When the maintenance track changes, the cluster is switched to the latest cluster release available for the maintenance track.</div>
                         <div>At this point, the maintenance track name is applied.</div>
                 </td>
@@ -693,7 +708,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -710,7 +724,6 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -727,13 +740,12 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>The node type to be provisioned for the cluster.Valid Values: ds2.xlarge | ds2.8xlarge | dc1.large | dc1.8xlarge | dc2.large | dc2.8xlarge | ra3.4xlarge | ra3.16xlarge</div>
+                        <div>The node type to be provisioned for the cluster.Valid Values: ds2.xlarge | ds2.8xlarge | dc1.large | dc1.8xlarge | dc2.large | dc2.8xlarge | ra3.4xlarge | ra3.16xlarge.</div>
                 </td>
             </tr>
             <tr>
@@ -749,7 +761,7 @@ Parameters
                 </td>
                 <td>
                         <div>The number of compute nodes in the cluster.</div>
-                        <div>This parameter is required when the <em>cluster_type</em> parameter is specified as multi-node.</div>
+                        <div>This parameter is required when the ClusterType parameter is specified as multi-node.</div>
                 </td>
             </tr>
             <tr>
@@ -794,8 +806,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Using <em>profile</em> will override <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> and support for passing them at the same time as <em>profile</em> has been deprecated.</div>
-                        <div><em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> will be made mutually exclusive with <em>profile</em> after 2022-06-01.</div>
+                        <div>The <em>profile</em> option is mutually exclusive with the <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> options.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: aws_profile</div>
                 </td>
             </tr>
@@ -866,7 +877,7 @@ Parameters
                 </td>
                 <td>
                         <div>The Redshift operation to be performed.</div>
-                        <div>Resource Action supports pause-cluster, resume-cluster <em>apis</em></div>
+                        <div>Resource Action supports pause-cluster, resume-cluster APIs.</div>
                 </td>
             </tr>
             <tr>
@@ -882,7 +893,7 @@ Parameters
                 </td>
                 <td>
                         <div>The identifier of the database revision.</div>
-                        <div>You can retrieve this value from the response to the <em>describe_cluster_db_revisions</em> request.</div>
+                        <div>You can retrieve this value from the response to the DescribeClusterDbRevisions request.</div>
                 </td>
             </tr>
             <tr>
@@ -917,8 +928,7 @@ Parameters
                 </td>
                 <td>
                         <div><code>AWS STS security token</code>. If not set then the value of the <code>AWS_SECURITY_TOKEN</code> or <code>EC2_SECURITY_TOKEN</code> environment variable is used.</div>
-                        <div>If <em>profile</em> is set this parameter is ignored.</div>
-                        <div>Passing the <em>security_token</em> and <em>profile</em> options at the same time has been deprecated and the options will be made mutually exclusive after 2022-06-01.</div>
+                        <div>The <em>security_token</em> and <em>profile</em> options are mutually exclusive.</div>
                         <div>Aliases <em>aws_session_token</em> and <em>session_token</em> have been added in version 3.2.0.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: aws_session_token, session_token, aws_security_token, access_token</div>
                 </td>
@@ -1159,7 +1169,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>Dictionary containing resource information.</div>
+                            <div>When <em>state=list</em>, it is a list containing dictionaries of resource information.</div>
+                            <div>Otherwise, it is a dictionary of resource information.</div>
+                            <div>When <em>state=absent</em>, it is an empty dictionary.</div>
                     <br/>
                 </td>
             </tr>

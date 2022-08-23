@@ -1,0 +1,123 @@
+# Create a EKS Cluster to test Fargate Profile
+- name: Ensure IAM instance role exists
+  iam_role:
+    name: "{{ _resource_prefix }}-cluster-role"
+    assume_role_policy_document: "{{ lookup('file','eks_cluster-policy.json') }}"
+    state: present
+    create_instance_profile: false
+    managed_policies:
+      - AmazonEKSServicePolicy
+      - AmazonEKSClusterPolicy
+  register: _result_create_iam_role
+
+- name: Create a VPC
+  ec2_vpc_net:
+    cidr_block: 10.0.0.0/16
+    state: present
+    name: "{{ _resource_prefix }}-vpc"
+    resource_tags:
+      Name: "{{ _resource_prefix }}-vpc"
+  register: _result_create_vpc
+
+- name: Create subnets
+  ec2_vpc_subnet:
+    az: "{{ aws_region }}{{ item.zone }}"
+    tags: '{ "Name": "{{ _resource_prefix }}-subnet-{{ item.type }}-{{ item.zone }}", "kubernetes.io/role/{{ item.tag }}": "1" }'
+    vpc_id: "{{ _result_create_vpc.vpc.id }}"
+    cidr: '{{ item.cidr }}'
+    state: present
+  register: _result_create_subnets
+  with_items:
+    - '{{ eks_subnets }}'
+
+- name: Create Internet Gateway
+  amazon.aws.ec2_vpc_igw:
+    vpc_id: "{{ _result_create_vpc.vpc.id }}"
+    state: present
+    tags:
+      Name: "{{ _resource_prefix }}-IGW"
+  register: _result_create_igw
+
+- name: Set up public subnet route table
+  community.aws.ec2_vpc_route_table:
+    vpc_id: "{{ _result_create_vpc.vpc.id }}"
+    tags:
+      Name: "Public"
+    subnets: "{{ _result_create_subnets.results | selectattr('subnet.tags.Name', 'contains', 'public') | map(attribute='subnet.id') }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ _result_create_igw.gateway_id }}"
+  register: _result_create_public_route_table
+
+- name: Create NAT Gateway
+  amazon.aws.ec2_vpc_nat_gateway:
+    if_exist_do_not_create: yes
+    state: present
+    subnet_id: "{{ (_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains', 'public') | map(attribute='subnet.id'))[0] }}"
+    wait: true
+    tags:
+      Name: "{{ _resource_prefix }}-NAT"
+  register: _result_create_nat_gateway
+
+- name: Set up NAT-protected route table
+  community.aws.ec2_vpc_route_table:
+    vpc_id: '{{ _result_create_vpc.vpc.id }}'
+    tags:
+      Name: Internal
+    subnets: "{{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains', 'private') | map(attribute='subnet.id') }}"
+    routes:
+      - dest: 0.0.0.0/0
+        nat_gateway_id: "{{ _result_create_nat_gateway.nat_gateway_id }}"
+  register: _result_create_nat_route_table
+
+- name: Create security groups to use for EKS cluster
+  ec2_group:
+    name: '{{ item.name }}'
+    description: '{{ item.description }}'
+    state: present
+    rules: '{{ item.rules }}'
+    rules_egress: '{{ item.rules_egress | default(omit) }}'
+    vpc_id: '{{ _result_create_vpc.vpc.id }}'
+  with_items: '{{ eks_security_groups }}'
+  register: _result_create_security_groups
+
+- debug:
+    msg: "{{ _result_create_security_groups }}"
+
+- name: Create EKS cluster
+  amazon.cloud.eks_cluster:
+    name: "{{ eks_cluster_name }}"
+    resources_vpc_config:
+      security_group_ids: "{{ _result_create_security_groups.results | map(attribute='group_id') }}"
+      subnet_ids: "{{ _result_create_subnets.results | map(attribute='subnet.id') }}"
+      endpoint_public_access: true
+      endpoint_private_access: false
+      public_access_cidrs:
+      - 0.0.0.0/0
+    role_arn: "{{ _result_create_iam_role.arn }}"
+    tags:
+      Name: "{{ _resource_prefix }}-eks-cluster"
+    wait_timeout: 900
+  register: _result_create_cluster
+  tags:
+    - docs
+
+- name: Check that EKS cluster was created
+  assert:
+     that:
+      - _result_create_cluster.result.identifier == "{{ eks_cluster_name }}"
+
+- name: Describe EKS cluster
+  amazon.cloud.eks_cluster:
+    name: "{{ eks_cluster_name }}"
+    state: describe
+  register: _result_get_cluster
+  tags:
+    - docs
+
+- name: List EKS clusters
+  amazon.cloud.eks_cluster:
+    state: list
+  register: _result_list_clusters
+  tags:
+    - docs

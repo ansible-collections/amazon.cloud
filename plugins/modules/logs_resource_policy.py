@@ -14,18 +14,26 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: logs_resource_policy
 short_description: Create and manage resource policies
-description: Creates and manage resource policies that allows other AWS services to
-    put log events to the account (list, create, update, describe, delete).
+description:
+- Creates and manage resource policies that allows other AWS services to put log events
+    to the account.
 options:
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     policy_document:
         description:
-        - The policy document
-        required: true
+        - The policy document.
         type: str
     policy_name:
         description:
-        - A name for resource policy
-        required: true
+        - A name for resource policy.
         type: str
     state:
         choices:
@@ -66,7 +74,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -102,8 +113,8 @@ def main():
         ),
     )
 
-    argument_spec["policy_name"] = {"type": "str", "required": True}
-    argument_spec["policy_document"] = {"type": "str", "required": True}
+    argument_spec["policy_name"] = {"type": "str"}
+    argument_spec["policy_document"] = {"type": "str"}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -111,15 +122,20 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
+    argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
         ["state", "present", ["policy_document", "policy_name"], True],
         ["state", "absent", ["policy_name"], True],
         ["state", "get", ["policy_name"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -134,7 +150,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -142,22 +158,32 @@ def main():
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = ["policy_name"]
 
-    state = module.params.get("state")
-    identifier = module.params.get("policy_name")
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "read", "update", "delete", "list"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["policy_name"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

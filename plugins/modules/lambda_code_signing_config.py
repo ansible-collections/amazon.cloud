@@ -14,32 +14,30 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: lambda_code_signing_config
 short_description: Code signing for AWS Lambda
-description: Creates and manage code signing for AWS Lambda (list, create, update,
-    describe, delete).
+description:
+- Creates and manage code signing for AWS Lambda.
 options:
     allowed_publishers:
         description:
-        - When the I(code_signing_config) is later on attached to a function, the
-            function code will be expected to be signed by profiles from this listWhen
-            the I(code_signing_config) is later on attached to a function, the function
-            code will be expected to be signed by profiles from this list
-        required: true
+        - When the CodeSigningConfig is later on attached to a function, the function
+            code will be expected to be signed by profiles from this listWhen the
+            CodeSigningConfig is later on attached to a function, the function code
+            will be expected to be signed by profiles from this list.
         suboptions:
             signing_profile_version_arns:
                 description:
-                - List of Signing profile version Arns
+                - List of Signing profile version Arns.
                 elements: str
-                required: true
                 type: list
         type: dict
     code_signing_config_arn:
         description:
-        - A unique Arn for I(code_signing_config) resource
+        - A unique Arn for CodeSigningConfig resource.
         type: str
     code_signing_policies:
         description:
         - Policies to control how to act if a signature is invalidPolicies to control
-            how to act if a signature is invalid
+            how to act if a signature is invalid.
         suboptions:
             untrusted_artifact_on_deployment:
                 choices:
@@ -49,13 +47,22 @@ options:
                 description:
                 - Indicates how Lambda operations involve updating the code artifact
                     will operate.
-                - Default to Warn if not provided
+                - Default to Warn if not provided.
                 type: str
         type: dict
     description:
         description:
-        - A description of the I(code_signing_config)
+        - A description of the CodeSigningConfig.
         type: str
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     state:
         choices:
         - present
@@ -95,7 +102,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -135,13 +145,8 @@ def main():
     argument_spec["allowed_publishers"] = {
         "type": "dict",
         "options": {
-            "signing_profile_version_arns": {
-                "type": "list",
-                "required": True,
-                "elements": "str",
-            }
+            "signing_profile_version_arns": {"type": "list", "elements": "str"}
         },
-        "required": True,
     }
     argument_spec["code_signing_policies"] = {
         "type": "dict",
@@ -161,15 +166,20 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
+    argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["allowed_publishers"], True],
-        ["state", "absent", [], True],
-        ["state", "get", [], True],
+        ["state", "present", ["allowed_publishers", "code_signing_config_arn"], True],
+        ["state", "absent", ["code_signing_config_arn"], True],
+        ["state", "get", ["code_signing_config_arn"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -186,30 +196,40 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = None
+    create_only_params = {}
+
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = module.params.get("code_signing_config_arn")
+    identifier = ["code_signing_config_arn"]
 
-    results = {"changed": False, "result": []}
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

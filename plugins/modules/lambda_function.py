@@ -14,8 +14,8 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: lambda_function
 short_description: Create and manage Lambda functions
-description: Creates and manage Lambda functions (list, create, update, describe,
-    delete).
+description:
+- Creates and manage Lambda functions.
 options:
     architectures:
         choices:
@@ -28,7 +28,6 @@ options:
     code:
         description:
         - The code for the function.
-        required: true
         suboptions:
             image_uri:
                 description:
@@ -58,7 +57,7 @@ options:
         type: dict
     code_signing_config_arn:
         description:
-        - A unique Arn for I(code_signing_config) resource
+        - A unique Arn for CodeSigningConfig resource.
         type: str
     dead_letter_config:
         description:
@@ -93,7 +92,6 @@ options:
             size:
                 description:
                 - The amount of ephemeral storage that your function has access to.
-                required: true
                 type: int
         type: dict
     file_system_configs:
@@ -101,18 +99,26 @@ options:
         - Connection settings for an Amazon EFS file system.
         - To connect a function to a file system, a mount target must be available
             in every Availability Zone that your function connects to.
-        - If your template contains an AWS::EFS::I(mount_target) resource, you must
-            also specify a I(depends_on) attribute to ensure that the mount target
-            is created or updated before the function.
+        - If your template contains an AWS::EFS::MountTarget resource, you must also
+            specify a DependsOn attribute to ensure that the mount target is created
+            or updated before the function.
         elements: dict
         suboptions:
             local_mount_path:
                 description:
                 - The path where the function can access the file system, starting
                     with /mnt/.
-                required: true
                 type: str
         type: list
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     function_name:
         description:
         - The name of the Lambda function, up to 64 characters in length.
@@ -123,11 +129,11 @@ options:
         - The name of the method within your code that Lambda calls to execute your
             function.
         - The format includes the file name.
-        - It can also include namespaces and other qualifiers, depending on the runtime
+        - It can also include namespaces and other qualifiers, depending on the runtime.
         type: str
     image_config:
         description:
-        - I(image_config)
+        - I(image_config).
         suboptions:
             command:
                 description:
@@ -167,13 +173,12 @@ options:
         - Image
         - Zip
         description:
-        - I(package_type).
+        - PackageType.
         type: str
     purge_tags:
         default: true
         description:
         - Remove tags not listed in I(tags).
-        required: false
         type: bool
     reserved_concurrent_executions:
         description:
@@ -182,7 +187,6 @@ options:
     role:
         description:
         - The Amazon Resource Name (ARN) of the functions execution role.
-        required: true
         type: str
     runtime:
         description:
@@ -210,7 +214,6 @@ options:
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
-        required: false
         type: dict
     timeout:
         description:
@@ -277,7 +280,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -313,54 +319,16 @@ def main():
         ),
     )
 
-    argument_spec["code"] = {
+    argument_spec["image_config"] = {
         "type": "dict",
         "options": {
-            "s3_bucket": {"type": "str"},
-            "s3_key": {"type": "str"},
-            "s3_object_version": {"type": "str"},
-            "zip_file": {"type": "str"},
-            "image_uri": {"type": "str"},
+            "working_directory": {"type": "str"},
+            "command": {"type": "list", "elements": "str"},
+            "entry_point": {"type": "list", "elements": "str"},
         },
-        "required": True,
     }
-    argument_spec["dead_letter_config"] = {
-        "type": "dict",
-        "options": {"target_arn": {"type": "str"}},
-    }
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["environment"] = {
-        "type": "dict",
-        "options": {"variables": {"type": "dict"}},
-    }
-    argument_spec["ephemeral_storage"] = {
-        "type": "dict",
-        "options": {"size": {"type": "int", "required": True}},
-    }
-    argument_spec["file_system_configs"] = {
-        "type": "list",
-        "elements": "dict",
-        "options": {"local_mount_path": {"type": "str", "required": True}},
-    }
-    argument_spec["function_name"] = {"type": "str"}
-    argument_spec["handler"] = {"type": "str"}
-    argument_spec["architectures"] = {
-        "type": "list",
-        "elements": "str",
-        "choices": ["arm64", "x86_64"],
-    }
-    argument_spec["kms_key_arn"] = {"type": "str"}
-    argument_spec["layers"] = {"type": "list", "elements": "str"}
     argument_spec["memory_size"] = {"type": "int"}
-    argument_spec["reserved_concurrent_executions"] = {"type": "int"}
-    argument_spec["role"] = {"type": "str", "required": True}
-    argument_spec["runtime"] = {"type": "str"}
-    argument_spec["tags"] = {
-        "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
-    }
-    argument_spec["timeout"] = {"type": "int"}
+    argument_spec["description"] = {"type": "str"}
     argument_spec["tracing_config"] = {
         "type": "dict",
         "options": {"mode": {"type": "str", "choices": ["Active", "PassThrough"]}},
@@ -372,16 +340,49 @@ def main():
             "subnet_ids": {"type": "list", "elements": "str"},
         },
     }
-    argument_spec["code_signing_config_arn"] = {"type": "str"}
-    argument_spec["image_config"] = {
+    argument_spec["dead_letter_config"] = {
+        "type": "dict",
+        "options": {"target_arn": {"type": "str"}},
+    }
+    argument_spec["timeout"] = {"type": "int"}
+    argument_spec["handler"] = {"type": "str"}
+    argument_spec["reserved_concurrent_executions"] = {"type": "int"}
+    argument_spec["code"] = {
         "type": "dict",
         "options": {
-            "entry_point": {"type": "list", "elements": "str"},
-            "command": {"type": "list", "elements": "str"},
-            "working_directory": {"type": "str"},
+            "s3_object_version": {"type": "str"},
+            "s3_bucket": {"type": "str"},
+            "zip_file": {"type": "str"},
+            "s3_key": {"type": "str"},
+            "image_uri": {"type": "str"},
         },
     }
+    argument_spec["role"] = {"type": "str"}
+    argument_spec["file_system_configs"] = {
+        "type": "list",
+        "elements": "dict",
+        "options": {"local_mount_path": {"type": "str"}},
+    }
+    argument_spec["function_name"] = {"type": "str"}
+    argument_spec["runtime"] = {"type": "str"}
+    argument_spec["kms_key_arn"] = {"type": "str"}
     argument_spec["package_type"] = {"type": "str", "choices": ["Image", "Zip"]}
+    argument_spec["code_signing_config_arn"] = {"type": "str"}
+    argument_spec["environment"] = {
+        "type": "dict",
+        "options": {"variables": {"type": "dict"}},
+    }
+    argument_spec["ephemeral_storage"] = {
+        "type": "dict",
+        "options": {"size": {"type": "int"}},
+    }
+    argument_spec["layers"] = {"type": "list", "elements": "str"}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
+    argument_spec["architectures"] = {
+        "type": "list",
+        "elements": "str",
+        "choices": ["arm64", "x86_64"],
+    }
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -389,16 +390,21 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
-    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
+    argument_spec["force"] = {"type": "bool", "default": False}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["function_name", "role", "code"], True],
+        ["state", "present", ["code", "function_name", "role"], True],
         ["state", "absent", ["function_name"], True],
         ["state", "get", ["function_name"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -435,7 +441,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -443,22 +449,32 @@ def main():
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = ["function_name"]
 
-    state = module.params.get("state")
-    identifier = module.params.get("function_name")
+    # Necessary to handle when module does not support all the states
+    handlers = ["read", "create", "update", "list", "delete"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["function_name"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)
