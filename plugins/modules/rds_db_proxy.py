@@ -12,15 +12,15 @@ __metaclass__ = type
 
 
 DOCUMENTATION = r"""
-module: rdsdb_proxy
+module: rds_db_proxy
 short_description: Create and manage DB proxies
-description: Creates and manage DB proxies (list, create, update, describe, delete).
+description:
+- Creates and manage DB proxies.
 options:
     auth:
         description:
         - The authorization mechanism that the proxy uses.
         elements: dict
-        required: true
         suboptions:
             auth_scheme:
                 choices:
@@ -59,7 +59,6 @@ options:
         - The identifier for the proxy.
         - This name must be unique for all proxies owned by your AWS account in the
             specified AWS Region.
-        required: true
         type: str
     debug_logging:
         description:
@@ -72,8 +71,16 @@ options:
         - POSTGRESQL
         description:
         - The kinds of databases that the proxy can connect to.
-        required: true
         type: str
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     idle_client_timeout:
         description:
         - The number of seconds that a connection to the proxy can be inactive before
@@ -83,7 +90,6 @@ options:
         default: true
         description:
         - Remove tags not listed in I(tags).
-        required: false
         type: bool
     require_tls:
         description:
@@ -94,7 +100,6 @@ options:
         description:
         - The Amazon Resource Name (ARN) of the IAM role that the proxy uses to access
             secrets in AWS Secrets Manager.
-        required: true
         type: str
     state:
         choices:
@@ -118,7 +123,6 @@ options:
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
-        required: false
         type: dict
     vpc_security_group_ids:
         description:
@@ -129,7 +133,6 @@ options:
         description:
         - VPC subnet IDs to associate with the new proxy.
         elements: str
-        required: true
         type: list
     wait:
         default: false
@@ -142,7 +145,7 @@ options:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
 author: Ansible Cloud Team (@ansible-collections)
-version_added: 0.1.0
+version_added: 0.2.0
 requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
@@ -154,7 +157,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -200,29 +206,16 @@ def main():
             "secret_arn": {"type": "str"},
             "user_name": {"type": "str"},
         },
-        "required": True,
     }
-    argument_spec["db_proxy_name"] = {"type": "str", "required": True}
+    argument_spec["db_proxy_name"] = {"type": "str"}
     argument_spec["debug_logging"] = {"type": "bool"}
-    argument_spec["engine_family"] = {
-        "type": "str",
-        "choices": ["MYSQL", "POSTGRESQL"],
-        "required": True,
-    }
+    argument_spec["engine_family"] = {"type": "str", "choices": ["MYSQL", "POSTGRESQL"]}
     argument_spec["idle_client_timeout"] = {"type": "int"}
     argument_spec["require_tls"] = {"type": "bool"}
-    argument_spec["role_arn"] = {"type": "str", "required": True}
-    argument_spec["tags"] = {
-        "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
-    }
+    argument_spec["role_arn"] = {"type": "str"}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
     argument_spec["vpc_security_group_ids"] = {"type": "list", "elements": "str"}
-    argument_spec["vpc_subnet_ids"] = {
-        "type": "list",
-        "elements": "str",
-        "required": True,
-    }
+    argument_spec["vpc_subnet_ids"] = {"type": "list", "elements": "str"}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -230,21 +223,26 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
-    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
+    argument_spec["force"] = {"type": "bool", "default": False}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
         [
             "state",
             "present",
-            ["role_arn", "db_proxy_name", "engine_family", "auth", "vpc_subnet_ids"],
+            ["engine_family", "vpc_subnet_ids", "db_proxy_name", "auth", "role_arn"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],
         ["state", "get", ["db_proxy_name"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -267,7 +265,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -275,22 +273,32 @@ def main():
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = ["db_proxy_name", "engine_family", "vpc_subnet_ids"]
 
-    state = module.params.get("state")
-    identifier = module.params.get("db_proxy_name")
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "read", "update", "delete", "list"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["db_proxy_name"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

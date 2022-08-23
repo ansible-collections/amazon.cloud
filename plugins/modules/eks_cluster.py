@@ -14,12 +14,12 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: eks_cluster
 short_description: Create and manages Amazon EKS control planes
-description: Create and manage Amazon EKS control planes (list, create, update, describe,
-    delete).
+description:
+- Create and manage Amazon EKS control planes.
 options:
     encryption_config:
         description:
-        - The encryption configuration for the cluster
+        - The encryption configuration for the cluster.
         elements: dict
         suboptions:
             provider:
@@ -41,6 +41,15 @@ options:
                 elements: str
                 type: list
         type: list
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     kubernetes_network_config:
         description:
         - The Kubernetes network configuration for the cluster.
@@ -52,7 +61,7 @@ options:
                 description:
                 - Ipv4 or Ipv6.
                 - You can only specify ipv6 for 1.21 and later clusters that use version
-                    1.10.1 or later of the Amazon VPC CNI add-on
+                    1.10.1 or later of the Amazon VPC CNI add-on.
                 type: str
             service_ipv4_cidr:
                 description:
@@ -77,7 +86,7 @@ options:
                 suboptions:
                     enabled_types:
                         description:
-                        - Enabled Logging Type
+                        - Enabled Logging Type.
                         elements: dict
                         suboptions:
                             type:
@@ -88,7 +97,7 @@ options:
                                 - controllerManager
                                 - scheduler
                                 description:
-                                - name of the log type
+                                - name of the log type.
                                 type: str
                         type: list
                 type: dict
@@ -101,12 +110,10 @@ options:
         default: true
         description:
         - Remove tags not listed in I(tags).
-        required: false
         type: bool
     resources_vpc_config:
         description:
         - An object representing the VPC configuration to use for an Amazon EKS cluster.
-        required: true
         suboptions:
             endpoint_private_access:
                 description:
@@ -117,7 +124,7 @@ options:
                 - The default value for this parameter is false, which disables private
                     access for your Kubernetes API server.
                 - If you disable private access and you have nodes or AWS Fargate
-                    pods in the cluster, then ensure that publicI(access_cidrs) includes
+                    pods in the cluster, then ensure that publicAccessCidrs includes
                     the necessary CIDR blocks for communication with the nodes or
                     Fargate pods.
                 type: bool
@@ -158,7 +165,6 @@ options:
                     subnets to allow communication between your nodes and the Kubernetes
                     control plane.
                 elements: str
-                required: true
                 type: list
         type: dict
     role_arn:
@@ -166,7 +172,6 @@ options:
         - The Amazon Resource Name (ARN) of the IAM role that provides permissions
             for the Kubernetes control plane to make calls to AWS API operations on
             your behalf.
-        required: true
         type: str
     state:
         choices:
@@ -190,7 +195,6 @@ options:
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
-        required: false
         type: dict
     version:
         description:
@@ -217,11 +221,40 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Create EKS cluster
+  amazon.cloud.eks_cluster:
+    name: '{{ eks_cluster_name }}'
+    resources_vpc_config:
+      security_group_ids: "{{ _result_create_security_groups.results | map(attribute='group_id') }}"
+      subnet_ids: "{{ _result_create_subnets.results | map(attribute='subnet.id') }}"
+      endpoint_public_access: true
+      endpoint_private_access: false
+      public_access_cidrs:
+      - 0.0.0.0/0
+    role_arn: '{{ _result_create_iam_role.arn }}'
+    tags:
+      Name: '{{ _resource_prefix }}-eks-cluster'
+    wait_timeout: 900
+  register: _result_create_cluster
+
+- name: Describe EKS cluster
+  amazon.cloud.eks_cluster:
+    name: '{{ eks_cluster_name }}'
+    state: describe
+  register: _result_get_cluster
+
+- name: List EKS clusters
+  amazon.cloud.eks_cluster:
+    state: list
+  register: _result_list_clusters
 """
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -257,21 +290,6 @@ def main():
         ),
     )
 
-    argument_spec["encryption_config"] = {
-        "type": "list",
-        "elements": "dict",
-        "options": {
-            "provider": {"type": "dict", "options": {"key_arn": {"type": "str"}}},
-            "resources": {"type": "list", "elements": "str"},
-        },
-    }
-    argument_spec["kubernetes_network_config"] = {
-        "type": "dict",
-        "options": {
-            "service_ipv4_cidr": {"type": "str"},
-            "ip_family": {"type": "str", "choices": ["ipv4", "ipv6"]},
-        },
-    }
     argument_spec["logging"] = {
         "type": "dict",
         "options": {
@@ -298,25 +316,35 @@ def main():
             }
         },
     }
+    argument_spec["encryption_config"] = {
+        "type": "list",
+        "elements": "dict",
+        "options": {
+            "resources": {"type": "list", "elements": "str"},
+            "provider": {"type": "dict", "options": {"key_arn": {"type": "str"}}},
+        },
+    }
+    argument_spec["kubernetes_network_config"] = {
+        "type": "dict",
+        "options": {
+            "service_ipv4_cidr": {"type": "str"},
+            "ip_family": {"type": "str", "choices": ["ipv4", "ipv6"]},
+        },
+    }
+    argument_spec["role_arn"] = {"type": "str"}
     argument_spec["name"] = {"type": "str"}
+    argument_spec["version"] = {"type": "str"}
     argument_spec["resources_vpc_config"] = {
         "type": "dict",
         "options": {
-            "endpoint_private_access": {"type": "bool"},
             "endpoint_public_access": {"type": "bool"},
             "public_access_cidrs": {"type": "list", "elements": "str"},
+            "endpoint_private_access": {"type": "bool"},
             "security_group_ids": {"type": "list", "elements": "str"},
-            "subnet_ids": {"type": "list", "required": True, "elements": "str"},
+            "subnet_ids": {"type": "list", "elements": "str"},
         },
-        "required": True,
     }
-    argument_spec["role_arn"] = {"type": "str", "required": True}
-    argument_spec["version"] = {"type": "str"}
-    argument_spec["tags"] = {
-        "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
-    }
+    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -324,16 +352,21 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
-    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
+    argument_spec["force"] = {"type": "bool", "default": False}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["role_arn", "name", "resources_vpc_config"], True],
+        ["state", "present", ["role_arn", "resources_vpc_config", "name"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -354,7 +387,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -369,22 +402,32 @@ def main():
         "security_group_ids",
     ]
 
-    state = module.params.get("state")
-    identifier = module.params.get("name")
+    # Necessary to handle when module does not support all the states
+    handlers = ["read", "create", "update", "list", "delete"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["name"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

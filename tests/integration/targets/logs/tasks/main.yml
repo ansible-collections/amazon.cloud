@@ -14,7 +14,7 @@
         log_group_name: "test-{{ lookup('password', '/dev/null') | hash('md5') }}"
 
     - name: Create log group (check mode)
-      logs_log_group: &log_group
+      amazon.cloud.logs_log_group: &log_group
         state: present
         log_group_name: "{{ log_group_name }}"
         retention_in_days: 7
@@ -23,26 +23,36 @@
       check_mode: yes
 
     - name: Create log group
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         <<: *log_group
         wait: yes
       register: output
+      tags:
+        - docs
 
     - assert:
         that:
-          - output.result[0].identifier == log_group_name
+          - output.result.identifier == log_group_name
 
     - name: Create log group (idempotence)
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         *log_group
       register: output
 
     - assert:
         that:
           - output is not changed
+    
+    - name: Describe log group
+      amazon.cloud.logs_log_group:
+        state: describe
+        log_group_name: "{{ log_group_name }}"
+      register: output
+      tags:
+        - docs
 
     - name: Update log group (check mode)
-      logs_log_group: &log_group_update
+      amazon.cloud.logs_log_group: &log_group_update
         state: present
         log_group_name: "{{ log_group_name }}"
         tags:
@@ -55,20 +65,22 @@
           - output is changed
 
     - name: Update log group
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         <<: *log_group_update
         purge_tags: false
         wait: yes
       register: output
+      tags:
+        - docs
 
     - assert:
         that:
           - output is changed
-          - "'testkey' in output.result[0].properties.tags"
-          - "'anotherkey' in output.result[0].properties.tags"
+          - "'testkey' in output.result.properties.tags"
+          - "'anotherkey' in output.result.properties.tags"
 
     - name: Update log group (idempotence)
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         *log_group_update
       register: output
 
@@ -79,7 +91,7 @@
     #       - output is not changed
 
     - name: Delete log group (check mode)
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         state: absent
         log_group_name: "{{ log_group_name }}"
       check_mode: yes
@@ -90,17 +102,19 @@
           - output is changed
 
     - name: Delete log group
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         state: absent
         log_group_name: "{{ log_group_name }}"
       register: output
+      tags:
+        - docs
 
     - assert:
         that:
           - output is changed
 
     - name: Delete log group (idempotence)
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         state: absent
         log_group_name: "{{ log_group_name }}"
       register: output
@@ -111,7 +125,7 @@
 
   always:
     - name: Cleanup log group
-      logs_log_group:
+      amazon.cloud.logs_log_group:
         state: absent
         log_group_name: "{{ log_group_name }}"
-      ignore_errors: yes
+      ignore_errors: true

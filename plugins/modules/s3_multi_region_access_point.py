@@ -14,17 +14,26 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: s3_multi_region_access_point
 short_description: Create and manage Amazon S3 Multi-Region Access Points
-description: Create and manage Amazon S3 Multi-Region Access Points (list, create,
-    update, describe, delete).
+description:
+- Create and manage Amazon S3 Multi-Region Access Points.
 options:
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     name:
         description:
         - The name you want to assign to this Multi Region Access Point.
         type: str
     public_access_block_configuration:
         description:
-        - The I(public_access_block) configuration that you want to apply to this
-            Multi Region Access Point.
+        - The PublicAccessBlock configuration that you want to apply to this Multi
+            Region Access Point.
         - You can enable the configuration options in any combination.
         - For more information about when Amazon S3 considers a bucket or object public,
             see U(https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status)
@@ -34,7 +43,7 @@ options:
                 description:
                 - Specifies whether Amazon S3 should block public access control lists
                     (ACLs) for buckets in this account.
-                - 'Setting this element to C(True) causes the following behavior:'
+                - Setting this element to C(True) causes the following behavior:.
                 - '- PUT Bucket acl and PUT Object acl calls fail if the specified
                     ACL is public.'
                 - '- PUT Object calls fail if the request includes a public ACL.'
@@ -77,12 +86,14 @@ options:
         - The name of the bucket that represents of the region belonging to this Multi
             Region Access Point.
         elements: dict
-        required: true
         suboptions:
+            account_id:
+                description:
+                - Not Provived.
+                type: str
             bucket:
                 description:
                 - Not Provived.
-                required: true
                 type: str
         type: list
     state:
@@ -124,7 +135,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -173,8 +187,7 @@ def main():
     argument_spec["regions"] = {
         "type": "list",
         "elements": "dict",
-        "options": {"bucket": {"type": "str", "required": True}},
-        "required": True,
+        "options": {"bucket": {"type": "str"}, "account_id": {"type": "str"}},
     }
     argument_spec["state"] = {
         "type": "str",
@@ -183,15 +196,20 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
+    argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
         ["state", "present", ["name", "regions"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -209,7 +227,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -217,22 +235,32 @@ def main():
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = ["name", "public_access_block_configuration", "regions"]
 
-    state = module.params.get("state")
-    identifier = module.params.get("name")
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "read", "update", "delete", "list"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["name"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

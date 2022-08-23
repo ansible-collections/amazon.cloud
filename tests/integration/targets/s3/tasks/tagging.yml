@@ -1,0 +1,244 @@
+- name: Tests relating to setting tags
+  vars:
+    first_tags:
+      'Key with Spaces': Value with spaces
+      CamelCaseKey: CamelCaseValue
+      pascalCaseKey: pascalCaseValue
+      snake_case_key: snake_case_value
+    second_tags:
+      'New Key with Spaces': Value with spaces
+      NewCamelCaseKey: CamelCaseValue
+      newPascalCaseKey: pascalCaseValue
+      new_snake_case_key: snake_case_value
+    third_tags:
+      'Key with Spaces': Value with spaces
+      CamelCaseKey: CamelCaseValue
+      pascalCaseKey: pascalCaseValue
+      snake_case_key: snake_case_value
+      'New Key with Spaces': Updated Value with spaces
+    final_tags:
+      'Key with Spaces': Value with spaces
+      CamelCaseKey: CamelCaseValue
+      pascalCaseKey: pascalCaseValue
+      snake_case_key: snake_case_value
+      'New Key with Spaces': Updated Value with spaces
+      NewCamelCaseKey: CamelCaseValue
+      newPascalCaseKey: pascalCaseValue
+      new_snake_case_key: snake_case_value
+
+  # Mandatory settings
+  module_defaults:
+    amazon.cloud.s3_bucket:
+      bucket_name: "{{ output.result.identifier }}"
+
+  block:
+    - name: test adding tags to amazon.cloud.s3_bucket (check mode)
+      amazon.cloud.s3_bucket:
+        tags: '{{ first_tags }}'
+        purge_tags: true
+      check_mode: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is success
+          - _result is changed
+
+    - name: test adding tags to amazon.cloud.s3_bucket
+      amazon.cloud.s3_bucket:
+        tags: '{{ first_tags }}'
+        purge_tags: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is success
+          - _result is changed
+          - _result.result.properties.tags == first_tags
+
+    - name: test adding tags to amazon.cloud.s3_bucket - idempotency (check mode)
+      amazon.cloud.s3_bucket:
+        tags: '{{ first_tags }}'
+        purge_tags: true
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is success
+          - _result is not changed
+          - _result.result.properties.tags == first_tags
+
+
+    - name: test adding tags to amazon.cloud.s3_bucket - idempotency
+      amazon.cloud.s3_bucket:
+        tags: '{{ first_tags }}'
+        purge_tags: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is success
+          - _result is not changed
+          - _result.result.properties.tags == first_tags
+
+    ###
+
+    - name: test updating tags with purge on amazon.cloud.s3_bucket (check mode)
+      amazon.cloud.s3_bucket:
+        tags: '{{ second_tags }}'
+        purge_tags: true
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+        - _result is changed
+
+    - name: test updating tags with purge on amazon.cloud.s3_bucket
+      amazon.cloud.s3_bucket:
+        tags: '{{ second_tags }}'
+        purge_tags: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is changed
+          - _result.result.properties.tags == second_tags
+
+    - name: test updating tags with purge on amazon.cloud.s3_bucket - idempotency (check mode)
+      amazon.cloud.s3_bucket:
+        tags: '{{ second_tags }}'
+        purge_tags: true
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+        - _result is not changed
+
+    - name: test updating tags with purge on amazon.cloud.s3_bucket - idempotency
+      amazon.cloud.s3_bucket:
+        tags: '{{ second_tags }}'
+        purge_tags: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is not changed
+          - _result.result.properties.tags == second_tags
+
+    #
+
+    - name: test updating tags without purge on amazon.cloud.s3_bucket (check mode)
+      amazon.cloud.s3_bucket:
+        tags: '{{ third_tags }}'
+        purge_tags: false
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+        - _result is changed
+
+    - name: test updating tags without purge on amazon.cloud.s3_bucket
+      amazon.cloud.s3_bucket:
+        tags: '{{ third_tags }}'
+        purge_tags: false
+        wait: true
+        wait_timeout: 120
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is changed
+          - _result.result.properties.tags == final_tags
+
+    - name: test updating tags without purge on amazon.cloud.s3_bucket - idempotency (check mode)
+      amazon.cloud.s3_bucket:
+        tags: '{{ third_tags }}'
+        purge_tags: false
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+        - _result is not changed
+
+    - name: test updating tags without purge on amazon.cloud.s3_bucket - idempotency
+      amazon.cloud.s3_bucket:
+        tags: '{{ third_tags }}'
+        purge_tags: false
+        wait: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is not changed
+          - _result.result.properties.tags == final_tags
+
+    - name: test no tags param amazon.cloud.s3_bucket (check mode)
+      amazon.cloud.s3_bucket: {}
+      register: _result
+      check_mode: yes
+    - name: assert no change
+      assert:
+        that:
+        - _result is not changed
+        - _result.result.properties.tags == final_tags
+
+
+    - name: test no tags param amazon.cloud.s3_bucket
+      amazon.cloud.s3_bucket: {}
+      register: _result
+    - name: assert no change
+      assert:
+        that:
+          - _result is not changed
+          - _result.result.properties.tags == final_tags
+
+    ###
+
+    - name: test removing tags from amazon.cloud.s3_bucket (check mode)
+      amazon.cloud.s3_bucket:
+        tags: {}
+        purge_tags: true
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+        - _result is changed
+
+    - name: test removing tags from amazon.cloud.s3_bucket
+      amazon.cloud.s3_bucket:
+        tags: {}
+        purge_tags: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is changed
+          - _result.result.properties.tags is undefined
+
+    - name: test removing tags from amazon.cloud.s3_bucket - idempotency (check mode)
+      amazon.cloud.s3_bucket:
+        tags: {}
+        purge_tags: true
+      register: _result
+      check_mode: yes
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is not changed
+
+    - name: test removing tags from amazon.cloud.s3_bucket - idempotency
+      amazon.cloud.s3_bucket:
+        tags: {}
+        purge_tags: true
+      register: _result
+    - name: assert that update succeeded
+      assert:
+        that:
+          - _result is not changed
+          - _result.result.properties.tags is undefined

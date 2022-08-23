@@ -1,0 +1,22 @@
+---
+- name: eks integration tests
+  collections:
+    - amazon.aws
+    - community.aws
+    - amazon.cloud
+  module_defaults:
+    group/amazon.cloud.aws:
+      aws_access_key: '{{ aws_access_key }}'
+      aws_secret_key: '{{ aws_secret_key }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region }}'
+    group/aws:
+      aws_access_key: '{{ aws_access_key }}'
+      aws_secret_key: '{{ aws_secret_key }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region }}'
+  block:
+     - include_tasks: eks_cluster.yml
+     - include_tasks: eks_fargate_profile.yml
+  always:
+    - include_tasks: cleanup.yml

@@ -14,13 +14,14 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: redshift_cluster
 short_description: Create and manage clusters
-description: Creates and manage clusters (list, create, update, describe, delete).
+description:
+- Creates and manage clusters.
 options:
     allow_version_upgrade:
         description:
         - Major version upgrades can be applied during the maintenance window to the
             Amazon Redshift engine that is running on the cluster.
-        - Default value is True
+        - Default value is True.
         type: bool
     aqua_configuration_status:
         description:
@@ -36,14 +37,14 @@ options:
         description:
         - The number of days that automated snapshots are retained.
         - If the value is 0, automated snapshots are disabled.
-        - Default value is 1
+        - Default value is 1.
         type: int
     availability_zone:
         description:
-        - The C(EC2) Availability Zone (AZ) in which you want Amazon Redshift to provision
+        - The EC2 Availability Zone (AZ) in which you want Amazon Redshift to provision
             the cluster.
         - 'Default: A random, system-chosen Availability Zone in the region that is
-            specified by the endpoint'
+            specified by the endpoint.'
         type: str
     availability_zone_relocation:
         description:
@@ -52,7 +53,7 @@ options:
         type: bool
     availability_zone_relocation_status:
         description:
-        - The availability zone relocation status of the cluster
+        - The availability zone relocation status of the cluster.
         type: str
     classic:
         description:
@@ -68,7 +69,7 @@ options:
             operations such as deleting or modifying.
         - All alphabetical characters must be lower case, no hypens at the end, no
             two consecutive hyphens.
-        - Cluster name should be unique for all clusters within an AWS account
+        - Cluster name should be unique for all clusters within an AWS account.
         type: str
     cluster_parameter_group_name:
         description:
@@ -86,10 +87,8 @@ options:
     cluster_type:
         description:
         - The type of the cluster.
-        - When cluster type is specified as single-node, the I(number_of_nodes) parameter
-            is not required and if multi-node, the I(number_of_nodes) parameter is
-            required
-        required: true
+        - When cluster type is specified as single-node, the NumberOfNodes parameter
+            is not required and if multi-node, the NumberOfNodes parameter is required.
         type: str
     cluster_version:
         description:
@@ -101,7 +100,6 @@ options:
         - The name of the first database to be created when the cluster is created.
         - To create additional databases after the cluster is created, connect to
             the cluster with a SQL client and use SQL commands to create a database.
-        required: true
         type: str
     defer_maintenance:
         description:
@@ -127,7 +125,7 @@ options:
         - The destination AWS Region that you want to copy snapshots to.
         - 'Constraints: Must be the name of a valid AWS Region.'
         - For more information, see Regions and Endpoints in the Amazon Web Services
-            ) General Reference
+            ) General Reference.
         type: str
     elastic_ip:
         description:
@@ -150,12 +148,21 @@ options:
             in a VPC. For more information, see Enhanced VPC Routing in the Amazon
             Redshift Cluster Management Guide.
         - If this option is true , enhanced VPC routing is enabled.
-        - 'Default: false'
+        - 'Default: false.'
+        type: bool
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
         type: bool
     hsm_client_certificate_identifier:
         description:
         - Specifies the name of the HSM client certificate the Amazon Redshift cluster
-            uses to retrieve the data encryption keys stored in an HSM
+            uses to retrieve the data encryption keys stored in an HSM.
         type: str
     hsm_configuration_identifier:
         description:
@@ -167,7 +174,7 @@ options:
         - A list of AWS Identity and Access Management (IAM) roles that can be used
             by the cluster to access other AWS services.
         - You must supply the IAM roles in their Amazon Resource Name (ARN) format.
-        - You can supply up to 10 IAM roles in a single request
+        - You can supply up to 10 IAM roles in a single request.
         elements: str
         type: list
     kms_key_id:
@@ -182,7 +189,6 @@ options:
             bucket_name:
                 description:
                 - Not Provived.
-                required: true
                 type: str
             s3_key_prefix:
                 description:
@@ -193,8 +199,8 @@ options:
         description:
         - The name for the maintenance track that you want to assign for the cluster.
         - This name change is asynchronous.
-        - The new track name stays in the I(pending_modified_values) for the cluster
-            until the next maintenance window.
+        - The new track name stays in the PendingModifiedValues for the cluster until
+            the next maintenance window.
         - When the maintenance track changes, the cluster is switched to the latest
             cluster release available for the maintenance track.
         - At this point, the maintenance track name is applied.
@@ -213,27 +219,24 @@ options:
         - Password must be between 8 and 64 characters in length, should have at least
             one uppercase letter.Must contain at least one lowercase letter.Must contain
             one number.Can be any printable ASCII character.
-        required: true
         type: str
     master_username:
         description:
         - The user name associated with the master user account for the cluster that
             is being created.
         - The user name cant be PUBLIC and first character must be a letter.
-        required: true
         type: str
     node_type:
         description:
         - 'The node type to be provisioned for the cluster.Valid Values: ds2.xlarge
             | ds2.8xlarge | dc1.large | dc1.8xlarge | dc2.large | dc2.8xlarge | ra3.4xlarge
-            | ra3.16xlarge'
-        required: true
+            | ra3.16xlarge.'
         type: str
     number_of_nodes:
         description:
         - The number of compute nodes in the cluster.
-        - This parameter is required when the I(cluster_type) parameter is specified
-            as multi-node.
+        - This parameter is required when the ClusterType parameter is specified as
+            multi-node.
         type: int
     owner_account:
         description:
@@ -252,17 +255,16 @@ options:
         default: true
         description:
         - Remove tags not listed in I(tags).
-        required: false
         type: bool
     resource_action:
         description:
         - The Redshift operation to be performed.
-        - Resource Action supports pause-cluster, resume-cluster I(apis)
+        - Resource Action supports pause-cluster, resume-cluster APIs.
         type: str
     revision_target:
         description:
         - The identifier of the database revision.
-        - You can retrieve this value from the response to the I(describe_cluster_db_revisions)
+        - You can retrieve this value from the response to the DescribeClusterDbRevisions
             request.
         type: str
     rotate_encryption_key:
@@ -320,7 +322,6 @@ options:
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
-        required: false
         type: dict
     vpc_security_group_ids:
         description:
@@ -351,7 +352,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -388,17 +392,17 @@ def main():
     )
 
     argument_spec["cluster_identifier"] = {"type": "str"}
-    argument_spec["master_username"] = {"type": "str", "required": True}
-    argument_spec["master_user_password"] = {"type": "str", "required": True}
-    argument_spec["node_type"] = {"type": "str", "required": True}
+    argument_spec["master_username"] = {"type": "str"}
+    argument_spec["master_user_password"] = {"type": "str"}
+    argument_spec["node_type"] = {"type": "str"}
     argument_spec["allow_version_upgrade"] = {"type": "bool"}
     argument_spec["automated_snapshot_retention_period"] = {"type": "int"}
     argument_spec["availability_zone"] = {"type": "str"}
     argument_spec["cluster_parameter_group_name"] = {"type": "str"}
-    argument_spec["cluster_type"] = {"type": "str", "required": True}
+    argument_spec["cluster_type"] = {"type": "str"}
     argument_spec["cluster_version"] = {"type": "str"}
     argument_spec["cluster_subnet_group_name"] = {"type": "str"}
-    argument_spec["db_name"] = {"type": "str", "required": True}
+    argument_spec["db_name"] = {"type": "str"}
     argument_spec["elastic_ip"] = {"type": "str"}
     argument_spec["encrypted"] = {"type": "bool"}
     argument_spec["hsm_client_certificate_identifier"] = {"type": "str"}
@@ -409,21 +413,14 @@ def main():
     argument_spec["publicly_accessible"] = {"type": "bool"}
     argument_spec["cluster_security_groups"] = {"type": "list", "elements": "str"}
     argument_spec["iam_roles"] = {"type": "list", "elements": "str"}
-    argument_spec["tags"] = {
-        "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
-    }
+    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
     argument_spec["vpc_security_group_ids"] = {"type": "list", "elements": "str"}
     argument_spec["snapshot_cluster_identifier"] = {"type": "str"}
     argument_spec["snapshot_identifier"] = {"type": "str"}
     argument_spec["owner_account"] = {"type": "str"}
     argument_spec["logging_properties"] = {
         "type": "dict",
-        "options": {
-            "bucket_name": {"type": "str", "required": True},
-            "s3_key_prefix": {"type": "str"},
-        },
+        "options": {"bucket_name": {"type": "str"}, "s3_key_prefix": {"type": "str"}},
     }
     argument_spec["endpoint"] = {"type": "dict", "options": {}}
     argument_spec["destination_region"] = {"type": "str"}
@@ -451,28 +448,33 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
-    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
+    argument_spec["force"] = {"type": "bool", "default": False}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
         [
             "state",
             "present",
             [
-                "master_user_password",
-                "db_name",
-                "master_username",
-                "node_type",
                 "cluster_identifier",
+                "db_name",
+                "node_type",
                 "cluster_type",
+                "master_user_password",
+                "master_username",
             ],
             True,
         ],
         ["state", "absent", ["cluster_identifier"], True],
         ["state", "get", ["cluster_identifier"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -558,7 +560,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -574,22 +576,32 @@ def main():
         "master_username",
     ]
 
-    state = module.params.get("state")
-    identifier = module.params.get("cluster_identifier")
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "read", "update", "delete", "list"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["cluster_identifier"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)
