@@ -1,5 +1,5 @@
 ---
-- name: eks integration tests
+- name: EKS integration tests
   collections:
     - amazon.aws
     - community.aws

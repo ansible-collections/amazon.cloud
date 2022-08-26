@@ -26,11 +26,11 @@
   register: _result_delete_fp
 
 - name: Create IAM instance role
-  iam_role:
+  community.aws.iam_role:
     name: "{{ _resource_prefix }}-fp-role"
     assume_role_policy_document: "{{ lookup('file', 'eks_fargate_profile-policy.json') }}"
     state: present
-    create_instance_profile: no
+    create_instance_profile: false
     managed_policies:
       - AmazonEKSFargatePodExecutionRolePolicy
   register: _result_create_iam_role_fp
