@@ -123,7 +123,6 @@
           restrict_public_buckets: false
         tags:
           mykey: "myval"
-        wait: true
       diff: true
       register: _result
       tags:

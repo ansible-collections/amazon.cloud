@@ -25,9 +25,10 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- boto3 >= 1.17.0
-- botocore >= 1.20.0
-- python >= 3.6
+- python >= 3.9
+- boto3 >= 1.20.0
+- botocore >= 1.23.0
+- jsonpatch
 
 
 Parameters

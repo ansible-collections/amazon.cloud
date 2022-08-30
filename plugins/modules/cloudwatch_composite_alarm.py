@@ -108,7 +108,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -178,7 +177,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["alarm_rule", "alarm_name"], True],
+        ["state", "present", ["alarm_name", "alarm_rule"], True],
         ["state", "absent", ["alarm_name"], True],
         ["state", "get", ["alarm_name"], True],
     ]

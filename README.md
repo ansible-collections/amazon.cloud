@@ -41,7 +41,7 @@ Name | Description
 [amazon.cloud.iam_role](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.iam_role_module.rst)|Create and manage roles
 [amazon.cloud.iam_server_certificate](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.iam_server_certificate_module.rst)|Uploads and manages a server certificate entity for the AWS account
 [amazon.cloud.kms_alias](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.kms_alias_module.rst)|Specifies a display name for a KMS key.
-[amazon.cloud.kms_replica_key](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.kms_replica_key_module.rst)|Creates andn manages a multi-Region replica key that is based on a multi-Region primary key
+[amazon.cloud.kms_replica_key](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.kms_replica_key_module.rst)|Creates and manages a multi-Region replica key that is based on a multi-Region primary key
 [amazon.cloud.lambda_code_signing_config](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.lambda_code_signing_config_module.rst)|Code signing for AWS Lambda
 [amazon.cloud.lambda_event_source_mapping](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.lambda_event_source_mapping_module.rst)|Create a mapping between an event source and an AWS Lambda function
 [amazon.cloud.lambda_function](https://github.com/ansible-collections/amazon.cloud/blob/main/docs/amazon.cloud.lambda_function_module.rst)|Create and manage Lambda functions

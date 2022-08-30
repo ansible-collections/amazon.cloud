@@ -116,7 +116,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -241,11 +240,11 @@ def main():
             "state",
             "present",
             [
-                "pod_execution_role_arn",
-                "fargate_profile_name",
-                "cluster_name",
                 "selectors",
+                "fargate_profile_name",
                 "identifier",
+                "cluster_name",
+                "pod_execution_role_arn",
             ],
             True,
         ],

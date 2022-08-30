@@ -64,7 +64,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -126,7 +125,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["policy_document", "object_lambda_access_point"], True],
+        ["state", "present", ["object_lambda_access_point", "policy_document"], True],
         ["state", "absent", ["object_lambda_access_point"], True],
         ["state", "get", ["object_lambda_access_point"], True],
     ]

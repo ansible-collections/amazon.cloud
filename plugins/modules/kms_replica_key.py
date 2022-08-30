@@ -13,7 +13,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 module: kms_replica_key
-short_description: Creates andn manages a multi-Region replica key that is based on
+short_description: Creates and manages a multi-Region replica key that is based on
     a multi-Region primary key
 description:
 - Creates andn manages a multi-Region replica key that is based on a multi-Region
@@ -102,7 +102,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -170,7 +169,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["primary_key_arn", "key_policy", "key_id"], True],
+        ["state", "present", ["key_policy", "primary_key_arn", "key_id"], True],
         ["state", "absent", ["key_id"], True],
         ["state", "get", ["key_id"], True],
     ]

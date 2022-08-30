@@ -80,7 +80,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -149,10 +148,10 @@ def main():
             "state",
             "present",
             [
-                "cluster_identifier",
-                "endpoint_name",
                 "vpc_security_group_ids",
                 "subnet_group_name",
+                "endpoint_name",
+                "cluster_identifier",
             ],
             True,
         ],

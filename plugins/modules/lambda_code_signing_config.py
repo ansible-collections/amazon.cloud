@@ -91,7 +91,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -169,7 +168,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["allowed_publishers", "code_signing_config_arn"], True],
+        ["state", "present", ["code_signing_config_arn", "allowed_publishers"], True],
         ["state", "absent", ["code_signing_config_arn"], True],
         ["state", "get", ["code_signing_config_arn"], True],
     ]

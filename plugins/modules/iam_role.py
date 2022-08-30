@@ -114,7 +114,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -188,7 +187,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["assume_role_policy_document", "role_name"], True],
+        ["state", "present", ["role_name", "assume_role_policy_document"], True],
         ["state", "absent", ["role_name"], True],
         ["state", "get", ["role_name"], True],
     ]

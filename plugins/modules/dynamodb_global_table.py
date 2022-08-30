@@ -456,7 +456,6 @@ options:
         type: dict
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -716,7 +715,7 @@ def main():
         [
             "state",
             "present",
-            ["key_schema", "replicas", "table_name", "attribute_definitions"],
+            ["key_schema", "table_name", "replicas", "attribute_definitions"],
             True,
         ],
         ["state", "absent", ["table_name"], True],

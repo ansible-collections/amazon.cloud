@@ -211,7 +211,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -310,7 +309,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["s3_bucket_name", "is_logging", "trail_name"], True],
+        ["state", "present", ["trail_name", "is_logging", "s3_bucket_name"], True],
         ["state", "absent", ["trail_name"], True],
         ["state", "get", ["trail_name"], True],
     ]

@@ -144,7 +144,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -232,7 +231,7 @@ def main():
         [
             "state",
             "present",
-            ["report_plan_arn", "report_delivery_channel", "report_setting"],
+            ["report_plan_arn", "report_setting", "report_delivery_channel"],
             True,
         ],
         ["state", "absent", ["report_plan_arn"], True],

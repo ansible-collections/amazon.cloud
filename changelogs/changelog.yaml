@@ -63,7 +63,7 @@ releases:
     - description: Specifies the Object Lambda Access Point resource policy document
       name: s3_object_lambda_access_point_policy
       namespace: ''
-    release_date: '2022-08-23'
+    release_date: '2022-04-11'
   0.2.0:
     changes:
       minor_changes:
@@ -71,7 +71,7 @@ releases:
       - s3_object_lambda_access_point - module renamed to ``s3objectlambda_access_point``.
       - s3_object_lambda_access_point_policy - module renamed to ``s3objectlambda_access_point_policy``.
     fragments:
-    - modules_renamed.yml
+    - rename_modules.yml
     modules:
     - description: Creates and manages a new event data store
       name: cloudtrail_event_data_store
@@ -134,4 +134,4 @@ releases:
     - description: Specifies the Object Lambda Access Point resource policy document
       name: s3objectlambda_access_point_policy
       namespace: ''
-    release_date: '2022-08-23'
+    release_date: '2022-08-30'

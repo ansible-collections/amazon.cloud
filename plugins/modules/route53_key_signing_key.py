@@ -84,7 +84,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -154,11 +153,11 @@ def main():
             "state",
             "present",
             [
-                "hosted_zone_id",
-                "key_management_service_arn",
                 "name",
                 "identifier",
                 "status",
+                "key_management_service_arn",
+                "hosted_zone_id",
             ],
             True,
         ],

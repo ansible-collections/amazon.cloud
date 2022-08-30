@@ -15,7 +15,7 @@ DOCUMENTATION = r"""
 module: cloudtrail_event_data_store
 short_description: Creates and manages a new event data store
 description:
-- Creates and manages Creates a new event data store.a new event data store.
+- Creates and manages a new event data store.
 options:
     advanced_event_selectors:
         description:
@@ -161,7 +161,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2

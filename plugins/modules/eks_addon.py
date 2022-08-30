@@ -100,7 +100,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -172,7 +171,7 @@ def main():
 
     required_if = [
         ["state", "list", ["cluster_name"], True],
-        ["state", "present", ["identifier", "addon_name", "cluster_name"], True],
+        ["state", "present", ["cluster_name", "addon_name", "identifier"], True],
         ["state", "absent", ["cluster_name", "addon_name", "identifier"], True],
         ["state", "get", ["cluster_name", "addon_name", "identifier"], True],
     ]

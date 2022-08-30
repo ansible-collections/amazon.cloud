@@ -71,7 +71,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -135,7 +134,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["query_string", "query_definition_id", "name"], True],
+        ["state", "present", ["query_definition_id", "name", "query_string"], True],
         ["state", "absent", ["query_definition_id"], True],
         ["state", "get", ["query_definition_id"], True],
     ]

@@ -98,7 +98,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -171,7 +170,7 @@ def main():
         [
             "state",
             "present",
-            ["db_proxy_name", "vpc_subnet_ids", "db_proxy_endpoint_name"],
+            ["db_proxy_endpoint_name", "vpc_subnet_ids", "db_proxy_name"],
             True,
         ],
         ["state", "absent", ["db_proxy_endpoint_name"], True],

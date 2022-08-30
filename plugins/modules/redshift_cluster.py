@@ -341,7 +341,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -456,12 +455,12 @@ def main():
             "state",
             "present",
             [
-                "cluster_type",
-                "node_type",
-                "db_name",
-                "master_user_password",
-                "cluster_identifier",
                 "master_username",
+                "cluster_identifier",
+                "db_name",
+                "node_type",
+                "cluster_type",
+                "master_user_password",
             ],
             True,
         ],
