@@ -14,8 +14,20 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: lambda_event_source_mapping
 short_description: Create a mapping between an event source and an AWS Lambda function
-description: Create a mapping between an event source and an AWS Lambda function.
+description:
+- Create a mapping between an event source and an AWS Lambda function.
 options:
+    amazon_managed_kafka_event_source_config:
+        description:
+        - Specific configuration settings for an MSK event source.Specific configuration
+            settings for an MSK event source.
+        suboptions:
+            consumer_group_id:
+                description:
+                - The identifier for the Kafka Consumer Group to join.The identifier
+                    for the Kafka Consumer Group to join.
+                type: str
+        type: dict
     batch_size:
         description:
         - The maximum number of items to retrieve in a single batch.
@@ -66,10 +78,18 @@ options:
                         type: str
                 type: list
         type: dict
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     function_name:
         description:
         - The name of the Lambda function.
-        required: true
         type: str
     function_response_types:
         choices:
@@ -123,9 +143,19 @@ options:
                         type: list
                 type: dict
         type: dict
+    self_managed_kafka_event_source_config:
+        description:
+        - Specific configuration settings for a Self-Managed Apache Kafka event source.Specific
+            configuration settings for a Self-Managed Apache Kafka event source.
+        suboptions:
+            consumer_group_id:
+                description:
+                - The identifier for the Kafka Consumer Group to join.
+                type: str
+        type: dict
     source_access_configurations:
         description:
-        - The configuration used by AWS Lambda to access event source
+        - The configuration used by AWS Lambda to access event source.
         elements: dict
         suboptions:
             type:
@@ -153,8 +183,8 @@ options:
         type: str
     starting_position_timestamp:
         description:
-        - With I(starting_position) set to C(AT_TIMESTAMP), the time from which to
-            start reading, in Unix time seconds.
+        - With StartingPosition set to C(AT_TIMESTAMP), the time from which to start
+            reading, in Unix time seconds.
         type: int
     state:
         choices:
@@ -194,7 +224,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -205,7 +234,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -262,7 +294,7 @@ def main():
             }
         },
     }
-    argument_spec["function_name"] = {"type": "str", "required": True}
+    argument_spec["function_name"] = {"type": "str"}
     argument_spec["maximum_batching_window_in_seconds"] = {"type": "int"}
     argument_spec["maximum_record_age_in_seconds"] = {"type": "int"}
     argument_spec["maximum_retry_attempts"] = {"type": "int"}
@@ -308,6 +340,14 @@ def main():
             }
         },
     }
+    argument_spec["amazon_managed_kafka_event_source_config"] = {
+        "type": "dict",
+        "options": {"consumer_group_id": {"type": "str"}},
+    }
+    argument_spec["self_managed_kafka_event_source_config"] = {
+        "type": "dict",
+        "options": {"consumer_group_id": {"type": "str"}},
+    }
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -315,15 +355,20 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
+    argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["function_name"], True],
-        ["state", "absent", [], True],
-        ["state", "get", [], True],
+        ["state", "present", ["id", "function_name"], True],
+        ["state", "absent", ["id"], True],
+        ["state", "get", ["id"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -331,6 +376,9 @@ def main():
 
     params = {}
 
+    params["amazon_managed_kafka_event_source_config"] = module.params.get(
+        "amazon_managed_kafka_event_source_config"
+    )
     params["batch_size"] = module.params.get("batch_size")
     params["bisect_batch_on_function_error"] = module.params.get(
         "bisect_batch_on_function_error"
@@ -352,6 +400,9 @@ def main():
     params["parallelization_factor"] = module.params.get("parallelization_factor")
     params["queues"] = module.params.get("queues")
     params["self_managed_event_source"] = module.params.get("self_managed_event_source")
+    params["self_managed_kafka_event_source_config"] = module.params.get(
+        "self_managed_kafka_event_source_config"
+    )
     params["source_access_configurations"] = module.params.get(
         "source_access_configurations"
     )
@@ -368,7 +419,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -379,24 +430,36 @@ def main():
         "starting_position",
         "starting_position_timestamp",
         "self_managed_event_source",
+        "amazon_managed_kafka_event_source_config",
+        "self_managed_kafka_event_source_config",
     ]
 
-    state = module.params.get("state")
-    identifier = module.params.get("id")
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "delete", "list", "read", "update"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["id"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

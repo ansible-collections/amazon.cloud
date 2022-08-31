@@ -14,19 +14,27 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 module: backup_framework
 short_description: Create and manage frameworks with one or more controls
-description: Creates and manages frameworks with one or more controls (list, create,
-    update, describe, delete).
+description:
+- Creates and manages frameworks with one or more controls.
 options:
+    force:
+        default: false
+        description:
+        - Cancel IN_PROGRESS and PENDING resource requestes.
+        - Because you can only perform a single operation on a given resource at a
+            time, there might be cases where you need to cancel the current resource
+            operation to make the resource available so that another operation may
+            be performed on it.
+        type: bool
     framework_arn:
         description:
-        - An Amazon Resource Name (ARN) that uniquely identifies Framework as a resource
+        - An Amazon Resource Name (ARN) that uniquely identifies Framework as a resource.
         type: str
     framework_controls:
         description:
         - Contains detailed information about all of the controls of a framework.
         - Each framework must contain at least one control.
         elements: dict
-        required: true
         suboptions:
             control_input_parameters:
                 description:
@@ -36,19 +44,16 @@ options:
                     parameter_name:
                         description:
                         - Not Provived.
-                        required: true
                         type: str
                     parameter_value:
                         description:
                         - Not Provived.
-                        required: true
                         type: str
                 type: list
             control_name:
                 description:
                 - The name of a control.
                 - This name is between 1 and 256 characters.
-                required: true
                 type: str
             control_scope:
                 description:
@@ -83,7 +88,6 @@ options:
                                 - 'You can use any of the following characters: the
                                     set of Unicode letters, digits, whitespace, _,
                                     ., /, =, +, and -.'
-                                required: true
                                 type: str
                             value:
                                 description:
@@ -94,7 +98,6 @@ options:
                                 - 'You can use any of the following characters: the
                                     set of Unicode letters, digits, whitespace, _,
                                     ., /, =, +, and -.'
-                                required: true
                                 type: str
                         type: list
                 type: dict
@@ -121,7 +124,6 @@ options:
                     and cannot be prefixed with aws:.
                 - 'You can use any of the following characters: the set of Unicode
                     letters, digits, whitespace, _, ., /, =, +, and -.'
-                required: true
                 type: str
             value:
                 description:
@@ -130,14 +132,12 @@ options:
                     and cannot be prefixed with aws:.
                 - 'You can use any of the following characters: the set of Unicode
                     letters, digits, whitespace, _, ., /, =, +, and -.'
-                required: true
                 type: str
         type: list
     purge_tags:
         default: true
         description:
         - Remove tags not listed in I(tags).
-        required: false
         type: bool
     state:
         choices:
@@ -161,7 +161,6 @@ options:
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
-        required: false
         type: dict
     wait:
         default: false
@@ -175,7 +174,6 @@ options:
         type: int
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.1.0
-requirements: []
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -186,7 +184,10 @@ EXAMPLES = r"""
 
 RETURN = r"""
 result:
-    description: Dictionary containing resource information.
+    description:
+        - When I(state=list), it is a list containing dictionaries of resource information.
+        - Otherwise, it is a dictionary of resource information.
+        - When I(state=absent), it is an empty dictionary.
     returned: always
     type: complex
     contains:
@@ -229,13 +230,13 @@ def main():
         "type": "list",
         "elements": "dict",
         "options": {
-            "control_name": {"type": "str", "required": True},
+            "control_name": {"type": "str"},
             "control_input_parameters": {
                 "type": "list",
                 "elements": "dict",
                 "options": {
-                    "parameter_name": {"type": "str", "required": True},
-                    "parameter_value": {"type": "str", "required": True},
+                    "parameter_name": {"type": "str"},
+                    "parameter_value": {"type": "str"},
                 },
             },
             "control_scope": {
@@ -246,23 +247,16 @@ def main():
                     "tags": {
                         "type": "list",
                         "elements": "dict",
-                        "options": {
-                            "key": {"type": "str", "required": True},
-                            "value": {"type": "str", "required": True},
-                        },
+                        "options": {"key": {"type": "str"}, "value": {"type": "str"}},
                     },
                 },
             },
         },
-        "required": True,
     }
     argument_spec["framework_tags"] = {
         "type": "list",
         "elements": "dict",
-        "options": {
-            "key": {"type": "str", "required": True},
-            "value": {"type": "str", "required": True},
-        },
+        "options": {"key": {"type": "str"}, "value": {"type": "str"}},
     }
     argument_spec["state"] = {
         "type": "str",
@@ -271,21 +265,22 @@ def main():
     }
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
-    argument_spec["tags"] = {
-        "type": "dict",
-        "required": False,
-        "aliases": ["resource_tags"],
-    }
-    argument_spec["purge_tags"] = {"type": "bool", "required": False, "default": True}
+    argument_spec["force"] = {"type": "bool", "default": False}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["framework_controls"], True],
-        ["state", "absent", [], True],
-        ["state", "get", [], True],
+        ["state", "present", ["framework_arn", "framework_controls"], True],
+        ["state", "absent", ["framework_arn"], True],
+        ["state", "get", ["framework_arn"], True],
     ]
+    mutually_exclusive = []
 
     module = AnsibleAWSModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
     )
     cloud = CloudControlResource(module)
 
@@ -304,7 +299,7 @@ def main():
     _params_to_set = {k: v for k, v in params.items() if v is not None}
 
     # Only if resource is taggable
-    if module.params.get("tags", None):
+    if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
     params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
@@ -312,22 +307,32 @@ def main():
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = ["framework_name"]
 
-    state = module.params.get("state")
-    identifier = module.params.get("framework_arn")
+    # Necessary to handle when module does not support all the states
+    handlers = ["create", "read", "update", "delete", "list"]
 
-    results = {"changed": False, "result": []}
+    state = module.params.get("state")
+    identifier = ["framework_arn"]
+
+    results = {"changed": False, "result": {}}
 
     if state == "list":
-        results["result"] = cloud.list_resources(type_name)
+        if "list" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be listed."
+            )
+        results["result"] = cloud.list_resources(type_name, identifier)
 
     if state in ("describe", "get"):
+        if "read" not in handlers:
+            module.exit_json(
+                **results, msg=f"Resource type {type_name} cannot be read."
+            )
         results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "present":
-        results["changed"] |= cloud.present(
+        results = cloud.present(
             type_name, identifier, params_to_set, create_only_params
         )
-        results["result"] = cloud.get_resource(type_name, identifier)
 
     if state == "absent":
         results["changed"] |= cloud.absent(type_name, identifier)

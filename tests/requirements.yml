@@ -1,2 +1,5 @@
-integration_tests_dependencies: []
+integration_tests_dependencies:
+- amazon.aws
+- community.aws
+- community.crypto
 unit_tests_dependencies: []
