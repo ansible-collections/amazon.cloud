@@ -1,4 +1,4 @@
-requires_ansible: '>=2.9.10'
+requires_ansible: '>=2.11.0'
 action_groups:
   aws:
   - backup_backup_vault
