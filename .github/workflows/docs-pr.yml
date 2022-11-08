@@ -15,7 +15,10 @@ jobs:
     with:
       init-lenient: false
       init-fail-on-error: true
-      extra-collections: 'amazon.aws'
+      intersphinx-links: |
+        amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
+        community_aws:https://ansible-collections.github.io/community.aws/branch/main/
+        ansible_devel:https://docs.ansible.com/ansible-core/devel/
 
 
   build-docs:
@@ -26,7 +29,10 @@ jobs:
     with:
       init-lenient: true
       init-fail-on-error: false
-      extra-collections: 'amazon.aws'
+      intersphinx-links: |
+        amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
+        community_aws:https://ansible-collections.github.io/community.aws/branch/main/
+        ansible_devel:https://docs.ansible.com/ansible-core/devel/
 
   comment:
     permissions:
