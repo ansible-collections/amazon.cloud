@@ -132,7 +132,7 @@ Every voice is important. If you have something on your mind, create an issue or
 
 ## Release notes
 
-See the [changelog](https://github.com/ansible-collections/amazon.cloud/tree/main/CHANGELOG.rst).
+See the [rendered changelog](https://ansible-collections.github.io/amazon.cloud/branch/main/collections/amazon/cloud/docsite/CHANGELOG.html) or the [raw generated changelog](https://github.com/ansible-collections/amazon.cloud/tree/main/CHANGELOG.rst).
 
 
 ## Communication
