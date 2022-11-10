@@ -31,7 +31,7 @@ jobs:
 
   publish-docs-gh-pages:
     # use to prevent running on forks
-    if: github.repository == 'ansible-collections/community.aws'
+    if: github.repository == 'ansible-collections/amazon.cloud'
     permissions:
       contents: write
     needs: [build-docs]
