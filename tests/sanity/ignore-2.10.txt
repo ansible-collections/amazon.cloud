@@ -14,6 +14,11 @@ plugins/module_utils/utils.py future-import-boilerplate!skip
 plugins/module_utils/utils.py metaclass-boilerplate!skip
 plugins/module_utils/utils.py compile-2.6!skip
 plugins/module_utils/utils.py import-2.6!skip
+plugins/module_utils/waiters.py future-import-boilerplate!skip
+plugins/module_utils/waiters.py metaclass-boilerplate!skip
+plugins/module_utils/waiters.py compile-2.6!skip
+plugins/module_utils/waiters.py import-2.6!skip
+plugins/module_utils/waiters.py import-2.7!skip
 plugins/modules/backup_backup_vault.py compile-2.7!skip
 plugins/modules/backup_backup_vault.py compile-3.5!skip
 plugins/modules/backup_backup_vault.py import-2.7!skip
