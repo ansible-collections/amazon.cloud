@@ -1,2 +1,4 @@
 cloud/aws
 zuul/aws/cloud_control
+# Resource request failed to reach successful state: User: arn:aws:sts::966509639900:assumed-role/ansible-core-ci-test-prod/prod=remote=zuul-cloud is not authorized to perform: iam:UploadServerCertificate on resource: arn:aws:iam::966509639900:server-certificate/example/ansible-test-96259f54ff99 because no identity-based policy allows the iam:UploadServerCertificate action (Service: Iam, Status Code: 403, Request ID: 7329c667-e030-4948-b84b-f72eb76c104b)
+disabled
