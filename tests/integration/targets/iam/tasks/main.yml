@@ -12,7 +12,8 @@
   block:
     - include_tasks: ./generate_certs.yml
 
-    - set_fact:
+    - name: Load the certificate data
+      set_fact:
         cert_a_data: '{{ lookup("file", path_cert_a) }}'
         cert_b_data: '{{ lookup("file", path_cert_b) }}'
         chain_cert_data: '{{ lookup("file", path_intermediate_cert) }}'
