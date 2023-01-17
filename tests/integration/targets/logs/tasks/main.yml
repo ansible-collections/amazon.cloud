@@ -42,7 +42,7 @@
     - assert:
         that:
           - output is not changed
-    
+
     - name: Describe log group
       amazon.cloud.logs_log_group:
         state: describe

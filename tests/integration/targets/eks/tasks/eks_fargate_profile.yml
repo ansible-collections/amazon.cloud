@@ -1,4 +1,3 @@
-- include_tasks: set_facts.yml
 # Creating dependencies
 - name: Delete Fargate Profile b (if present)
   amazon.cloud.eks_fargate_profile:

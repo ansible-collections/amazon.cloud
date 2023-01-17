@@ -9,7 +9,7 @@
     - amazon.cloud
 
   block:
-    - name: Set S3 bucket name 
+    - name: Set S3 bucket name
       set_fact:
         bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
 
@@ -52,11 +52,11 @@
       register: _result
       tags:
         - docs
-    
+
     - assert:
         that:
             - _result is success
-    
+
     - name: List S3 buckets
       amazon.cloud.s3_bucket:
         state: list
@@ -127,7 +127,7 @@
       register: _result
       tags:
         - docs
-    
+
     - assert:
         that:
             - _result is success
@@ -224,9 +224,9 @@
         that:
             - _result is success
             - _result is not changed
-    
+
     - include_tasks: tagging.yml
-    
+
     - name: Delete S3 bucket - check_mode
       amazon.cloud.s3_bucket:
         bucket_name: "{{ output.result.identifier }}"

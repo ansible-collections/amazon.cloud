@@ -12,12 +12,11 @@
   block:
     - include_tasks: ./generate_certs.yml
 
-    - name: Load the certificate data
-      set_fact:
+    - set_fact:
         cert_a_data: '{{ lookup("file", path_cert_a) }}'
         cert_b_data: '{{ lookup("file", path_cert_b) }}'
         chain_cert_data: '{{ lookup("file", path_intermediate_cert) }}'
-      
+
     - name: Create Certificate - CHECK_MODE
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'
@@ -32,7 +31,7 @@
         that:
         - create_cert is successful
         - create_cert is changed
-    
+
     - name: Create Certificate
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'
@@ -58,7 +57,7 @@
         - result.path == '/'
       vars:
         result: "{{ create_cert.result.properties }}"
-  
+
     - name: Create Certificate - CHECK_MODE (idempotency)
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'
@@ -73,7 +72,7 @@
         that:
         - create_cert is successful
         - create_cert is not changed
-    
+
     - name: Create Certificate (idempotency)
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'
@@ -87,7 +86,7 @@
         that:
         - create_cert is successful
         - create_cert is not changed
-    
+
     - name: Update Chaining Certificate (CreateOnlyProperties) - CHECK_MODE
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'
@@ -95,13 +94,13 @@
         certificate_chain: '{{ chain_cert_data }}'
       register: update_cert
       ignore_errors: true
-    
+
     - name: Check result - Update Certificate
       assert:
         that:
         - create_cert is successful
         - create_cert is not changed
-    
+
     - name: Delete certificate
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'
@@ -140,7 +139,7 @@
         that:
         - delete_cert is successful
         - delete_cert is not changed
-    
+
     - name: Create Certificate with Chain and path - CHECK_MODE
       amazon.cloud.iam_server_certificate:
         server_certificate_name: '{{ cert_name }}'

@@ -8,7 +8,7 @@ eks_fargate_profile_name_b: "{{ _resource_prefix }}-fp-b"
 selectors:
   - labels:
     - key: "test"
-      value: "test"  
+      value: "test"
     namespace: "fp-default"
 
 tags:

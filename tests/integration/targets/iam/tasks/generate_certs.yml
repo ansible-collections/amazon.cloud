@@ -13,7 +13,7 @@
 - name: 'Generate CSRs'
   community.crypto.openssl_csr:
     path: '{{ remote_tmp_dir }}/{{ item }}.csr'
-    privatekey_path:  '{{ remote_tmp_dir }}/{{ item }}-key.pem'
+    privatekey_path: '{{ remote_tmp_dir }}/{{ item }}-key.pem'
     common_name: '{{ item }}.ansible.test'
     subject_alt_name: 'DNS:{{ item }}.ansible.test'
     basic_constraints:
