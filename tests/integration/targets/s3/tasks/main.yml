@@ -243,6 +243,7 @@
       amazon.cloud.s3_bucket:
         bucket_name: "{{ output.result.identifier }}"
         state: absent
+        wait: true
       register: _result
 
     - assert:

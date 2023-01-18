@@ -40,7 +40,7 @@
           new_snake_case_key: snake_case_value
 
 
-    - name: _test adding tags to amazon.cloud.s3_bucket (check mode)
+    - name: test adding tags to amazon.cloud.s3_bucket (check mode)
       amazon.cloud.s3_bucket:
         tags: '{{ first_tags }}'
         purge_tags: true
