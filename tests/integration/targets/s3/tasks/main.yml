@@ -56,19 +56,17 @@
     - assert:
         that:
             - _result is success
-    
-    # Temporary commented
-    # Failed to list resource requests: An error occurred (ThrottlingException) when calling the ListResourceRequests operation (reached max retries: 4): Rate exceeded
-    # - name: List S3 buckets
-    #   amazon.cloud.s3_bucket:
-    #     state: list
-    #   register: _result
-    #   tags:
-    #     - docs
 
-    # - assert:
-    #     that:
-    #         - _result is success
+    - name: List S3 buckets
+      amazon.cloud.s3_bucket:
+        state: list
+      register: _result
+      tags:
+        - docs
+
+    - assert:
+        that:
+            - _result is success
 
     - name: Create S3 bucket - idempotence
       amazon.cloud.s3_bucket:
