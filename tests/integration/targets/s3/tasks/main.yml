@@ -56,7 +56,7 @@
     - assert:
         that:
             - _result is success
-    
+
     - name: List S3 buckets
       amazon.cloud.s3_bucket:
         state: list

@@ -113,6 +113,9 @@ class CloudControlResource(object):
             )
 
     @to_sync
+    @AWSRetry.jittered_backoff(
+        catch_extra_error_codes=["ThrottlingException"], retries=10
+    )
     async def list_resources(
         self, type_name: str, identifiers: Optional[List] = None
     ) -> List:
@@ -144,7 +147,7 @@ class CloudControlResource(object):
                 if "NextToken" in response:
                     params["NextToken"] = response["NextToken"]
                 try:
-                    response = self.client.list_resources(**params)
+                    response = self.client.list_resources(**params, aws_retry=True)
                 except (
                     botocore.exceptions.BotoCoreError,
                     botocore.exceptions.ClientError,
@@ -173,6 +176,9 @@ class CloudControlResource(object):
 
         return results
 
+    @AWSRetry.jittered_backoff(
+        catch_extra_error_codes=["ThrottlingException"], retries=10
+    )
     def list_resource_requests(self, params: Iterable) -> List:
         """
         Returns existing resource operation requests using specific filters.
@@ -186,7 +192,9 @@ class CloudControlResource(object):
                 if "NextToken" in response:
                     params["NextToken"] = response["NextToken"]
                 try:
-                    response = self.client.list_resource_requests(**params)
+                    response = self.client.list_resource_requests(
+                        **params, aws_retry=True
+                    )
                 except (
                     botocore.exceptions.BotoCoreError,
                     botocore.exceptions.ClientError,
@@ -387,7 +395,7 @@ class CloudControlResource(object):
         self.wait_for_in_progress_requests(in_progress_requests, identifier)
         try:
             response = self.client.delete_resource(
-                TypeName=type_name, Identifier=identifier
+                TypeName=type_name, Identifier=identifier, aws_retry=True
             )
         except self.client.exceptions.ResourceNotFoundException:
             # If the resource has been deleted by an IN PROGRESS delete operation
@@ -414,7 +422,8 @@ class CloudControlResource(object):
             if response and response["ProgressEvent"]["OperationStatus"] == "PENDING":
                 try:
                     response = self.client.get_resource_request_status(
-                        RequestToken=response["ProgressEvent"]["RequestToken"]
+                        RequestToken=response["ProgressEvent"]["RequestToken"],
+                        aws_retry=True,
                     )
                 except (
                     botocore.exceptions.BotoCoreError,
@@ -461,7 +470,7 @@ class CloudControlResource(object):
                 try:
                     for e in in_progress_requests:
                         self.client.cancel_resource_request(
-                            RequestToken=e["RequestToken"]
+                            RequestToken=e["RequestToken"], aws_retry=True
                         )
                 except (
                     botocore.exceptions.BotoCoreError,
@@ -488,6 +497,7 @@ class CloudControlResource(object):
                         TypeName=type_name,
                         Identifier=identifier,
                         PatchDocument=str(patch),
+                        aws_retry=True,
                     )
                 except (
                     botocore.exceptions.BotoCoreError,

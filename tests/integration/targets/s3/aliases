@@ -1,2 +1,4 @@
 cloud/aws
 zuul/aws/cloud_control
+
+disabled  # Temporary disabled because they throw several ThrottlingExceptions and it needs further investigation

@@ -56,6 +56,7 @@
       amazon.cloud.s3_bucket:
         tags: '{{ first_tags }}'
         purge_tags: true
+        wait: true
       register: _result
     - name: assert that update succeeded
       assert:
@@ -90,8 +91,6 @@
           - _result is not changed
           - _result.result.properties.tags == first_tags
 
-    ###
-
     - name: test updating tags with purge on amazon.cloud.s3_bucket (check mode)
       amazon.cloud.s3_bucket:
         tags: '{{ second_tags }}'
@@ -107,6 +106,7 @@
       amazon.cloud.s3_bucket:
         tags: '{{ second_tags }}'
         purge_tags: true
+        wait: true
       register: _result
     - name: assert that update succeeded
       assert:
@@ -136,12 +136,11 @@
           - _result is not changed
           - _result.result.properties.tags == second_tags
 
-    #
-
     - name: test updating tags without purge on amazon.cloud.s3_bucket (check mode)
       amazon.cloud.s3_bucket:
         tags: '{{ third_tags }}'
         purge_tags: false
+        wait: true
       register: _result
       check_mode: yes
     - name: assert that update succeeded
@@ -195,7 +194,6 @@
         - _result is not changed
         - _result.result.properties.tags == final_tags
 
-
     - name: test no tags param amazon.cloud.s3_bucket
       amazon.cloud.s3_bucket: {}
       register: _result
@@ -204,8 +202,6 @@
         that:
           - _result is not changed
           - _result.result.properties.tags == final_tags
-
-    ###
 
     - name: test removing tags from amazon.cloud.s3_bucket (check mode)
       amazon.cloud.s3_bucket:
@@ -222,6 +218,7 @@
       amazon.cloud.s3_bucket:
         tags: {}
         purge_tags: true
+        wait: true
       register: _result
     - name: assert that update succeeded
       assert:
