@@ -6,6 +6,9 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened, closed]
 
+env:
+  GHP_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
 jobs:
   validate-docs:
     permissions:
@@ -15,7 +18,10 @@ jobs:
     with:
       init-lenient: false
       init-fail-on-error: true
-      extra-collections: 'amazon.aws'
+      extra-collections: 'git+https://github.com/ansible-collections/amazon.aws.git,main'
+      intersphinx-links: |
+        amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
+        ansible_devel:https://docs.ansible.com/ansible-core/devel/
 
 
   build-docs:
@@ -26,7 +32,10 @@ jobs:
     with:
       init-lenient: true
       init-fail-on-error: false
-      extra-collections: 'amazon.aws'
+      extra-collections: 'git+https://github.com/ansible-collections/amazon.aws.git,main'
+      intersphinx-links: |
+        amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
+        ansible_devel:https://docs.ansible.com/ansible-core/devel/
 
   comment:
     permissions:
