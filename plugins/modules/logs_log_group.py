@@ -215,6 +215,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
+
     required_if = [
         ["state", "present", ["log_group_name"], True],
         ["state", "absent", ["log_group_name"], True],
