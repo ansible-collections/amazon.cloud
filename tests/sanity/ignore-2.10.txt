@@ -24,7 +24,6 @@ plugins/doc_fragments/boto3.py metaclass-boilerplate!skip
 plugins/doc_fragments/boto3.py compile-2.6!skip
 plugins/doc_fragments/boto3.py import-2.6!skip
 plugins/doc_fragments/boto3.py import-2.7!skip
-plugins/modules/backup_backup_vault.py compile-2.7
 plugins/modules/backup_backup_vault.py compile-2.7!skip
 plugins/modules/backup_backup_vault.py compile-3.5!skip
 plugins/modules/backup_backup_vault.py import-2.7!skip
