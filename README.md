@@ -1,5 +1,5 @@
 # AWS Cloud Control Collection for Ansible
-The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services. 
+The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services.
 
 This work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state. 
 
@@ -72,7 +72,7 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
     register: log_group
 ```
 
-Because modules may keep the same name in the `amazon.cloud`, `amazon.aws` and `community.aws` collections, we recommend using the FQCN. 
+Because modules may keep the same name in the `amazon.cloud`, `amazon.aws` and `community.aws` collections, we recommend using the FQCN.
 
 For example, if you want to use the s3_bucket module without specyfing the FQDN, it will use the order the collections are listed and take the first matching module it finds (in this case, s3_bucket from `amazon.aws`).
 
@@ -105,7 +105,7 @@ For example, if you want to use the s3_bucket module without specyfing the FQDN,
 
 ## Contributing to this collection
 
-We welcome community contributions to this collection. Because this collection is auto-generated using the [amazon_cloud_code_generator](https://github.com/ansible-collections/amazon_cloud_code_generator) tool, if you find problems, please open an issue or create a Pull Request against the [amazon_cloud_code_generator repository](https://github.com/ansible-collections/amazon_cloud_code_generator).
+We welcome community contributions to this collection. Because this collection is auto-generated using the [gouttelette](https://github.com/ansible-collections/gouttelette) tool, if you find problems, please open an issue or create a Pull Request against the [gouttelette repository](https://github.com/ansible-collections/gouttelette).
 
 You can also join us in the:
 
