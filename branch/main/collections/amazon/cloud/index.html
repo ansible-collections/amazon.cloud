@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amazon.Cloud &mdash; Ansible collections  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/ansible.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/antsibull-minimal.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/rtd-ethical-ads.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/images/Ansible-Mark-RGB_Black.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="amazon.cloud Release Notes" href="docsite/CHANGELOG.html" />
+    <link rel="prev" title="Collections in the Amazon Namespace" href="../index.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+
+
+
+
+</head>
+
+<body class="wy-body-for-nav"><!-- extra body elements for Ansible beyond RTD Sphinx Theme -->
+
+<div class="DocSite-globalNav ansibleNav">
+  <ul>
+    <li><a href="https://www.ansible.com/ansiblefest" target="_blank">AnsibleFest</a></li>
+    <li><a href="https://www.ansible.com/tower" target="_blank">Products</a></li>
+    <li><a href="https://www.ansible.com/community" target="_blank">Community</a></li>
+    <li><a href="https://www.ansible.com/webinars-training" target="_blank">Webinars & Training</a></li>
+    <li><a href="https://www.ansible.com/blog" target="_blank">Blog</a></li>
+  </ul>
+</div>
+
+<a class="DocSite-nav" href="/" style="padding-bottom: 30px;">
+
+  <img class="DocSiteNav-logo"
+    src="../../../_static/images/Ansible-Mark-RGB_White.png"
+    alt="Ansible Logo">
+  <div class="DocSiteNav-title">Ansible Collections Documentation</div>
+</a>
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ansible collections
+          </a><!--- Based on https://github.com/rtfd/sphinx_rtd_theme/pull/438/files -->
+
+<div class="version">
+  
+    
+  
+</div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <label class="sr-only" for="q">Search docs:</label>
+    <input type="text" class="st-default-search-input" id="q" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+              <p class="caption" role="heading"><span class="caption-text">Collections:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Collection Index</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Collections in the Amazon Namespace</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Amazon.Cloud</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#communication">Communication</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changelog">Changelog</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scenario-guide">Scenario Guide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plugin-index">Plugin Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plugin indexes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index_module.html">Index of all Modules</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference indexes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../environment_variables.html">Index of all Collection Environment Variables</a></li>
+</ul>
+<!-- extra nav elements for Ansible beyond RTD Sphinx Theme -->
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ansible collections</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Collection Index</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Collections in the Amazon Namespace</a></li>
+      <li class="breadcrumb-item active">Amazon.Cloud</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+  
+           <div itemprop="articleBody">
+             
+  <section id="amazon-cloud">
+<span id="plugins-in-amazon-cloud"></span><h1>Amazon.Cloud<a class="headerlink" href="#amazon-cloud" title="Permalink to this heading"></a></h1>
+<p>Collection version 0.2.0</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#description" id="id1">Description</a></p></li>
+<li><p><a class="reference internal" href="#communication" id="id2">Communication</a></p></li>
+<li><p><a class="reference internal" href="#changelog" id="id3">Changelog</a></p></li>
+<li><p><a class="reference internal" href="#scenario-guide" id="id4">Scenario Guide</a></p></li>
+<li><p><a class="reference internal" href="#plugin-index" id="id5">Plugin Index</a></p></li>
+</ul>
+</nav>
+<section id="description">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Description</a><a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<p><strong>Author:</strong></p>
+<ul class="simple">
+<li><p>Ansible (<a class="reference external" href="https://github.com/ansible">https://github.com/ansible</a>)</p></li>
+</ul>
+<p><strong>Supported ansible-core versions:</strong></p>
+<ul class="simple">
+<li><p>2.9.10 or newer</p></li>
+</ul>
+<p class="ansible-links">
+  <a href="https://github.com/ansible-collections/amazon.cloud/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc" aria-role="button" target="_blank" rel="noopener external">Issue Tracker</a>
+  <a href="https://github.com/ansible-collections/amazon.cloud" aria-role="button" target="_blank" rel="noopener external">Repository (Sources)</a>
+</p></section>
+<section id="communication">
+<span id="communication-for-amazon-cloud"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Communication</a><a class="headerlink" href="#communication" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Matrix room <code class="docutils literal notranslate"><span class="pre">#aws:ansible.im</span></code>: <a class="reference external" href="https://matrix.to/#/#aws:ansible.im">General usage and support questions</a>.</p></li>
+<li><p>IRC channel <code class="docutils literal notranslate"><span class="pre">#ansible-aws</span></code> (Libera network):
+<a class="reference external" href="https://web.libera.chat/?channel=#ansible-aws">General usage and support questions</a>.</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="changelog">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Changelog</a><a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docsite/CHANGELOG.html">amazon.cloud Release Notes</a></li>
+</ul>
+</div>
+</section>
+<section id="scenario-guide">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Scenario Guide</a><a class="headerlink" href="#scenario-guide" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docsite/guide_amazon_cloud.html">Amazon.Cloud Collection Guide</a></li>
+</ul>
+</div>
+</section>
+<section id="plugin-index">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Plugin Index</a><a class="headerlink" href="#plugin-index" title="Permalink to this heading"></a></h2>
+<p>These are the plugins in the amazon.cloud collection:</p>
+<section id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="backup_backup_vault_module.html#ansible-collections-amazon-cloud-backup-backup-vault-module"><span class="std std-ref">backup_backup_vault module</span></a> – Create and manage logical containers where backups are stored</p></li>
+<li><p><a class="reference internal" href="backup_framework_module.html#ansible-collections-amazon-cloud-backup-framework-module"><span class="std std-ref">backup_framework module</span></a> – Create and manage frameworks with one or more controls</p></li>
+<li><p><a class="reference internal" href="backup_report_plan_module.html#ansible-collections-amazon-cloud-backup-report-plan-module"><span class="std std-ref">backup_report_plan module</span></a> – Create and manage report plans</p></li>
+<li><p><a class="reference internal" href="cloudtrail_event_data_store_module.html#ansible-collections-amazon-cloud-cloudtrail-event-data-store-module"><span class="std std-ref">cloudtrail_event_data_store module</span></a> – Creates and manages a new event data store</p></li>
+<li><p><a class="reference internal" href="cloudtrail_trail_module.html#ansible-collections-amazon-cloud-cloudtrail-trail-module"><span class="std std-ref">cloudtrail_trail module</span></a> – Creates and manages a trail that specifies the settings for delivery of log data to an Amazon S3 bucket.</p></li>
+<li><p><a class="reference internal" href="cloudwatch_composite_alarm_module.html#ansible-collections-amazon-cloud-cloudwatch-composite-alarm-module"><span class="std std-ref">cloudwatch_composite_alarm module</span></a> – Creates and manages a composite alarm</p></li>
+<li><p><a class="reference internal" href="cloudwatch_metric_stream_module.html#ansible-collections-amazon-cloud-cloudwatch-metric-stream-module"><span class="std std-ref">cloudwatch_metric_stream module</span></a> – Creates and manages a metric stream</p></li>
+<li><p><a class="reference internal" href="dynamodb_global_table_module.html#ansible-collections-amazon-cloud-dynamodb-global-table-module"><span class="std std-ref">dynamodb_global_table module</span></a> – Creates and manages a Version 2019.11.21 global table</p></li>
+<li><p><a class="reference internal" href="eks_addon_module.html#ansible-collections-amazon-cloud-eks-addon-module"><span class="std std-ref">eks_addon module</span></a> – Creates and manages Amazon EKS add-ons</p></li>
+<li><p><a class="reference internal" href="eks_cluster_module.html#ansible-collections-amazon-cloud-eks-cluster-module"><span class="std std-ref">eks_cluster module</span></a> – Create and manages Amazon EKS control planes</p></li>
+<li><p><a class="reference internal" href="eks_fargate_profile_module.html#ansible-collections-amazon-cloud-eks-fargate-profile-module"><span class="std std-ref">eks_fargate_profile module</span></a> – Creates and manage AWS Fargate profiles</p></li>
+<li><p><a class="reference internal" href="iam_role_module.html#ansible-collections-amazon-cloud-iam-role-module"><span class="std std-ref">iam_role module</span></a> – Create and manage roles</p></li>
+<li><p><a class="reference internal" href="iam_server_certificate_module.html#ansible-collections-amazon-cloud-iam-server-certificate-module"><span class="std std-ref">iam_server_certificate module</span></a> – Uploads and manages a server certificate entity for the AWS account</p></li>
+<li><p><a class="reference internal" href="kms_alias_module.html#ansible-collections-amazon-cloud-kms-alias-module"><span class="std std-ref">kms_alias module</span></a> – Specifies a display name for a KMS key.</p></li>
+<li><p><a class="reference internal" href="kms_replica_key_module.html#ansible-collections-amazon-cloud-kms-replica-key-module"><span class="std std-ref">kms_replica_key module</span></a> – Creates and manages a multi-Region replica key that is based on a multi-Region primary key</p></li>
+<li><p><a class="reference internal" href="lambda_code_signing_config_module.html#ansible-collections-amazon-cloud-lambda-code-signing-config-module"><span class="std std-ref">lambda_code_signing_config module</span></a> – Code signing for AWS Lambda</p></li>
+<li><p><a class="reference internal" href="lambda_event_source_mapping_module.html#ansible-collections-amazon-cloud-lambda-event-source-mapping-module"><span class="std std-ref">lambda_event_source_mapping module</span></a> – Create a mapping between an event source and an AWS Lambda function</p></li>
+<li><p><a class="reference internal" href="lambda_function_module.html#ansible-collections-amazon-cloud-lambda-function-module"><span class="std std-ref">lambda_function module</span></a> – Create and manage Lambda functions</p></li>
+<li><p><a class="reference internal" href="logs_log_group_module.html#ansible-collections-amazon-cloud-logs-log-group-module"><span class="std std-ref">logs_log_group module</span></a> – Create and manage log groups</p></li>
+<li><p><a class="reference internal" href="logs_query_definition_module.html#ansible-collections-amazon-cloud-logs-query-definition-module"><span class="std std-ref">logs_query_definition module</span></a> – Create and manage query definitions</p></li>
+<li><p><a class="reference internal" href="logs_resource_policy_module.html#ansible-collections-amazon-cloud-logs-resource-policy-module"><span class="std std-ref">logs_resource_policy module</span></a> – Create and manage resource policies</p></li>
+<li><p><a class="reference internal" href="rds_db_proxy_module.html#ansible-collections-amazon-cloud-rds-db-proxy-module"><span class="std std-ref">rds_db_proxy module</span></a> – Create and manage DB proxies</p></li>
+<li><p><a class="reference internal" href="rds_db_proxy_endpoint_module.html#ansible-collections-amazon-cloud-rds-db-proxy-endpoint-module"><span class="std std-ref">rds_db_proxy_endpoint module</span></a> – Creates and manages a DB proxy endpoint</p></li>
+<li><p><a class="reference internal" href="redshift_cluster_module.html#ansible-collections-amazon-cloud-redshift-cluster-module"><span class="std std-ref">redshift_cluster module</span></a> – Create and manage clusters</p></li>
+<li><p><a class="reference internal" href="redshift_endpoint_access_module.html#ansible-collections-amazon-cloud-redshift-endpoint-access-module"><span class="std std-ref">redshift_endpoint_access module</span></a> – Creates and manages Redshift-managed VPC endpoint</p></li>
+<li><p><a class="reference internal" href="redshift_endpoint_authorization_module.html#ansible-collections-amazon-cloud-redshift-endpoint-authorization-module"><span class="std std-ref">redshift_endpoint_authorization module</span></a> – Describes an endpoint authorization for authorizing Redshift-managed VPC endpoint access to a cluster across AWS accounts.</p></li>
+<li><p><a class="reference internal" href="redshift_event_subscription_module.html#ansible-collections-amazon-cloud-redshift-event-subscription-module"><span class="std std-ref">redshift_event_subscription module</span></a> – Create and manage Amazon Redshift event notification subscriptions</p></li>
+<li><p><a class="reference internal" href="redshift_scheduled_action_module.html#ansible-collections-amazon-cloud-redshift-scheduled-action-module"><span class="std std-ref">redshift_scheduled_action module</span></a> – Creates and manages a scheduled action</p></li>
+<li><p><a class="reference internal" href="route53_dnssec_module.html#ansible-collections-amazon-cloud-route53-dnssec-module"><span class="std std-ref">route53_dnssec module</span></a> – Is used to enable DNSSEC signing in a hosted zone</p></li>
+<li><p><a class="reference internal" href="route53_key_signing_key_module.html#ansible-collections-amazon-cloud-route53-key-signing-key-module"><span class="std std-ref">route53_key_signing_key module</span></a> – Creates a new key-signing key (KSK) in a hosted zone</p></li>
+<li><p><a class="reference internal" href="s3_access_point_module.html#ansible-collections-amazon-cloud-s3-access-point-module"><span class="std std-ref">s3_access_point module</span></a> – Create and manage Amazon S3 access points to use to access S3 buckets</p></li>
+<li><p><a class="reference internal" href="s3_bucket_module.html#ansible-collections-amazon-cloud-s3-bucket-module"><span class="std std-ref">s3_bucket module</span></a> – Create and manage S3 buckets</p></li>
+<li><p><a class="reference internal" href="s3_multi_region_access_point_module.html#ansible-collections-amazon-cloud-s3-multi-region-access-point-module"><span class="std std-ref">s3_multi_region_access_point module</span></a> – Create and manage Amazon S3 Multi-Region Access Points</p></li>
+<li><p><a class="reference internal" href="s3_multi_region_access_point_policy_module.html#ansible-collections-amazon-cloud-s3-multi-region-access-point-policy-module"><span class="std std-ref">s3_multi_region_access_point_policy module</span></a> – Manage Amazon S3 access policies</p></li>
+<li><p><a class="reference internal" href="s3objectlambda_access_point_module.html#ansible-collections-amazon-cloud-s3objectlambda-access-point-module"><span class="std std-ref">s3objectlambda_access_point module</span></a> – Create and manage Object Lambda Access Points used to access S3 buckets</p></li>
+<li><p><a class="reference internal" href="s3objectlambda_access_point_policy_module.html#ansible-collections-amazon-cloud-s3objectlambda-access-point-policy-module"><span class="std std-ref">s3objectlambda_access_point_policy module</span></a> – Specifies the Object Lambda Access Point resource policy document</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>List of <a class="reference internal" href="../../index.html#list-of-collections"><span class="std std-ref">collections</span></a> with docs hosted here.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          
+
+<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Collections in the Amazon Namespace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docsite/CHANGELOG.html" class="btn btn-neutral float-right" title="amazon.cloud Release Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Ansible contributors.</p>
+  </div>
+
+  
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script><!-- extra footer elements for Ansible beyond RTD Sphinx Theme -->
+
+</body>
+</html>
