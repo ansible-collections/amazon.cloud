@@ -23,7 +23,6 @@ jobs:
       init-fail-on-error: true
       extra-collections: |
         'git+https://github.com/ansible-collections/amazon.aws.git,main'
-        'git+https://github.com/ansible-collections/community.aws.git,main'
       intersphinx-links: |
         amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
         community_aws:https://ansible-collections.github.io/community.aws/branch/main/
