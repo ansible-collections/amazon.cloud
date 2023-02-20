@@ -1,4 +1,4 @@
 major_changes:
-- amazon.cloud collection - The amazon.collection collection has dropped support for
-  ``botocore<1.23.0`` and ``boto3<1.20.0``.
+- amazon.cloud collection - The amazon.cloud collection collection has dropped support for
+  ``botocore<1.28.0`` and ``boto3<1.25.0``.
   (https://github.com/ansible-collections/amazon.cloud/pull/48).
