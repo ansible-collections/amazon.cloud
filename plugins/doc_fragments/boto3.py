@@ -7,11 +7,11 @@
 class ModuleDocFragment(object):
 
     # Minimum requirements for the collection
-    DOCUMENTATION = r'''
+    DOCUMENTATION = r"""
 options: {}
 requirements:
   - python >= 3.9
   - boto3 >= 1.25.0
   - botocore >= 1.28.0
   - jsonpatch
-'''
+"""

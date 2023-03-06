@@ -37,7 +37,10 @@ from typing import Iterable, List, Dict, Optional, Union
 
 from ansible_collections.amazon.aws.plugins.module_utils.ec2 import AWSRetry
 from ansible_collections.amazon.aws.plugins.module_utils.core import AnsibleAWSModule
-from ansible_collections.amazon.aws.plugins.module_utils.common import (
+
+# Replicated common.py filefrom amazon.aws because the client agent string will be
+# released in amazon.aws 6.0.0
+from ansible_collections.amazon.cloud.plugins.module_utils.common import (
     set_collection_info,
 )
 from .utils import (

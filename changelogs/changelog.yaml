@@ -135,3 +135,89 @@ releases:
       name: s3objectlambda_access_point_policy
       namespace: ''
     release_date: '2022-08-30'
+  0.3.0:
+    changes:
+      breaking_changes:
+      - amazon.cloud collection - Support for ansible-core < 2.11 has been dropped
+        (https://github.com/ansible-collections/amazon.cloud/pull/27).
+      major_changes:
+      - amazon.cloud collection - The amazon.cloud collection collection has dropped
+        support for ``botocore<1.28.0`` and ``boto3<1.25.0``. (https://github.com/ansible-collections/amazon.cloud/pull/48).
+    fragments:
+    - bump_boto3_botocore_versions.yml
+    - drop-old-ansible.yml
+    modules:
+    - description: Creates and manages a web ACL association.
+      name: autoscaling_launch_configuration
+      namespace: ''
+    - description: Creates and manages an Auto Scaling group
+      name: autoscaling_lifecycle_hook
+      namespace: ''
+    - description: Creates and manages a pool of pre-initialized EC2 instances that
+        sits alongside the Auto Scaling group
+      name: autoscaling_warm_pool
+      namespace: ''
+    - description: Creates and manages a placement group
+      name: ec2_placement_group
+      namespace: ''
+    - description: Creates and manages an AWS ECR Repository resource
+      name: ecr_repository
+      namespace: ''
+    - description: Creates and manages a capacity provider
+      name: ecs_capacity_provider
+      namespace: ''
+    - description: Creates and manages an Amazon Elastic Container Service (Amazon
+        ECS) cluster
+      name: ecs_cluster
+      namespace: ''
+    - description: Creates and manages the association between one or more capacity
+        providers and a default capacity provider strategy with a cluster
+      name: ecs_cluster_capacity_provider_associations
+      namespace: ''
+    - description: Specifies which task set in a service is the primary task set.
+      name: ecs_primary_task_set
+      namespace: ''
+    - description: Creates and manages an instance profile
+      name: iam_instance_profile
+      namespace: ''
+    - description: Specifies a metric filter that describes how CloudWatch Logs extracts
+        information from logs and transforms it into Amazon CloudWatch metrics
+      name: logs_metric_filter
+      namespace: ''
+    - description: Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB
+        cluster
+      name: rds_db_cluster_parameter_group
+      namespace: ''
+    - description: Creates and manages resource creates an Amazon DB instance
+      name: rds_db_instance
+      namespace: ''
+    - description: Creates and manages a database subnet group
+      name: rds_db_subnet_group
+      namespace: ''
+    - description: Creates and manages an Amazon Aurora global database spread across
+        multiple AWS Regions
+      name: rds_global_cluster
+      namespace: ''
+    - description: Creates and manages an option group
+      name: rds_option_group
+      namespace: ''
+    - description: Creates and manages a Systems Manager (SSM) document
+      name: ssm_document
+      namespace: ''
+    - description: Creates and manages a resource data sync
+      name: ssm_resource_data_sync
+      namespace: ''
+    - description: Creates and manages and IP set
+      name: wafv2_ip_set
+      namespace: ''
+    - description: Creates and manages an association between logging destinations
+        and a web ACL resource
+      name: wafv2_logging_configuration
+      namespace: ''
+    - description: Creates and manages an AWS WAFv2 Regex Pattern Set
+      name: wafv2_regex_pattern_set
+      namespace: ''
+    - description: Creates and manages a web ACL association
+      name: wafv2_web_acl_association
+      namespace: ''
+    release_date: '2023-03-06'
