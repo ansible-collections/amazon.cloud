@@ -87,6 +87,12 @@ For example, if you want to use the s3_bucket module without specyfing the FQDN,
           bucket_name: "..."
 ```
 
+## Developement
+
+This collection can be generated using the [content_builder](https://github.com/ansible-community/ansible.content_builder) tool. Please refer to the [cloud_content generation section](https://github.com/ansible-community/ansible.content_builder#4-amazoncloud).
+
+This tool can generate the api specification files and use them to generate the modules. The developer can use the api specification files and the modules.yaml file hosted in this repository. The path to these files should be provided as input to the content builder tool to generate the schema and modules. To get more details on the command and input arguments please refer to the tool's [README](https://github.com/ansible-community/ansible.content_builder#resource-module-scaffolding-generated-using-openapi-based-json).
+
 ### See Also:
 
 * [Amazon.Cloud Collection Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_amazon_cloud.html)
