@@ -68,7 +68,7 @@ except ImportError:
     HAS_BOTO3 = False
 
 AMAZON_CLOUD_COLLECTION_NAME = "amazon.cloud"
-AMAZON_CLOUD_COLLECTION_VERSION = "0.2.0"
+AMAZON_CLOUD_COLLECTION_VERSION = "0.3.0"
 
 
 class CloudControlResource(object):
