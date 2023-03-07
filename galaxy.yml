@@ -10,8 +10,8 @@ description: null
 license_file: LICENSE
 tags: [amazon, cloud, aws]
 dependencies:
-  amazon.aws: '>5.2.0,<=5.3.0'
-  community.aws: '>5.1.0,<=5.2.0'
+  amazon.aws: '>=5.3.0'
+  community.aws: '>=5.3.0'
 repository: https://github.com/ansible-collections/amazon.cloud
 documentation: https://github.com/ansible-collections/amazon.cloud/tree/main/docs
 homepage: https://github.com/ansible-collections/amazon.cloud
