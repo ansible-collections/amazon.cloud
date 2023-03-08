@@ -1,3 +1,4 @@
+---
 - backup_backup_vault:
     documentation:
       short_description: Create and manage logical containers where backups are stored
