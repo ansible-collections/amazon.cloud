@@ -19,7 +19,9 @@
         "ec2:DescribeVpcs",
         "kms:Decrypt",
         "lambda:GetCodeSigningConfig",
-        "lambda:GetFunctionCodeSigningConfig"
+        "lambda:GetFunctionCodeSigningConfig",
+        "lambda:GetRuntimeManagementConfig",
+        "lambda:PutRuntimeManagementConfig"
       ]
     },
     "update": {
@@ -42,7 +44,9 @@
         "lambda:PutFunctionCodeSigningConfig",
         "lambda:DeleteFunctionCodeSigningConfig",
         "lambda:GetCodeSigningConfig",
-        "lambda:GetFunctionCodeSigningConfig"
+        "lambda:GetFunctionCodeSigningConfig",
+        "lambda:GetRuntimeManagementConfig",
+        "lambda:PutRuntimeManagementConfig"
       ]
     },
     "list": {
@@ -161,80 +165,26 @@
         }
       }
     },
-    "Environment": {
-      "description": "A function's environment variable settings.",
+    "RuntimeManagementConfig": {
       "additionalProperties": false,
       "type": "object",
       "properties": {
-        "Variables": {
-          "patternProperties": {
-            "[a-zA-Z][a-zA-Z0-9_]+": {
-              "type": "string"
-            }
-          },
-          "description": "Environment variable key-value pairs.",
-          "additionalProperties": false,
-          "type": "object"
-        }
-      }
-    },
-    "FileSystemConfig": {
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "Arn": {
-          "pattern": "^arn:aws[a-zA-Z-]*:elasticfilesystem:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\\d{1}:\\d{12}:access-point/fsap-[a-f0-9]{17}$",
-          "description": "The Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system.",
+        "UpdateRuntimeOn": {
+          "description": "Trigger for runtime update",
           "type": "string",
-          "maxLength": 200
+          "enum": [
+            "Auto",
+            "FunctionUpdate",
+            "Manual"
+          ]
         },
-        "LocalMountPath": {
-          "pattern": "^/mnt/[a-zA-Z0-9-_.]+$",
-          "description": "The path where the function can access the file system, starting with /mnt/.",
-          "type": "string",
-          "maxLength": 160
+        "RuntimeVersionArn": {
+          "description": "Unique identifier for a runtime version arn",
+          "type": "string"
         }
       },
       "required": [
-        "Arn",
-        "LocalMountPath"
-      ]
-    },
-    "Tag": {
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "Value": {
-          "minLength": 0,
-          "description": "The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
-          "type": "string",
-          "maxLength": 256
-        },
-        "Key": {
-          "minLength": 1,
-          "description": "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
-          "type": "string",
-          "maxLength": 128
-        }
-      },
-      "required": [
-        "Key"
-      ]
-    },
-    "EphemeralStorage": {
-      "description": "A function's ephemeral storage settings.",
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "Size": {
-          "description": "The amount of ephemeral storage that your function has access to.",
-          "maximum": 10240,
-          "type": "integer",
-          "minimum": 512
-        }
-      },
-      "required": [
-        "Size"
+        "UpdateRuntimeOn"
       ]
     },
     "SnapStart": {
@@ -310,6 +260,82 @@
           "type": "string"
         }
       }
+    },
+    "Environment": {
+      "description": "A function's environment variable settings.",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "Variables": {
+          "patternProperties": {
+            "[a-zA-Z][a-zA-Z0-9_]+": {
+              "type": "string"
+            }
+          },
+          "description": "Environment variable key-value pairs.",
+          "additionalProperties": false,
+          "type": "object"
+        }
+      }
+    },
+    "FileSystemConfig": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "Arn": {
+          "pattern": "^arn:aws[a-zA-Z-]*:elasticfilesystem:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\\d{1}:\\d{12}:access-point/fsap-[a-f0-9]{17}$",
+          "description": "The Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system.",
+          "type": "string",
+          "maxLength": 200
+        },
+        "LocalMountPath": {
+          "pattern": "^/mnt/[a-zA-Z0-9-_.]+$",
+          "description": "The path where the function can access the file system, starting with /mnt/.",
+          "type": "string",
+          "maxLength": 160
+        }
+      },
+      "required": [
+        "Arn",
+        "LocalMountPath"
+      ]
+    },
+    "Tag": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "Value": {
+          "minLength": 0,
+          "description": "The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+          "type": "string",
+          "maxLength": 256
+        },
+        "Key": {
+          "minLength": 1,
+          "description": "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+          "type": "string",
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "Key"
+      ]
+    },
+    "EphemeralStorage": {
+      "description": "A function's ephemeral storage settings.",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "Size": {
+          "description": "The amount of ephemeral storage that your function has access to.",
+          "maximum": 10240,
+          "type": "integer",
+          "minimum": 512
+        }
+      },
+      "required": [
+        "Size"
+      ]
     }
   },
   "required": [
@@ -329,6 +355,10 @@
     "VpcConfig": {
       "description": "For network connectivity to AWS resources in a VPC, specify a list of security groups and subnets in the VPC.",
       "$ref": "#/definitions/VpcConfig"
+    },
+    "RuntimeManagementConfig": {
+      "description": "RuntimeManagementConfig",
+      "$ref": "#/definitions/RuntimeManagementConfig"
     },
     "ReservedConcurrentExecutions": {
       "description": "The number of simultaneous executions to reserve for the function.",

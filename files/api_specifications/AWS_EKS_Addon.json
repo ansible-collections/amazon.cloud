@@ -43,6 +43,10 @@
       "type": "string",
       "minLength": 1
     },
+    "PreserveOnDelete": {
+      "description": "PreserveOnDelete parameter value",
+      "type": "boolean"
+    },
     "ResolveConflicts": {
       "description": "Resolve parameter value conflicts",
       "type": "string",
@@ -94,7 +98,8 @@
     "arn"
   ],
   "writeOnlyProperties": [
-    "resolve_conflicts"
+    "resolve_conflicts",
+    "preserve_on_delete"
   ],
   "handlers": {
     "create": {

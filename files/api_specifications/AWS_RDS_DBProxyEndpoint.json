@@ -96,14 +96,21 @@
     "db_proxy_endpoint_arn",
     "endpoint",
     "vpc_id",
-    "is_default"
+    "is_default",
+    "target_role"
   ],
   "createOnlyProperties": [
     "db_proxy_name",
     "db_proxy_endpoint_name",
-    "vpc_subnet_ids",
-    "target_role"
+    "vpc_subnet_ids"
   ],
+  "tagging": {
+    "taggable": true,
+    "tagOnCreate": true,
+    "tagUpdatable": false,
+    "cloudFormationSystemTags": false,
+    "tagProperty": "/properties/Tags"
+  },
   "primaryIdentifier": [
     "db_proxy_endpoint_name"
   ],
