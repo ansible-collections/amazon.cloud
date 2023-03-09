@@ -1,4 +1,4 @@
-requires_ansible: '>=2.9.10'
+requires_ansible: '>=2.11.0'
 action_groups:
   aws:
   - backup_backup_vault
@@ -37,6 +37,28 @@ action_groups:
   - cloudtrail_event_data_store
   - cloudwatch_composite_alarm
   - cloudwatch_metric_stream
+  - rds_db_instance
+  - rds_db_cluster_parameter_group
+  - rds_db_subnet_group
+  - rds_global_cluster
+  - rds_option_group
+  - ssm_document
+  - ssm_resource_data_sync
+  - wafv2_ip_set
+  - wafv2_logging_configuration
+  - wafv2_regex_pattern_set
+  - wafv2_web_acl_association
+  - ecr_repository
+  - ecs_capacity_provider
+  - ecs_cluster
+  - ecs_cluster_capacity_provider_associations
+  - ecs_primary_task_set
+  - iam_instance_profile
+  - logs_metric_filter
+  - ec2_placement_group
+  - autoscaling_launch_configuration
+  - autoscaling_lifecycle_hook
+  - autoscaling_warm_pool
   - rdsdb_proxy
   - s3_object_lambda_access_point
   - s3_object_lambda_access_point_policy

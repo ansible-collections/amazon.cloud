@@ -9,9 +9,15 @@ try:
 except ImportError:
     pass  # caught by HAS_BOTO3
 
-from ansible_collections.amazon.aws.plugins.module_utils.retries import (
-    RetryingBotoClientWrapper,
-)
+try:
+    # Will be released in amazon.aws 6.0.0
+    from ansible_collections.amazon.aws.plugins.module_utils.retries import (
+        RetryingBotoClientWrapper,
+    )
+except ImportError:
+    from ansible_collections.amazon.aws.plugins.module_utils.modules import (
+        _RetryingBotoClientWrapper as RetryingBotoClientWrapper,
+    )
 
 
 cloudcontrolapi_data = {

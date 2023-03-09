@@ -5,6 +5,45 @@ amazon.cloud Release Notes
 .. contents:: Topics
 
 
+v0.3.0
+======
+
+Major Changes
+-------------
+
+- amazon.cloud collection - The amazon.cloud collection collection has dropped support for ``botocore<1.28.0`` and ``boto3<1.25.0``. (https://github.com/ansible-collections/amazon.cloud/pull/48).
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- amazon.cloud collection - Support for ansible-core < 2.11 has been dropped (https://github.com/ansible-collections/amazon.cloud/pull/27).
+
+New Modules
+-----------
+
+- autoscaling_launch_configuration - Creates and manages a web ACL association.
+- autoscaling_lifecycle_hook - Creates and manages an Auto Scaling group
+- autoscaling_warm_pool - Creates and manages a pool of pre-initialized EC2 instances that sits alongside the Auto Scaling group
+- ec2_placement_group - Creates and manages a placement group
+- ecr_repository - Creates and manages an AWS ECR Repository resource
+- ecs_capacity_provider - Creates and manages a capacity provider
+- ecs_cluster - Creates and manages an Amazon Elastic Container Service (Amazon ECS) cluster
+- ecs_cluster_capacity_provider_associations - Creates and manages the association between one or more capacity providers and a default capacity provider strategy with a cluster
+- ecs_primary_task_set - Specifies which task set in a service is the primary task set.
+- iam_instance_profile - Creates and manages an instance profile
+- logs_metric_filter - Specifies a metric filter that describes how CloudWatch Logs extracts information from logs and transforms it into Amazon CloudWatch metrics
+- rds_db_cluster_parameter_group - Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster
+- rds_db_instance - Creates and manages resource creates an Amazon DB instance
+- rds_db_subnet_group - Creates and manages a database subnet group
+- rds_global_cluster - Creates and manages an Amazon Aurora global database spread across multiple AWS Regions
+- rds_option_group - Creates and manages an option group
+- ssm_document - Creates and manages a Systems Manager (SSM) document
+- ssm_resource_data_sync - Creates and manages a resource data sync
+- wafv2_ip_set - Creates and manages and IP set
+- wafv2_logging_configuration - Creates and manages an association between logging destinations and a web ACL resource
+- wafv2_regex_pattern_set - Creates and manages an AWS WAFv2 Regex Pattern Set
+- wafv2_web_acl_association - Creates and manages a web ACL association
+
 v0.2.0
 ======
 
