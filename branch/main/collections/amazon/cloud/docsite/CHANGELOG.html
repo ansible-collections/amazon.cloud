@@ -129,39 +129,88 @@
            <div itemprop="articleBody">
              
   <section id="amazon-cloud-release-notes">
-<h1><a class="toc-backref" href="#id2" role="doc-backlink">amazon.cloud Release Notes</a><a class="headerlink" href="#amazon-cloud-release-notes" title="Permalink to this heading"></a></h1>
+<h1><a class="toc-backref" href="#id3" role="doc-backlink">amazon.cloud Release Notes</a><a class="headerlink" href="#amazon-cloud-release-notes" title="Permalink to this heading"></a></h1>
 <nav class="contents" id="topics">
 <p class="topic-title">Topics</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#amazon-cloud-release-notes" id="id2">amazon.cloud Release Notes</a></p>
+<li><p><a class="reference internal" href="#amazon-cloud-release-notes" id="id3">amazon.cloud Release Notes</a></p>
 <ul>
-<li><p><a class="reference internal" href="#v0-2-0" id="id3">v0.2.0</a></p>
+<li><p><a class="reference internal" href="#v0-3-0" id="id4">v0.3.0</a></p>
 <ul>
-<li><p><a class="reference internal" href="#minor-changes" id="id4">Minor Changes</a></p></li>
-<li><p><a class="reference internal" href="#new-modules" id="id5">New Modules</a></p></li>
+<li><p><a class="reference internal" href="#major-changes" id="id5">Major Changes</a></p></li>
+<li><p><a class="reference internal" href="#breaking-changes-porting-guide" id="id6">Breaking Changes / Porting Guide</a></p></li>
+<li><p><a class="reference internal" href="#new-modules" id="id7">New Modules</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#v0-1-0" id="id6">v0.1.0</a></p>
+<li><p><a class="reference internal" href="#v0-2-0" id="id8">v0.2.0</a></p>
 <ul>
-<li><p><a class="reference internal" href="#id1" id="id7">New Modules</a></p></li>
+<li><p><a class="reference internal" href="#minor-changes" id="id9">Minor Changes</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id10">New Modules</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#v0-1-0" id="id11">v0.1.0</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id12">New Modules</a></p></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </nav>
+<section id="v0-3-0">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">v0.3.0</a><a class="headerlink" href="#v0-3-0" title="Permalink to this heading"></a></h2>
+<section id="major-changes">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Major Changes</a><a class="headerlink" href="#major-changes" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>amazon.cloud collection - The amazon.cloud collection collection has dropped support for <code class="docutils literal notranslate"><span class="pre">botocore&lt;1.28.0</span></code> and <code class="docutils literal notranslate"><span class="pre">boto3&lt;1.25.0</span></code>. (<a class="reference external" href="https://github.com/ansible-collections/amazon.cloud/pull/48">https://github.com/ansible-collections/amazon.cloud/pull/48</a>).</p></li>
+</ul>
+</section>
+<section id="breaking-changes-porting-guide">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Breaking Changes / Porting Guide</a><a class="headerlink" href="#breaking-changes-porting-guide" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>amazon.cloud collection - Support for ansible-core &lt; 2.11 has been dropped (<a class="reference external" href="https://github.com/ansible-collections/amazon.cloud/pull/27">https://github.com/ansible-collections/amazon.cloud/pull/27</a>).</p></li>
+</ul>
+</section>
+<section id="new-modules">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">New Modules</a><a class="headerlink" href="#new-modules" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>autoscaling_launch_configuration - Creates and manages a web ACL association.</p></li>
+<li><p>autoscaling_lifecycle_hook - Creates and manages an Auto Scaling group</p></li>
+<li><p>autoscaling_warm_pool - Creates and manages a pool of pre-initialized EC2 instances that sits alongside the Auto Scaling group</p></li>
+<li><p>ec2_placement_group - Creates and manages a placement group</p></li>
+<li><p>ecr_repository - Creates and manages an AWS ECR Repository resource</p></li>
+<li><p>ecs_capacity_provider - Creates and manages a capacity provider</p></li>
+<li><p>ecs_cluster - Creates and manages an Amazon Elastic Container Service (Amazon ECS) cluster</p></li>
+<li><p>ecs_cluster_capacity_provider_associations - Creates and manages the association between one or more capacity providers and a default capacity provider strategy with a cluster</p></li>
+<li><p>ecs_primary_task_set - Specifies which task set in a service is the primary task set.</p></li>
+<li><p>iam_instance_profile - Creates and manages an instance profile</p></li>
+<li><p>logs_metric_filter - Specifies a metric filter that describes how CloudWatch Logs extracts information from logs and transforms it into Amazon CloudWatch metrics</p></li>
+<li><p>rds_db_cluster_parameter_group - Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster</p></li>
+<li><p>rds_db_instance - Creates and manages resource creates an Amazon DB instance</p></li>
+<li><p>rds_db_subnet_group - Creates and manages a database subnet group</p></li>
+<li><p>rds_global_cluster - Creates and manages an Amazon Aurora global database spread across multiple AWS Regions</p></li>
+<li><p>rds_option_group - Creates and manages an option group</p></li>
+<li><p>ssm_document - Creates and manages a Systems Manager (SSM) document</p></li>
+<li><p>ssm_resource_data_sync - Creates and manages a resource data sync</p></li>
+<li><p>wafv2_ip_set - Creates and manages and IP set</p></li>
+<li><p>wafv2_logging_configuration - Creates and manages an association between logging destinations and a web ACL resource</p></li>
+<li><p>wafv2_regex_pattern_set - Creates and manages an AWS WAFv2 Regex Pattern Set</p></li>
+<li><p>wafv2_web_acl_association - Creates and manages a web ACL association</p></li>
+</ul>
+</section>
+</section>
 <section id="v0-2-0">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">v0.2.0</a><a class="headerlink" href="#v0-2-0" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">v0.2.0</a><a class="headerlink" href="#v0-2-0" title="Permalink to this heading"></a></h2>
 <section id="minor-changes">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Minor Changes</a><a class="headerlink" href="#minor-changes" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Minor Changes</a><a class="headerlink" href="#minor-changes" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>rdsdb_proxy - module renamed to <code class="docutils literal notranslate"><span class="pre">rds_db_proxy</span></code>.</p></li>
 <li><p>s3_object_lambda_access_point - module renamed to <code class="docutils literal notranslate"><span class="pre">s3objectlambda_access_point</span></code>.</p></li>
 <li><p>s3_object_lambda_access_point_policy - module renamed to <code class="docutils literal notranslate"><span class="pre">s3objectlambda_access_point_policy</span></code>.</p></li>
 </ul>
 </section>
-<section id="new-modules">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">New Modules</a><a class="headerlink" href="#new-modules" title="Permalink to this heading"></a></h3>
+<section id="id1">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">New Modules</a><a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>cloudtrail_event_data_store - Creates and manages a new event data store</p></li>
 <li><p>cloudtrail_trail - Creates and manages a trail that specifies the settings for delivery of log data to an Amazon S3 bucket.</p></li>
@@ -186,9 +235,9 @@
 </section>
 </section>
 <section id="v0-1-0">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">v0.1.0</a><a class="headerlink" href="#v0-1-0" title="Permalink to this heading"></a></h2>
-<section id="id1">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">New Modules</a><a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">v0.1.0</a><a class="headerlink" href="#v0-1-0" title="Permalink to this heading"></a></h2>
+<section id="id2">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">New Modules</a><a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>backup_backup_vault - Create and manage logical containers where backups are stored</p></li>
 <li><p>backup_framework - Create and manage frameworks with one or more controls</p></li>
