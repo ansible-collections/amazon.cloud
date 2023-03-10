@@ -1,0 +1,445 @@
+---
+- backup_backup_vault:
+    documentation:
+      short_description: Create and manage logical containers where backups are stored
+      description:
+      - Creates and manages logical containers where backups are stored.
+    resource: AWS::Backup::BackupVault
+- backup_framework:
+    documentation:
+      short_description: Create and manage frameworks with one or more controls
+      description:
+      - Creates and manages frameworks with one or more controls.
+    resource: AWS::Backup::Framework
+- backup_report_plan:
+    documentation:
+      short_description: Create and manage report plans
+      description:
+      - Creates and manages report plans.
+    resource: AWS::Backup::ReportPlan
+- eks_cluster:
+    documentation:
+      short_description: Create and manages Amazon EKS control planes
+      description:
+      - Create and manage Amazon EKS control planes.
+    resource: AWS::EKS::Cluster
+- iam_role:
+    documentation:
+      short_description: Create and manage roles
+      description:
+      - Creates and manages new roles for your AWS account.
+    resource: AWS::IAM::Role
+- lambda_code_signing_config:
+    documentation:
+      short_description: Code signing for AWS Lambda
+      description:
+      - Creates and manage code signing for AWS Lambda.
+    resource: AWS::Lambda::CodeSigningConfig
+- lambda_event_source_mapping:
+    documentation:
+      short_description: Create a mapping between an event source and an AWS Lambda
+        function
+      description:
+      - Create a mapping between an event source and an AWS Lambda function.
+    resource: AWS::Lambda::EventSourceMapping
+- lambda_function:
+    documentation:
+      short_description: Create and manage Lambda functions
+      description:
+      - Creates and manage Lambda functions.
+    resource: AWS::Lambda::Function
+- logs_log_group:
+    documentation:
+      short_description: Create and manage log groups
+      description:
+      - Create and manage log groups.
+    resource: AWS::Logs::LogGroup
+- logs_query_definition:
+    documentation:
+      short_description: Create and manage query definitions
+      description:
+      - Creates and manage query definitions for CloudWatch Logs Insights.
+    resource: AWS::Logs::QueryDefinition
+- logs_resource_policy:
+    documentation:
+      short_description: Create and manage resource policies
+      description:
+      - Creates and manage resource policies that allows other AWS services to put
+        log events to the account.
+    resource: AWS::Logs::ResourcePolicy
+- rds_db_proxy:
+    documentation:
+      short_description: Create and manage DB proxies
+      description:
+      - Creates and manage DB proxies.
+    resource: AWS::RDS::DBProxy
+- redshift_cluster:
+    documentation:
+      short_description: Create and manage clusters
+      description:
+      - Creates and manage clusters.
+    resource: AWS::Redshift::Cluster
+- redshift_event_subscription:
+    documentation:
+      short_description: Create and manage Amazon Redshift event notification subscriptions
+      description:
+      - Creates and manage Amazon Redshift event notification subscriptions.
+    resource: AWS::Redshift::EventSubscription
+- s3_access_point:
+    documentation:
+      short_description: Create and manage Amazon S3 access points to use to access
+        S3 buckets
+      description:
+      - Create and manage Amazon S3 access points to use to access S3 buckets.
+    resource: AWS::S3::AccessPoint
+- s3_bucket:
+    documentation:
+      short_description: Create and manage S3 buckets
+      description:
+      - Create and manage S3 buckets.
+    resource: AWS::S3::Bucket
+- s3_multi_region_access_point:
+    documentation:
+      short_description: Create and manage Amazon S3 Multi-Region Access Points
+      description:
+      - Create and manage Amazon S3 Multi-Region Access Points.
+    resource: AWS::S3::MultiRegionAccessPoint
+- s3_multi_region_access_point_policy:
+    documentation:
+      short_description: Manage Amazon S3 access policies
+      description:
+      - Applie and manage Amazon S3 access policies to an Amazon S3 Multi-Region Access
+        Points.
+    resource: AWS::S3::MultiRegionAccessPointPolicy
+- s3objectlambda_access_point:
+    documentation:
+      short_description: Create and manage Object Lambda Access Points used to access
+        S3 buckets
+      description:
+      - Create and manage Object Lambda Access Points used to access S3 buckets.
+    resource: AWS::S3ObjectLambda::AccessPoint
+- s3objectlambda_access_point_policy:
+    documentation:
+      short_description: Specifies the Object Lambda Access Point resource policy
+        document
+      description:
+      - Create and manage Object Lambda Access Point resource policy document.
+    resource: AWS::S3ObjectLambda::AccessPointPolicy
+# 0.2.0
+- eks_fargate_profile:
+    documentation:
+      short_description: Creates and manage AWS Fargate profiles
+      description:
+      - Creates and manage AWS Fargate profiles for your Amazon EKS cluster.
+      - You must have at least one Fargate profile in a cluster to be able to run
+        pods on Fargate.
+    resource: AWS::EKS::FargateProfile
+- dynamodb_global_table:
+    documentation:
+      short_description: Creates and manages a Version 2019.11.21 global table
+      description:
+      - Creates and manages a Version 2019.11.21 global table.
+      - This resource cannot be used to create or manage a Version 2017.11.29 global
+        table.
+    resource: AWS::DynamoDB::GlobalTable
+- eks_addon:
+    documentation:
+      short_description: Creates and manages Amazon EKS add-ons
+      description:
+      - Creates and manages Amazon EKS add-ons.
+      - Amazon EKS add-ons require clusters running version 1.18 or later because
+        Amazon EKS add-ons rely on the Server-side Apply Kubernetes feature, which
+        is only available in Kubernetes 1.18 and later.
+      - For more information see U(https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html).
+    resource: AWS::EKS::Addon
+- iam_server_certificate:
+    documentation:
+      short_description: Uploads and manages a server certificate entity for the AWS
+        account
+      description:
+      - Uploads and manages a server certificate entity for the AWS account.
+    resource: AWS::IAM::ServerCertificate
+- kms_alias:
+    documentation:
+      short_description: Specifies a display name for a KMS key.
+      description:
+      - Specifies a display name for a KMS key.
+    resource: AWS::KMS::Alias
+- kms_replica_key:
+    documentation:
+      short_description: Creates and manages a multi-Region replica key that is based
+        on a multi-Region primary key
+      description:
+      - Creates andn manages a multi-Region replica key that is based on a multi-Region
+        primary key.
+    resource: AWS::KMS::ReplicaKey
+- rds_db_proxy_endpoint:
+    documentation:
+      short_description: Creates and manages a DB proxy endpoint
+      description:
+      - Creates and manages a DB proxy endpoint.
+      - You can use custom proxy endpoints to access a proxy through a different VPC
+        than the proxy's default VPC.
+    resource: AWS::RDS::DBProxyEndpoint
+- redshift_endpoint_access:
+    documentation:
+      short_description: Creates and manages Redshift-managed VPC endpoint
+      description:
+      - Creates and manages a Redshift-managed VPC endpoint.
+    resource: AWS::Redshift::EndpointAccess
+- redshift_endpoint_authorization:
+    documentation:
+      short_description: Describes an endpoint authorization for authorizing Redshift-managed
+        VPC endpoint access to a cluster across AWS accounts.
+      description:
+      - Describes an endpoint authorization for authorizing Redshift-managed VPC endpoint
+        access to a cluster across AWS accounts.
+    resource: AWS::Redshift::EndpointAuthorization
+- redshift_scheduled_action:
+    documentation:
+      short_description: Creates and manages a scheduled action
+      description:
+      - Creates and manages a scheduled action.
+      - A scheduled action contains a schedule and an Amazon Redshift API action.
+      - For example, you can create a schedule of when to run the ResizeCluster API
+        operation.
+    resource: AWS::Redshift::ScheduledAction
+- route53_dnssec:
+    documentation:
+      short_description: Is used to enable DNSSEC signing in a hosted zone
+      description:
+      - Is used to enable DNSSEC signing in a hosted zone.
+    resource: AWS::Route53::DNSSEC
+- route53_key_signing_key:
+    documentation:
+      short_description: Creates a new key-signing key (KSK) in a hosted zone
+      description:
+      - Creates a new key-signing key (KSK) in a hosted zone.
+    resource: AWS::Route53::KeySigningKey
+- cloudtrail_trail:
+    documentation:
+      short_description: Creates and manages a trail that specifies the settings for
+        delivery of log data to an Amazon S3 bucket.
+      description:
+      - Creates and manages a trail that specifies the settings for delivery of log
+        data to an Amazon S3 bucket.
+    resource: AWS::CloudTrail::Trail
+- cloudtrail_event_data_store:
+    documentation:
+      short_description: Creates and manages a new event data store
+      description:
+      - Creates and manages a new event data store.
+    resource: AWS::CloudTrail::EventDataStore
+- cloudwatch_composite_alarm:
+    documentation:
+      short_description: Creates and manages a composite alarm
+      description:
+      - Creates and manages a composite alarm.
+      - When you create a composite alarm, you specify a rule expression for the alarm
+        that takes into account the alarm states of other alarms that you have created.
+      - The composite alarm goes into ALARM state only if all conditions of the rule
+        are met.
+    resource: AWS::CloudWatch::CompositeAlarm
+- cloudwatch_metric_stream:
+    documentation:
+      short_description: Creates and manages a metric stream
+      description:
+      - Creates and manages a metric stream.
+      - Metrics streams can automatically stream CloudWatch metrics to AWS destinations
+        including Amazon S3 and to many third-party solutions.
+      - For more information, see U(https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Metric-Streams.html).
+    resource: AWS::CloudWatch::MetricStream
+# 0.3.0
+- rds_db_instance:
+    documentation:
+      short_description: Creates and manages resource creates an Amazon DB instance
+      description:
+      - Creates and manages resource creates an Amazon DB instance.
+      - The new DB instance can be an RDS DB instance, or it can be a DB instance
+        in an Aurora DB cluster.
+    resource: AWS::RDS::DBInstance
+- rds_db_cluster_parameter_group:
+    documentation:
+      short_description: Creates and manages an Amazon Aurora DB cluster or Multi-AZ
+        DB cluster
+      description:
+      - Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster.
+    resource: AWS::RDS::DBClusterParameterGroup
+- rds_db_subnet_group:
+    documentation:
+      short_description: Creates and manages a database subnet group
+      description:
+      - Creates and manages a database subnet group.
+      - Subnet groups must contain at least two subnets in two different Availability
+        Zones in the same region.
+    resource: AWS::RDS::DBSubnetGroup
+- rds_global_cluster:
+    documentation:
+      short_description: Creates and manages an Amazon Aurora global database spread
+        across multiple AWS Regions
+      description:
+      - Creates and manages an Amazon Aurora global database spread across multiple
+        AWS Regions.
+    resource: AWS::RDS::GlobalCluster
+- rds_option_group:
+    documentation:
+      short_description: Creates and manages an option group
+      description:
+      - Creates and manages an option group, to enable and configure features that
+        are specific to a particular DB engine.
+    resource: AWS::RDS::OptionGroup
+- ssm_document:
+    documentation:
+      short_description: Creates and manages a Systems Manager (SSM) document
+      description:
+      - Creates and manages a Systems Manager (SSM) document in AWS Systems Manager.
+      - This document defines the actions that Systems Manager performs on your AWS
+        resources.
+    resource: AWS::SSM::Document
+- ssm_resource_data_sync:
+    documentation:
+      short_description: Creates and manages a resource data sync
+      description:
+      - Creates and manages a resource data sync for AWS Systems Manager.
+      - A resource data sync helps you view data from multiple sources in a single
+        location.
+    resource: AWS::SSM::ResourceDataSync
+- wafv2_ip_set:
+    documentation:
+      short_description: Creates and manages and IP set
+      description:
+      - Creates and manages and IP set to identify web requests that originate from
+        specific IP addresses or ranges of IP addresses.
+      - For example, if you're receiving a lot of requests from a ranges of IP addresses,
+        you can configure AWS WAF to block them using an IP set that lists those IP
+        addresses.
+      - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-ipset.html).
+    resource: AWS::WAFv2::IPSet
+- wafv2_logging_configuration:
+    documentation:
+      short_description: Creates and manages an association between logging destinations
+        and a web ACL resource
+      description:
+      - Creates and manages an association between logging destinations and a web
+        ACL resource, for logging from AWS WAF.
+      - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-loggingconfiguration.html).
+    resource: AWS::WAFv2::LoggingConfiguration
+- wafv2_regex_pattern_set:
+    documentation:
+      short_description: Creates and manages an AWS WAFv2 Regex Pattern Set
+      description:
+      - Creates and manages an AWS WAFv2 Regex Pattern Set.
+      - Use an AWS WAFv2 Regex Pattern Set to have AWS WAF inspect a web request component
+        for a specific set of regular expression patterns.
+    resource: AWS::WAFv2::RegexPatternSet
+- wafv2_web_acl_association:
+    documentation:
+      short_description: Creates and manages a web ACL association
+      description:
+      - Creates and manages a web ACL association.
+      - Use a web ACL association to define an association between a web ACL and a
+        regional application resource, to protect the resource.
+    resource: AWS::WAFv2::WebACLAssociation
+- ecr_repository:
+    documentation:
+      short_description: Creates and manages an AWS ECR Repository resource
+      description:
+      - The AWS ECR Repository resource specifies an Amazon Elastic Container Registry
+        (Amazon ECR) repository, where users can push and pull Docker images, Open
+        Container Initiative (OCI) images, and OCI compatible artifacts.
+      - For more information see U(https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html).
+    resource: AWS::ECR::Repository
+- ecs_capacity_provider:
+    documentation:
+      short_description: Creates and manages a capacity provider
+      description:
+      - Creates and manages a capacity provider.
+      - Capacity providers are associated with an Amazon ECS cluster and are used
+        in capacity provider strategies to facilitate cluster auto scaling.
+    resource: AWS::ECS::CapacityProvider
+- ecs_cluster:
+    documentation:
+      short_description: Creates and manages an Amazon Elastic Container Service (Amazon
+        ECS) cluster
+      description:
+      - Creates and manages an Amazon Elastic Container Service (Amazon ECS) cluster.
+    resource: AWS::ECS::Cluster
+- ecs_cluster_capacity_provider_associations:
+    documentation:
+      short_description: Creates and manages the association between one or more capacity
+        providers and a default capacity provider strategy with a cluster
+      description:
+      - The AWS ECS Cluster Capacity Provider Associations resource associates one
+        or more capacity providers and a default capacity provider strategy with a
+        cluster.
+    resource: AWS::ECS::ClusterCapacityProviderAssociations
+- ecs_primary_task_set:
+    documentation:
+      short_description: Specifies which task set in a service is the primary task
+        set.
+      description:
+      - Specifies which task set in a service is the primary task set.
+      - Any parameters that are updated on the primary task set in a service will
+        transition to the service.
+      - This is used when a service uses the EXTERNAL deployment controller type.
+    resource: AWS::ECS::PrimaryTaskSet
+- iam_instance_profile:
+    documentation:
+      short_description: Creates and manages an instance profile
+      description:
+      - Creates and manages an instance profile.
+      - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-instanceprofile.html).
+    resource: AWS::IAM::InstanceProfile
+- logs_metric_filter:
+    documentation:
+      short_description: Specifies a metric filter that describes how CloudWatch Logs
+        extracts information from logs and transforms it into Amazon CloudWatch metrics
+      description:
+      - Specifies a metric filter that describes how CloudWatch Logs extracts information
+        from logs and transforms it into Amazon CloudWatch metrics.
+      - If you have multiple metric filters that are associated with a log group,
+        all the filters are applied to the log streams in that group.
+      - The maximum number of metric filters that can be associated with a log group
+        is 100.
+    resource: AWS::Logs::MetricFilter
+- ec2_placement_group:
+    documentation:
+      short_description: Creates and manages a placement group
+      description:
+      - Specifies a placement group in which to launch instances.
+      - The strategy of the placement group determines how the instances are organized
+        within the group.
+      - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-placementgroup.html).
+    resource: AWS::EC2::PlacementGroup
+- autoscaling_launch_configuration:
+    documentation:
+      short_description: Creates and manages a web ACL association.
+      description:
+      - Creates and manages a web ACL association.
+      - Use a web ACL association to define an association between a web ACL and a
+        regional application resource, to protect the resource.
+    resource: AWS::AutoScaling::LaunchConfiguration
+- autoscaling_lifecycle_hook:
+    documentation:
+      short_description: Creates and manages an Auto Scaling group
+      description:
+      - Creates and manages an Auto Scaling group.
+      - The AWS AutoScaling Lifecycle Hook resource specifies lifecycle hooks for
+        an Auto Scaling group.
+      - These hooks let you create solutions that are aware of events in the Auto
+        Scaling instance lifecycle, and then perform a custom action on instances
+        when the corresponding lifecycle event occurs.
+      - A lifecycle hook provides a specified amount of time (one hour by default)
+        to wait for the action to complete before the instance transitions to the
+        next state.
+    resource: AWS::AutoScaling::LifecycleHook
+- autoscaling_warm_pool:
+    documentation:
+      short_description: Creates and manages a pool of pre-initialized EC2 instances
+        that sits alongside the Auto Scaling group
+      description:
+      - Creates and manages a pool of pre-initialized EC2 instances that sits alongside
+        the Auto Scaling group.
+      - Whenever your application needs to scale out, the Auto Scaling group can draw
+        on the warm pool to meet its new desired capacity.
+    resource: AWS::AutoScaling::WarmPool
