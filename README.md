@@ -111,7 +111,7 @@ This tool can generate the api specification files and use them to generate the 
 
 ## Contributing to this collection
 
-We welcome community contributions to this collection. Because this collection is auto-generated using the [gouttelette](https://github.com/ansible-collections/gouttelette) tool, if you find problems, please open an issue or create a Pull Request against the [gouttelette repository](https://github.com/ansible-collections/gouttelette).
+We welcome community contributions to this collection. Because this collection is auto-generated using the [content_builder](https://github.com/ansible-community/ansible.content_builder) tool, if you find problems, please open an issue or create a Pull Request against the [content_builder](https://github.com/ansible-community/ansible.content_builder).
 
 You can also join us in the:
 
