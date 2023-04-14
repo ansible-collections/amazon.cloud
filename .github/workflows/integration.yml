@@ -1,0 +1,89 @@
+# Some tests require secrets from the repo
+# and therefore require an approval/label to run
+name: integration
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request_target:
+    branches:
+      - main
+      - stable-*
+    types:
+      - labeled
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  safe-to-test-network:
+    if: >-
+      github.event.label.name == 'safe to test' ||
+      github.event.action != 'labeled'
+    permissions: read-all
+    uses: ansible-network/github_actions/.github/workflows/safe-to-test.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  safe-to-test:
+    if: github.event.label.name == 'safe to test' || github.event.action != 'labeled'
+    permissions:
+      pull-requests: write
+      contents: write
+    uses: abikouo/gha_testing/.github/workflows/safe-to-test.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  integration:
+    needs:
+      - safe-to-test
+    env:
+      source: "./source"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ansible-version:
+          - devel
+        python-version:
+          - "3.9"
+    name: "ansible-test-integration-py${{ matrix.python-version }}-${{ matrix.ansible-version }}"
+    steps:
+      - name: Checkout collection
+        uses: actions/checkout@v3
+        with:
+          path: ${{ env.source }}
+          fetch-depth: "0"
+
+      - name: Build and install collection
+        id: install-collection
+        uses: abikouo/github_actions/.github/actions/build_install_collection@build_install_collection
+        with:
+          install_python_dependencies: true
+          source_path: ${{ env.source }}
+
+      - name: Create AWS/sts session credentials
+        uses: abikouo/github_actions/.github/actions/ansible_aws_test_provider@ansible_test_integration_a
+        with:
+          collection_path: ${{ steps.install-collection.outputs.collection_path }}
+          ansible_core_ci_key: ${{ secrets.ANSIBLE_CORE_CI_KEY }}
+
+      - name: Run integration tests
+        uses: abikouo/github_actions/.github/actions/ansible_test_integration@ansible_test_integration_a
+        with:
+          collection_path: ${{ steps.install-collection.outputs.collection_path }}
+          python_version: ${{ matrix.python-version }}
+          ansible_version: ${{ matrix.ansible-version }}
+
+  integration_passed:
+    needs:
+      - integration
+    runs-on: ubuntu-latest
+    steps:
+      - run: >-
+          python -c "assert set([
+          '${{ needs.integration.result }}',
+          ]) == {'success'}"
