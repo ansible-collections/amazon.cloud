@@ -443,3 +443,49 @@
       - Whenever your application needs to scale out, the Auto Scaling group can draw
         on the warm pool to meet its new desired capacity.
     resource: AWS::AutoScaling::WarmPool
+- memorydb_acl:
+    documentation:
+      short_description: Creates and manages a MemoryDB ACL
+      description:
+      - Creates and manages an Access Control List (ACL) to specify permissions to
+        a MemoryDB for Redis cluster.
+        For more information, see
+        U(https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html)
+    resource: AWS::MemoryDB::ACL
+- memorydb_cluster:
+    documentation:
+      short_description: Creates and manages a MemoryDB cluster
+      description:
+      - Creates or manages a MemoryDB for Redis cluster.
+        For more information, see
+        U(https://docs.aws.amazon.com/cli/latest/reference/memorydb/create-cluster.html)
+    resource: AWS::MemoryDB::Cluster
+- memorydb_parameter_group:
+    documentation:
+      short_description: Creates and manages a MemoryDB parameter group
+      description:
+      - Creates a new MemoryDB parameter group. A parameter group is a collection
+        of parameters and their values that are applied to all of the nodes in any
+        cluster.
+        For more information, see
+        U(https://docs.aws.amazon.com/MemoryDB/latest/devguide/parametergroups.html)
+    resource: AWS::MemoryDB::ParameterGroup
+- memorydb_subnet_group:
+    documentation:
+      short_description: Creates and manages a MemoryDB subnet group
+      description:
+      - A subnet group is a collection of subnets (typically private) that you
+        can designate for your clusters running in an Amazon Virtual Private
+        Cloud (VPC) environment. When you create a MemoryDB cluster, you
+        must specify a subnet group. MemoryDB uses that subnet group to choose
+        a subnet and IP addresses within that subnet to associate with your nodes.
+        For more information, see
+        U(https://docs.aws.amazon.com/MemoryDB/latest/devguide/subnetgroups.html)
+    resource: AWS::MemoryDB::SubnetGroup
+- memorydb_user:
+    documentation:
+      short_description: Creates and manages a MemoryDB user
+      description:
+      - Creates a MemoryDB user. For more information, see
+        U(https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html)
+    resource: AWS::MemoryDB::User
