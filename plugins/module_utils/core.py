@@ -105,8 +105,10 @@ class CloudControlResource(object):
                 WaiterConfig=self._waiter_config,
             )
         except botocore.exceptions.WaiterError as e:
+            progress_event = e.last_response["ProgressEvent"]
+            message = progress_event.get("StatusMessage") or progress_event.get("OperationStatus")
             self.module.fail_json_aws(
-                e.last_response["ProgressEvent"]["StatusMessage"],
+                message,
                 msg="Resource request failed to reach successful state",
             )
         except (
