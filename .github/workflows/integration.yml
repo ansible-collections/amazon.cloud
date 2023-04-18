@@ -1,19 +1,11 @@
 name: integration
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: '${{ github.workflow }} @ ${{ github.sha }}'
   cancel-in-progress: true
 
 on:
   pull_request_target:
-    branches:
-      - main
-      - stable-*
-    types:
-      - opened
-      - reopened
-      - synchronize
-  workflow_dispatch:
 
 jobs:
   integration:
@@ -44,14 +36,14 @@ jobs:
           ref: main
 
       - name: Build and install collection
-        id: install-collection
+        id: install-src
         uses: abikouo/github_actions/.github/actions/build_install_collection@build_install_collection
         with:
           install_python_dependencies: true
           source_path: ${{ env.source }}
       
       - name: Build and install amazon.aws collection
-        id: install-collection
+        id: install-amazon
         uses: abikouo/github_actions/.github/actions/build_install_collection@build_install_collection
         with:
           install_python_dependencies: true
@@ -60,12 +52,12 @@ jobs:
       - name: Create AWS/sts session credentials
         uses: abikouo/github_actions/.github/actions/ansible_aws_test_provider@ansible_test_integration_a
         with:
-          collection_path: ${{ steps.install-collection.outputs.collection_path }}
+          collection_path: ${{ steps.install-src.outputs.collection_path }}
           ansible_core_ci_key: ${{ secrets.ANSIBLE_CORE_CI_KEY }}
 
       - name: Run integration tests
         uses: abikouo/github_actions/.github/actions/ansible_test_integration@ansible_test_integration_a
         with:
-          collection_path: ${{ steps.install-collection.outputs.collection_path }}
+          collection_path: ${{ steps.install-src.outputs.collection_path }}
           python_version: ${{ matrix.python-version }}
           ansible_version: ${{ matrix.ansible-version }}
