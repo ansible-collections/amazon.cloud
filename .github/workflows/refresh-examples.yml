@@ -1,0 +1,31 @@
+name: refresh-examples
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.sha }}'
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    name: Refresh examples
+    env:
+      gouttelette: "./gouttelette"
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout gouttelette
+        uses: ansible-network/github_actions/.github/actions/checkout_dependency@main
+        with:
+          repository: ansible-collections/gouttelette
+          path: ${{ env.gouttelette }}
+          ref: main
+
+      - name: Refresh examples
+        uses: abikouo/github_actions/.github/actions/tox@tox_linters
+        with:
+          path: "."
+          tox_envlist: refresh-examples
+          tox_dependencies: "${{ env.gouttelette }}"
