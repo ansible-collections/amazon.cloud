@@ -1,0 +1,3 @@
+---
+trivial:
+- "Remove references to gouttelette from tox.ini."
