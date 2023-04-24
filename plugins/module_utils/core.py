@@ -55,7 +55,7 @@ from .utils import (
     json_patch,
     get_patch,
 )
-
+from .utils import ansible_dict_to_boto3_tag_list # pylint: disable=unused-import
 from ansible_collections.amazon.cloud.plugins.module_utils.waiters import get_waiter
 
 BOTO3_IMP_ERR = None
