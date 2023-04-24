@@ -139,7 +139,7 @@ releases:
     changes:
       breaking_changes:
       - amazon.cloud collection - Support for ansible-core < 2.11 has been dropped
-        (https://github.com/ansible-collections/amazon.cloud/pull/27).
+        (https://github.com/ansible-collections/amazon.cloud/pull/49).
       major_changes:
       - amazon.cloud collection - The amazon.cloud collection collection has dropped
         support for ``botocore<1.28.0`` and ``boto3<1.25.0``. (https://github.com/ansible-collections/amazon.cloud/pull/48).

@@ -106,7 +106,9 @@ class CloudControlResource(object):
             )
         except botocore.exceptions.WaiterError as e:
             progress_event = e.last_response["ProgressEvent"]
-            message = progress_event.get("StatusMessage") or progress_event.get("OperationStatus")
+            message = progress_event.get("StatusMessage") or progress_event.get(
+                "OperationStatus"
+            )
             self.module.fail_json_aws(
                 message,
                 msg="Resource request failed to reach successful state",
@@ -535,7 +537,6 @@ class CloudControlResource(object):
 
 class AnsibleAmazonCloudModule(AnsibleAWSModule):
     def __init__(self, **kwargs):
-
         super(AnsibleAmazonCloudModule, self).__init__(**kwargs)
         set_collection_info(
             collection_name=AMAZON_CLOUD_COLLECTION_NAME,

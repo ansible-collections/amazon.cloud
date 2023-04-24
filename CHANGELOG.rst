@@ -16,7 +16,7 @@ Major Changes
 Breaking Changes / Porting Guide
 --------------------------------
 
-- amazon.cloud collection - Support for ansible-core < 2.11 has been dropped (https://github.com/ansible-collections/amazon.cloud/pull/27).
+- amazon.cloud collection - Support for ansible-core < 2.11 has been dropped (https://github.com/ansible-collections/amazon.cloud/pull/49).
 
 New Modules
 -----------

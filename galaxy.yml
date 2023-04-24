@@ -20,3 +20,4 @@ build_ignore:
   - '*cloud-config-aws.ini'
   - '*cloud-config-aws.yml'
   - 'changelogs/.plugin-cache.yaml'
+  - 'config/*'
