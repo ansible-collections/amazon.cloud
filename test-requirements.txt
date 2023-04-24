@@ -1,6 +1,7 @@
 botocore
 boto3
 
+setuptools<58.0
 coverage==4.5.4
 placebo
 mock
