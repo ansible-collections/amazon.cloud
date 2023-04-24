@@ -86,14 +86,4 @@ plugins/modules/autoscaling_launch_configuration.py validate-modules:no-log-need
 plugins/modules/autoscaling_launch_configuration.py validate-modules:parameter-state-invalid-choice
 plugins/modules/autoscaling_lifecycle_hook.py validate-modules:parameter-state-invalid-choice
 plugins/modules/autoscaling_warm_pool.py validate-modules:parameter-state-invalid-choice
-plugins/modules/eks_addon.py validate-modules:mutually_exclusive-type
-plugins/modules/eks_fargate_profile.py validate-modules:mutually_exclusive-type
-plugins/modules/redshift_endpoint_authorization.py validate-modules:mutually_exclusive-type
-plugins/modules/route53_key_signing_key.py validate-modules:mutually_exclusive-type
-plugins/modules/autoscaling_lifecycle_hook.py validate-modules:mutually_exclusive-type
-plugins/modules/ecs_primary_task_set.py validate-modules:mutually_exclusive-type
-plugins/modules/logs_metric_filter.py validate-modules:mutually_exclusive-type
-plugins/modules/wafv2_ip_set.py validate-modules:mutually_exclusive-type
-plugins/modules/wafv2_regex_pattern_set.py validate-modules:mutually_exclusive-type
-plugins/modules/wafv2_web_acl_association.py validate-modules:mutually_exclusive-type
 plugins/module_utils/core.py pylint!skip
