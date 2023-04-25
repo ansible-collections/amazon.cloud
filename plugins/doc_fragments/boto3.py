@@ -5,7 +5,6 @@
 
 
 class ModuleDocFragment(object):
-
     # Minimum requirements for the collection
     DOCUMENTATION = r"""
 options: {}
