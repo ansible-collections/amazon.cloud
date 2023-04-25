@@ -20,10 +20,10 @@ except ImportError:
 
 from ansible.module_utils.common.dict_transformations import (
     camel_dict_to_snake_dict,
-    snake_dict_to_camel_dict,
     recursive_diff,
 )
 
+from ansible.module_utils.common.dict_transformations import snake_dict_to_camel_dict # pylint: disable=unused-import
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import missing_required_lib
 

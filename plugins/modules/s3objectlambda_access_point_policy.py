@@ -86,7 +86,6 @@ result:
             type: dict
 """
 
-import json
 
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     AnsibleAmazonCloudModule,
