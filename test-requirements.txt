@@ -6,3 +6,4 @@ placebo
 mock
 pytest
 pytest-xdist
+pytest-ansible-units ; python_version > '3.8'
