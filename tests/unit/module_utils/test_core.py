@@ -61,6 +61,7 @@ def test_present_updates_resource(ccr):
         TypeName="AWS::S3::Bucket",
         Identifier="test_bucket",
         PatchDocument='[{"op": "add", "path": "/Tags", "value": [{"Key": "k", "Value": "v"}]}]',
+        aws_retry=True,
     )
     ccr.client.create_resource.assert_not_called()
 
@@ -79,6 +80,7 @@ def test_absent_deletes_resource(ccr):
     ccr.client.delete_resource.assert_called_with(
         TypeName="AWS::S3::Bucket",
         Identifier="test_bucket",
+        aws_retry=True,
     )
     ccr.client.create_resource.assert_not_called()
     ccr.client.update_resource.assert_not_called()
