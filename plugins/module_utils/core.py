@@ -48,7 +48,6 @@ from .utils import (
     scrub_keys,
     to_sync,
     to_async,
-    ansible_dict_to_boto3_tag_list,
     diff_dicts,
     snake_to_camel,
     json_patch,
