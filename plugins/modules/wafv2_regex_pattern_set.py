@@ -138,7 +138,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
 
 
 def main():
-
     argument_spec = dict(
         state=dict(
             type="str",

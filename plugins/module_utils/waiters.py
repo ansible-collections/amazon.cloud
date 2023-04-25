@@ -54,7 +54,6 @@ cloudcontrolapi_data = {
 
 
 def _inject_limit_retries(model):
-
     extra_retries = [
         "RequestLimitExceeded",
         "Unavailable",

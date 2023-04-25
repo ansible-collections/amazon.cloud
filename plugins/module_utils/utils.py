@@ -23,7 +23,9 @@ from ansible.module_utils.common.dict_transformations import (
     recursive_diff,
 )
 
-from ansible.module_utils.common.dict_transformations import snake_dict_to_camel_dict # pylint: disable=unused-import
+from ansible.module_utils.common.dict_transformations import (
+    snake_dict_to_camel_dict,
+)  # pylint: disable=unused-import
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import missing_required_lib
 
@@ -164,7 +166,6 @@ def ansible_dict_to_boto3_tag_list(
 def boto3_tag_list_to_ansible_dict(
     tags_list, tag_name_key_name=None, tag_value_key_name=None
 ):
-
     """Convert a boto3 list of resource tags to a flat dict of key:value pairs
     Args:
         tags_list (list): List of dicts representing AWS tags.
