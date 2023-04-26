@@ -23,9 +23,10 @@ from ansible.module_utils.common.dict_transformations import (
     recursive_diff,
 )
 
+# pylint: disable=unused-import
 from ansible.module_utils.common.dict_transformations import (
     snake_dict_to_camel_dict,
-)  # pylint: disable=unused-import
+)
 from ansible.module_utils._text import to_native
 from ansible.module_utils.basic import missing_required_lib
 
