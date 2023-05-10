@@ -93,6 +93,8 @@ This collection can be generated using the [content_builder](https://github.com/
 
 This tool can generate the api specification files and use them to generate the modules. The developer can use the [api specification](https://github.com/ansible-collections/amazon.cloud/api_specifications) files and the [modules.yaml](https://github.com/ansible-collections/amazon.cloud/modules.yaml) file hosted in this repository. The path to these files should be provided as input to the content builder tool to generate the schema and modules. To get more details on the command and input arguments please refer to the tool's [README](https://github.com/ansible-community/ansible.content_builder#resource-module-scaffolding-generated-using-openapi-based-json).
 
+This collection is tested using GitHub Actions. To know more on testing, refer to [CI.md](https://github.com/ansible-collections/amazon.cloud/blob/main/CI,md).
+
 ### See Also:
 
 * [Amazon.Cloud Collection Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_amazon_cloud.html)
