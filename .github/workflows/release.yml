@@ -1,0 +1,16 @@
+---
+name: Release
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    uses: ansible/devtools/.github/workflows/release_collection.yml@main
+    with:
+      environment: release
+      # publish to galaxy only (this release is not published to automation hub)
+      ah_publish: false
+    secrets:
+      ansible_galaxy_api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
