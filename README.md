@@ -1,12 +1,12 @@
 # AWS Cloud Control Collection for Ansible
 The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services.
 
-This work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state. 
+This work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state.
 
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.11.0**.
+This collection has been tested against following Ansible versions: **>=2.12.0**.
 
 Plugins and modules within a collection may be tested with only specific Ansible versions.
 A collection may contain metadata that identifies these versions.
