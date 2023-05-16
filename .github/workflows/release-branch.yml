@@ -1,0 +1,22 @@
+---
+name: Release
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.sha }}'
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: The base branch of the release
+        required: true
+
+jobs:
+  prepare:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: abikouo/github_actions/.github/workflows/release-branch.yml@release_v2
+    with:
+      release_branch: ${{ github.event.inputs.release_branch }}
