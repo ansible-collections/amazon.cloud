@@ -17,6 +17,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: abikouo/github_actions/.github/workflows/release-branch.yml@release_v2
+    uses: ansible-network/github_actions/.github/workflows/release-branch.yml@main
     with:
       release_branch: ${{ github.event.inputs.release_branch }}
