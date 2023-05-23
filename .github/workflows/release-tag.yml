@@ -18,3 +18,5 @@ jobs:
       contents: write
       pull-requests: write
     uses: ansible-network/github_actions/.github/workflows/release-tag.yml@main
+    secrets:
+      gh_token: ${{ secrets.GH_TOKEN }}
