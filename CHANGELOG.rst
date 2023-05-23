@@ -5,6 +5,19 @@ amazon.cloud Release Notes
 .. contents:: Topics
 
 
+v0.4.0
+======
+
+Minor Changes
+-------------
+
+- Add unit ad sanity test workflows to GHA.
+
+Bugfixes
+--------
+
+- Address a situation where the creation of a resource with ``wait: true`` was causing an exception in case of timeout (https://github.com/ansible-collections/amazon.cloud/pull/60).
+
 v0.3.0
 ======
 

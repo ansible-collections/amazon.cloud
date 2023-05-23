@@ -221,3 +221,18 @@ releases:
       name: wafv2_web_acl_association
       namespace: ''
     release_date: '2023-03-06'
+  0.4.0:
+    changes:
+      bugfixes:
+      - 'Address a situation where the creation of a resource with ``wait: true``
+        was causing an exception in case of timeout (https://github.com/ansible-collections/amazon.cloud/pull/60).'
+      minor_changes:
+      - Add unit ad sanity test workflows to GHA.
+    fragments:
+    - 20230426-update_readme_and_runtime.yml
+    - add_unit_sanity_workflows.yaml
+    - avoid_KeyError_exception_during_wait.yaml
+    - black_format.yaml
+    - cleanup.yml
+    - remove_used_import.yaml
+    release_date: '2023-05-23'
