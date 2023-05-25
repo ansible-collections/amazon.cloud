@@ -1,14 +1,15 @@
-# See https://docs.ansible.com/ansible/latest/dev_guide/collections_galaxy_meta.html
-
 namespace: amazon
 name: cloud
-version: 0.3.0
+version: 1.5.0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
 description: null
 license_file: LICENSE
-tags: [amazon, cloud, aws]
+tags:
+  - amazon
+  - cloud
+  - aws
 dependencies:
   amazon.aws: '>=5.3.0'
   community.aws: '>=5.3.0'
@@ -19,5 +20,5 @@ issues: https://github.com/ansible-collections/amazon.cloud/issues?q=is%3Aissue+
 build_ignore:
   - '*cloud-config-aws.ini'
   - '*cloud-config-aws.yml'
-  - 'changelogs/.plugin-cache.yaml'
-  - 'config/*'
+  - changelogs/.plugin-cache.yaml
+  - config/*
