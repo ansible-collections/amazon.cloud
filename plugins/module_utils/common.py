@@ -4,7 +4,7 @@
 # in amazon.aws 6.0.0
 
 AMAZON_CLOUD_COLLECTION_NAME = "amazon.cloud"
-AMAZON_CLOUD_COLLECTION_VERSION = "0.3.0"
+AMAZON_CLOUD_COLLECTION_VERSION = "0.4.0"
 
 
 _collection_info_context = {
