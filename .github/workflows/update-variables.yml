@@ -14,6 +14,6 @@ on:
 
 jobs:
   update-variables:
-    uses: ansible-network/github_actions/.github/workflows/update_aws_variables.yml@main
+    uses: abikouo/github_actions/.github/workflows/update_aws_variables.yml@release_v5
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
