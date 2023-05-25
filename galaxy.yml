@@ -2,7 +2,7 @@
 
 namespace: amazon
 name: cloud
-version: 0.3.0
+version: 0.4.0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
