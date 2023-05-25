@@ -20,3 +20,5 @@ jobs:
     uses: ansible-network/github_actions/.github/workflows/release-branch.yml@main
     with:
       version: ${{ github.event.inputs.version }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
