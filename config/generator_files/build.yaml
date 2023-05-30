@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  gather_facts: yes
+
+  vars:
+    manifest_file: /tmp/amazon_cloud_manifest.yaml
+
+  pre_tasks:
+    - name: Generate yaml manifest file
+      ansible.builtin.template:
+        dest: "{{ manifest_file }}"
+        src: "{{ collection_path }}/config/generator_files/manifest.yaml.j2"
+
+  roles:
+    - ansible.content_builder.run
