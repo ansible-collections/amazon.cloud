@@ -7,9 +7,11 @@ concurrency:
 
 on:
   pull_request_target:
+    paths:
+      - 'config/**'
 
 jobs:
-  generate:
+  builder:
     runs-on: ubuntu-latest
     env:
       python_version: '3.9'
