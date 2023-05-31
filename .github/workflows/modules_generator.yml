@@ -1,0 +1,87 @@
+---
+name: modules generator
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.sha }}'
+  cancel-in-progress: true
+
+on:
+  pull_request_target:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      python_version: '3.9'
+      ansible_version: 'stable-2.12'
+      collection_path: "amazon_cloud"
+      branch_name: ${{ github.head_ref }}
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ env.branch_name }}
+          path: ${{ env.collection_path }}
+
+      - name: Set up Python ${{ env.python_version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.python_version }}
+
+      - name: Install ansible with python dependencies
+        run: >-
+          python3 -m pip install
+          packaging
+          yq
+          q
+          ruamel_yaml
+          https://github.com/ansible/ansible/archive/${{ env.ansible_version }}.tar.gz
+          --disable-pip-version-check
+        shell: bash
+
+      - name: Read current version from galaxy.yml
+        id: read-version
+        run: echo "current_version=$(yq -r .version galaxy.yml)" >> $GITHUB_OUTPUT
+        shell: bash
+        working-directory: ${{ env.collection_path }}
+
+      - name: Compute next major release version
+        id: compute-version
+        run: |
+          python3 -m pip install packaging
+          python3 -c "from packaging import version; v=version.Version('${{ steps.read-version.outputs.current_version }}'); print('next_version=%s.%s.%s' % (v.major, v.minor+1, v.micro))" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Install required ansible collections with python requirements
+        run: |
+          ansible-galaxy collection install git+https://github.com/ansible-community/ansible.content_builder.git
+          ansible-galaxy collection install ansible.utils
+          python3 -m pip install -r /home/runner/.ansible/collections/ansible_collections/ansible/content_builder/requirements.txt
+        shell: bash
+
+      - name: Generate collection modules
+        run: >-
+          ansible-playbook config/generator_files/build.yaml 
+          -e collection_path="${{ github.workspace }}/${{ env.collection_path }}" 
+          -e collection_version="${{ steps.compute-version.outputs.next_version }}" -vvv
+        shell: bash
+        env:
+          AWS_DEFAULT_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        working-directory: ${{ env.collection_path }}
+
+      - name: push changes
+        run: |
+          if [[ $(git ls-files plugins --exclude-standard --others | wc -l) -gt 0 ]]; then
+            git config user.name "Ansible Bot"
+            git config user.email devtools@ansible.com
+            git add $(git ls-files plugins --exclude-standard --others) tests/sanity/ignore-* meta/runtime.yml
+            git commit -m "Push changes for plugins generated"
+            git push origin ${{ env.branch_name }}
+          fi
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        working-directory: ${{ env.collection_path }}
