@@ -36,7 +36,6 @@ jobs:
           python3 -m pip install
           packaging
           yq
-          q
           ruamel_yaml
           https://github.com/ansible/ansible/archive/${{ env.ansible_version }}.tar.gz
           --disable-pip-version-check
