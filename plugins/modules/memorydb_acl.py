@@ -56,7 +56,6 @@ options:
         - To remove all tags set I(tags={}) and I(purge_tags=true).
         type: dict
     user_names:
-        $comment: List of users.
         description:
         - List of users associated to this acl.
         elements: str
@@ -126,7 +125,6 @@ def main():
     argument_spec["acl_name"] = {"type": "str"}
     argument_spec["user_names"] = {
         "type": "list",
-        "$comment": "List of users.",
         "elements": "str",
     }
     argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}

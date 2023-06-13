@@ -22,7 +22,6 @@ options:
         - Not Provived.
         suboptions:
             passwords:
-                $comment: List of passwords.
                 description:
                 - Passwords used for this user account.
                 - You can create up to two passwords for each user.
@@ -147,8 +146,8 @@ def main():
             "type": {"type": "str", "choices": ["iam", "password"]},
             "passwords": {
                 "type": "list",
-                "$comment": "List of passwords.",
                 "elements": "str",
+                "no_log": True,
             },
         },
     }
