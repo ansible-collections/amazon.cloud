@@ -76,6 +76,11 @@ plugins/modules/autoscaling_launch_configuration.py validate-modules:no-log-need
 plugins/modules/autoscaling_launch_configuration.py validate-modules:parameter-state-invalid-choice
 plugins/modules/autoscaling_lifecycle_hook.py validate-modules:parameter-state-invalid-choice
 plugins/modules/autoscaling_warm_pool.py validate-modules:parameter-state-invalid-choice
+plugins/modules/memorydb_acl.py validate-modules:parameter-state-invalid-choice
+plugins/modules/memorydb_cluster.py validate-modules:parameter-state-invalid-choice
+plugins/modules/memorydb_parameter_group.py validate-modules:parameter-state-invalid-choice
+plugins/modules/memorydb_subnet_group.py validate-modules:parameter-state-invalid-choice
+plugins/modules/memorydb_user.py validate-modules:parameter-state-invalid-choice
 plugins/modules/eks_addon.py validate-modules:mutually_exclusive-type
 plugins/modules/eks_fargate_profile.py validate-modules:mutually_exclusive-type
 plugins/modules/redshift_endpoint_authorization.py validate-modules:mutually_exclusive-type
