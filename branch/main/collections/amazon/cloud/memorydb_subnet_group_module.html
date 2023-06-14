@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>amazon.cloud.rds_db_cluster_parameter_group module – Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster &mdash; Ansible collections  documentation</title>
+  <title>amazon.cloud.memorydb_subnet_group module – Creates and manages a MemoryDB subnet group &mdash; Ansible collections  documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/ansible.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/antsibull-minimal.css" type="text/css" />
@@ -21,8 +21,8 @@
         <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="amazon.cloud.rds_db_instance module – Creates and manages resource creates an Amazon DB instance" href="rds_db_instance_module.html" />
-    <link rel="prev" title="amazon.cloud.memorydb_user module – Creates and manages a MemoryDB user" href="memorydb_user_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+    <link rel="next" title="amazon.cloud.memorydb_user module – Creates and manages a MemoryDB user" href="memorydb_user_module.html" />
+    <link rel="prev" title="amazon.cloud.memorydb_parameter_group module – Creates and manages a MemoryDB parameter group" href="memorydb_parameter_group_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
 
@@ -118,10 +118,10 @@
           <li class="breadcrumb-item"><a href="../../index.html">Collection Index</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Collections in the Amazon Namespace</a></li>
           <li class="breadcrumb-item"><a href="index.html">Amazon.Cloud</a></li>
-      <li class="breadcrumb-item active">amazon.cloud.rds_db_cluster_parameter_group module – Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster</li>
+      <li class="breadcrumb-item active">amazon.cloud.memorydb_subnet_group module – Creates and manages a MemoryDB subnet group</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
-              <a href="https://github.com/ansible-collections/amazon.cloud/edit/main/plugins/modules/rds_db_cluster_parameter_group.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ansible-collections/amazon.cloud/edit/main/plugins/modules/memorydb_subnet_group.py?description=%23%23%23%23%23%20SUMMARY%0A%3C!—%20Your%20description%20here%20–%3E%0A%0A%0A%23%23%23%23%23%20ISSUE%20TYPE%0A-%20Docs%20Pull%20Request%0A%0A%2Blabel:%20docsite_pr" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -131,17 +131,17 @@
   
            <div itemprop="articleBody">
              
-  <span class="target" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module"></span><section id="amazon-cloud-rds-db-cluster-parameter-group-module-creates-and-manages-an-amazon-aurora-db-cluster-or-multi-az-db-cluster">
-<h1>amazon.cloud.rds_db_cluster_parameter_group module – Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster<a class="headerlink" href="#amazon-cloud-rds-db-cluster-parameter-group-module-creates-and-manages-an-amazon-aurora-db-cluster-or-multi-az-db-cluster" title="Permalink to this heading"></a></h1>
+  <span class="target" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module"></span><section id="amazon-cloud-memorydb-subnet-group-module-creates-and-manages-a-memorydb-subnet-group">
+<h1>amazon.cloud.memorydb_subnet_group module – Creates and manages a MemoryDB subnet group<a class="headerlink" href="#amazon-cloud-memorydb-subnet-group-module-creates-and-manages-a-memorydb-subnet-group" title="Permalink to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/amazon/cloud">amazon.cloud collection</a> (version 0.3.0).</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">amazon.cloud</span></code>.
 You need further requirements to be able to use this module,
-see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
-<p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">amazon.cloud.rds_db_cluster_parameter_group</span></code>.</p>
+see <a class="reference internal" href="#ansible-collections-amazon-cloud-memorydb-subnet-group-module-requirements"><span class="std std-ref">Requirements</span></a> for details.</p>
+<p>To use it in a playbook, specify: <code class="code docutils literal notranslate"><span class="pre">amazon.cloud.memorydb_subnet_group</span></code>.</p>
 </div>
-<p class="ansible-version-added">New in amazon.cloud 0.3.0</p>
+<p class="ansible-version-added">New in amazon.cloud 0.4.0</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
@@ -155,11 +155,11 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <section id="synopsis">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p>Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster.</p></li>
+<li><p>A subnet group is a collection of subnets (typically private) that you can designate for your clusters running in an Amazon Virtual Private Cloud (VPC) environment. When you create a MemoryDB cluster, you must specify a subnet group. MemoryDB uses that subnet group to choose a subnet and IP addresses within that subnet to associate with your nodes. For more information, see <a class="reference external" href="https://docs.aws.amazon.com/MemoryDB/latest/devguide/subnetgroups.html">https://docs.aws.amazon.com/MemoryDB/latest/devguide/subnetgroups.html</a></p></li>
 </ul>
 </section>
 <section id="requirements">
-<span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
+<span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-requirements"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
 <p>The below requirements are needed on the host that executes this module.</p>
 <ul class="simple">
 <li><p>python &gt;= 3.9</p></li>
@@ -181,7 +181,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <div class="ansibleOptionAnchor" id="parameter-access_key"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_access_key_id"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_access_key"></div>
-<div class="ansibleOptionAnchor" id="parameter-ec2_access_key"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-ec2-access-key"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-access-key-id"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-access-key"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-access-key"></span><strong>access_key</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-ec2_access_key"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-ec2-access-key"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-access-key-id"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-access-key"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-access-key"></span><strong>access_key</strong></p>
 <a class="ansibleOptionLink" href="#parameter-access_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: aws_access_key_id, aws_access_key, ec2_access_key</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -195,7 +195,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-aws_ca_bundle"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-ca-bundle"><strong>aws_ca_bundle</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-aws_ca_bundle"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-ca-bundle"><strong>aws_ca_bundle</strong></p>
 <a class="ansibleOptionLink" href="#parameter-aws_ca_bundle" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">path</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>The location of a CA Bundle to use when validating SSL certificates.</p>
@@ -203,7 +203,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-aws_config"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-config"><strong>aws_config</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-aws_config"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-config"><strong>aws_config</strong></p>
 <a class="ansibleOptionLink" href="#parameter-aws_config" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>A dictionary to modify the botocore configuration.</p>
@@ -211,14 +211,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-db_cluster_parameter_group_name"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-db-cluster-parameter-group-name"><strong>db_cluster_parameter_group_name</strong></p>
-<a class="ansibleOptionLink" href="#parameter-db_cluster_parameter_group_name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>Not Provived.</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-debug_botocore_endpoint_logs"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-debug-botocore-endpoint-logs"><strong>debug_botocore_endpoint_logs</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-debug_botocore_endpoint_logs"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-debug-botocore-endpoint-logs"><strong>debug_botocore_endpoint_logs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-debug_botocore_endpoint_logs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Use a <code class="docutils literal notranslate"><span class="pre">botocore.endpoint</span></code> logger to parse the unique (rather than total) <code class="docutils literal notranslate"><span class="pre">&quot;resource:action&quot;</span></code> API calls made during a task, outputing the set to the resource_actions key in the task results. Use the <code class="docutils literal notranslate"><span class="pre">aws_resource_action</span></code> callback to output to total list made during a playbook.</p>
@@ -230,18 +223,18 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-description"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-description"><strong>description</strong></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-description"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-description"><strong>description</strong></p>
 <a class="ansibleOptionLink" href="#parameter-description" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>A friendly description for this DB cluster parameter group.</p>
+<td><div class="ansible-option-cell"><p>An optional description of the subnet group.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-endpoint_url"></div>
 <div class="ansibleOptionAnchor" id="parameter-ec2_url"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_endpoint_url"></div>
-<div class="ansibleOptionAnchor" id="parameter-s3_url"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-s3-url"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-endpoint-url"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-ec2-url"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-endpoint-url"></span><strong>endpoint_url</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-s3_url"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-s3-url"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-endpoint-url"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-ec2-url"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-endpoint-url"></span><strong>endpoint_url</strong></p>
 <a class="ansibleOptionLink" href="#parameter-endpoint_url" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: ec2_url, aws_endpoint_url, s3_url</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -251,16 +244,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <p>Support for the <code class="docutils literal notranslate"><span class="pre">EC2_URL</span></code> environment variable has been deprecated and will be removed in a release after 2024-12-01.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-family"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-family"><strong>family</strong></p>
-<a class="ansibleOptionLink" href="#parameter-family" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>The DB cluster parameter group family name.</p>
-<p>A DB cluster parameter group can be associated with one and only one DB cluster parameter group family, and can be applied only to a DB cluster running a DB engine and engine version compatible with that DB cluster parameter group family.</p>
-</div></td>
-</tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-force"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-force"><strong>force</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-force"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-force"><strong>force</strong></p>
 <a class="ansibleOptionLink" href="#parameter-force" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Cancel IN_PROGRESS and PENDING resource requestes.</p>
@@ -273,16 +258,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-parameters"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-parameters"><strong>parameters</strong></p>
-<a class="ansibleOptionLink" href="#parameter-parameters" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>An array of parameters to be modified.</p>
-<p>A maximum of 20 parameters can be modified in a single request.</p>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-profile"></div>
-<div class="ansibleOptionAnchor" id="parameter-aws_profile"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-profile"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-profile"></span><strong>profile</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-aws_profile"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-profile"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-profile"></span><strong>profile</strong></p>
 <a class="ansibleOptionLink" href="#parameter-profile" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: aws_profile</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -292,8 +269,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <p>The <em>profile</em> option is mutually exclusive with the <em>aws_access_key</em>, <em>aws_secret_key</em> and <em>security_token</em> options.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-purge_tags"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-purge-tags"><strong>purge_tags</strong></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-purge_tags"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-purge-tags"><strong>purge_tags</strong></p>
 <a class="ansibleOptionLink" href="#parameter-purge_tags" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Remove tags not listed in <em>tags</em>.</p>
@@ -304,10 +281,10 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-region"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_region"></div>
-<div class="ansibleOptionAnchor" id="parameter-ec2_region"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-region"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-ec2-region"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-region"></span><strong>region</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-ec2_region"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-region"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-ec2-region"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-region"></span><strong>region</strong></p>
 <a class="ansibleOptionLink" href="#parameter-region" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: aws_region, ec2_region</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -319,11 +296,11 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <p>Support for the <code class="docutils literal notranslate"><span class="pre">EC2_REGION</span></code> environment variable has been deprecated and will be removed in a release after 2024-12-01.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
+<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-secret_key"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_secret_access_key"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_secret_key"></div>
-<div class="ansibleOptionAnchor" id="parameter-ec2_secret_key"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-secret-key"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-ec2-secret-key"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-secret-key"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-secret-access-key"></span><strong>secret_key</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-ec2_secret_key"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-secret-key"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-ec2-secret-key"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-secret-key"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-secret-access-key"></span><strong>secret_key</strong></p>
 <a class="ansibleOptionLink" href="#parameter-secret_key" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: aws_secret_access_key, aws_secret_key, ec2_secret_key</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -336,12 +313,12 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <p>Support for the <code class="docutils literal notranslate"><span class="pre">EC2_SECRET_KEY</span></code> environment variable has been deprecated and will be removed in a release after 2024-12-01.</p>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-session_token"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_session_token"></div>
 <div class="ansibleOptionAnchor" id="parameter-security_token"></div>
 <div class="ansibleOptionAnchor" id="parameter-aws_security_token"></div>
-<div class="ansibleOptionAnchor" id="parameter-access_token"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-session-token"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-security-token"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-session-token"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-aws-security-token"></span><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-access-token"></span><strong>session_token</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-access_token"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-session-token"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-security-token"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-session-token"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-aws-security-token"></span><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-access-token"></span><strong>session_token</strong></p>
 <a class="ansibleOptionLink" href="#parameter-session_token" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: aws_session_token, security_token, aws_security_token, access_token</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -354,8 +331,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <p>Support for the <code class="docutils literal notranslate"><span class="pre">EC2_SECRET_KEY</span></code> and <code class="docutils literal notranslate"><span class="pre">AWS_SECURITY_TOKEN</span></code> environment variables has been deprecated and will be removed in a release after 2024-12-01.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-state"><strong>state</strong></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-state"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-state"><strong>state</strong></p>
 <a class="ansibleOptionLink" href="#parameter-state" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Goal state for resource.</p>
@@ -373,9 +350,24 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </ul>
 </div></td>
 </tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-subnet_group_name"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-subnet-group-name"><strong>subnet_group_name</strong></p>
+<a class="ansibleOptionLink" href="#parameter-subnet_group_name" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>The name of the subnet group.</p>
+<p>This value must be unique as it also serves as the subnet group identifier.</p>
+</div></td>
+</tr>
 <tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-subnet_ids"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-subnet-ids"><strong>subnet_ids</strong></p>
+<a class="ansibleOptionLink" href="#parameter-subnet_ids" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>A list of VPC subnet IDs for the subnet group.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-tags"></div>
-<div class="ansibleOptionAnchor" id="parameter-resource_tags"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-tags"><span id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-resource-tags"></span><strong>tags</strong></p>
+<div class="ansibleOptionAnchor" id="parameter-resource_tags"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-tags"><span id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-resource-tags"></span><strong>tags</strong></p>
 <a class="ansibleOptionLink" href="#parameter-tags" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-aliases">aliases: resource_tags</span></p>
 <p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
@@ -383,8 +375,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 <p>To remove all tags set <em>tags={}</em> and <em>purge_tags=true</em>.</p>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-validate_certs"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-validate-certs"><strong>validate_certs</strong></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-validate_certs"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-validate-certs"><strong>validate_certs</strong></p>
 <a class="ansibleOptionLink" href="#parameter-validate_certs" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>When set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, SSL certificates will not be validated for communication with the AWS APIs.</p>
@@ -396,8 +388,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </ul>
 </div></td>
 </tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-wait"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-wait"><strong>wait</strong></p>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-wait"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-wait"><strong>wait</strong></p>
 <a class="ansibleOptionLink" href="#parameter-wait" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">boolean</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>Wait for operation to complete before returning.</p>
@@ -408,8 +400,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </ul>
 </div></td>
 </tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-wait_timeout"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-parameter-wait-timeout"><strong>wait_timeout</strong></p>
+<tr class="row-even"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-wait_timeout"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-parameter-wait-timeout"><strong>wait_timeout</strong></p>
 <a class="ansibleOptionLink" href="#parameter-wait_timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>How many seconds to wait for an operation to complete before timing out.</p>
@@ -446,7 +438,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </thead>
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-result"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-return-result"><strong>result</strong></p>
+<div class="ansibleOptionAnchor" id="return-result"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-return-result"><strong>result</strong></p>
 <a class="ansibleOptionLink" href="#return-result" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">complex</span></p>
 </div></td>
 <td><div class="ansible-option-cell"><p>When <em>state=list</em>, it is a list containing dictionaries of resource information.</p>
@@ -456,7 +448,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-result/identifier"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-return-result-identifier"><strong>identifier</strong></p>
+<div class="ansibleOptionAnchor" id="return-result/identifier"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-return-result-identifier"><strong>identifier</strong></p>
 <a class="ansibleOptionLink" href="#return-result/identifier" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The unique identifier of the resource.</p>
@@ -464,7 +456,7 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
 </div></td>
 </tr>
 <tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="return-result/properties"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-rds-db-cluster-parameter-group-module-return-result-properties"><strong>properties</strong></p>
+<div class="ansibleOptionAnchor" id="return-result/properties"></div><p class="ansible-option-title" id="ansible-collections-amazon-cloud-memorydb-subnet-group-module-return-result-properties"><strong>properties</strong></p>
 <a class="ansibleOptionLink" href="#return-result/properties" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
 <td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>The resource properties.</p>
@@ -495,8 +487,8 @@ see <a class="reference internal" href="#ansible-collections-amazon-cloud-rds-db
           
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="memorydb_user_module.html" class="btn btn-neutral float-left" title="amazon.cloud.memorydb_user module – Creates and manages a MemoryDB user" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="rds_db_instance_module.html" class="btn btn-neutral float-right" title="amazon.cloud.rds_db_instance module – Creates and manages resource creates an Amazon DB instance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="memorydb_parameter_group_module.html" class="btn btn-neutral float-left" title="amazon.cloud.memorydb_parameter_group module – Creates and manages a MemoryDB parameter group" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="memorydb_user_module.html" class="btn btn-neutral float-right" title="amazon.cloud.memorydb_user module – Creates and manages a MemoryDB user" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
