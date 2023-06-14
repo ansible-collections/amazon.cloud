@@ -1,4 +1,0 @@
-trivial:
-- "Fix PR reference into changelog."
-- "Move api_specifications folder and ignore it into galaxy.yml."
-- "Remove any gouttelette reference."
