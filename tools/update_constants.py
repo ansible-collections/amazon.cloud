@@ -35,25 +35,19 @@ def main() -> None:
     variable_regex = rf"^{variable_name} = [\"|'](.*)[\"|']"
 
     # Update user-agent variable
-    files = list((args.path / "plugins").iterdir())
-    while files:
-        item = files.pop(0)
-        if item.is_dir():
-            files.extend(list(item.iterdir()))
-        elif item.suffix == ".py":
-            # update python file
-            updated_content = []
-            for line in item.read_text().split("\n"):
-                m = re.match(variable_regex, line)
-                if m and m.group(1) != galaxy_version:
-                    logger.info("-- %s -- match variable [%s] with value [%s]", item.name, variable_name, m.group(1))
-                    updated_content.append(f'{variable_name} = "{galaxy_version}"')
-                    continue
-                updated_content.append(line)
-            result = "\n".join(updated_content)
-            if result != item.read_text():
-                logger.info("%s => updated.", item)
-                item.write_text(result)
+    for item in (args.path / "plugins").glob("**/*.py"):
+        updated_content = []
+        for line in item.read_text().split("\n"):
+            m = re.match(variable_regex, line)
+            if m and m.group(1) != galaxy_version:
+                logger.info("-- %s -- match variable [%s] with value [%s]", item.name, variable_name, m.group(1))
+                updated_content.append(f'{variable_name} = "{galaxy_version}"')
+                continue
+            updated_content.append(line)
+        result = "\n".join(updated_content)
+        if result != item.read_text():
+            logger.info("%s => updated.", item)
+            item.write_text(result)
 
 
 if __name__ == "__main__":
