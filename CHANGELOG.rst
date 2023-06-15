@@ -5,6 +5,28 @@ amazon.cloud Release Notes
 .. contents:: Topics
 
 
+v0.4.0
+======
+
+Minor Changes
+-------------
+
+- Add unit ad sanity test workflows to GHA.
+
+Bugfixes
+--------
+
+- Address a situation where the creation of a resource with ``wait: true`` was causing an exception in case of timeout (https://github.com/ansible-collections/amazon.cloud/pull/60).
+
+New Modules
+-----------
+
+- memorydb_acl - Creates and manages a MemoryDB ACL
+- memorydb_cluster - Creates and manages a MemoryDB cluster
+- memorydb_parameter_group - Creates and manages a MemoryDB parameter group
+- memorydb_subnet_group - Creates and manages a MemoryDB subnet group
+- memorydb_user - Creates and manages a MemoryDB user
+
 v0.3.0
 ======
 
