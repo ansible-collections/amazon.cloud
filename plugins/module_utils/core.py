@@ -227,9 +227,12 @@ class CloudControlResource(object):
 
         if isinstance(primary_identifier, list):
             for id in primary_identifier:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
+                if id == "ACLName":
+                    identifier[id] = self.module.params.get("acl_name")
+                else:
+                    identifier[
+                        snake_to_camel(id, capitalize_first=True)
+                    ] = self.module.params.get(id)
             primary_identifier = json.dumps(identifier)
         elif isinstance(primary_identifier, dict):
             primary_identifier = json.dumps(primary_identifier)
@@ -262,16 +265,17 @@ class CloudControlResource(object):
         identifier: Dict = {}
 
         resource = None
-
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
             for id in primary_identifier:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
+                if id == "ACLName":
+                    identifier[id] = self.module.params.get("acl_name")
+                else:
+                    identifier[
+                        snake_to_camel(id, capitalize_first=True)
+                    ] = self.module.params.get(id)
             identifier = json.dumps(identifier)
-
         try:
             resource = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier, aws_retry=True
@@ -362,9 +366,12 @@ class CloudControlResource(object):
             identifier = self.module.params.get("identifier")
         else:
             for id in primary_identifier:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
+                if id == "ACLName":
+                    identifier[id] = self.module.params.get("acl_name")
+                else:
+                    identifier[
+                        snake_to_camel(id, capitalize_first=True)
+                    ] = self.module.params.get(id)
             identifier = json.dumps(identifier)
 
         try:

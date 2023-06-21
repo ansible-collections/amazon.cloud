@@ -173,13 +173,13 @@ def main():
         params_to_set["ACLName"] = params_to_set.pop("AclName")
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["acl_name"]
+    create_only_params = ["ACLName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["acl_name"]
+    identifier = ["ACLName"]
 
     results = {"changed": False, "result": {}}
 
