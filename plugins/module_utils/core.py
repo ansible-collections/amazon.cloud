@@ -518,7 +518,7 @@ class CloudControlResource(object):
 
         return results
 
-    def get_identifier(self, identifier: dict = {}, primary_identifier: list = []):
+    def get_identifier(self, identifier: dict, primary_identifier: list ):
         for id in primary_identifier:
             if id == "acl_name":
                 identifier["ACLName"] = self.module.params.get("acl_name")
