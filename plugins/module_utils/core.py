@@ -448,8 +448,11 @@ class CloudControlResource(object):
         if "acl_name" in create_only_params:
             params = scrub_keys(
                 params_to_set,
-                [ 'ACLName' if item == 'acl_name' else item for item in create_only_params ]
-             )
+                [
+                    "ACLName" if item == "acl_name" else item
+                    for item in create_only_params
+                ],
+            )
         else:
             params = scrub_keys(
                 params_to_set,
@@ -523,7 +526,7 @@ class CloudControlResource(object):
 
         return results
 
-    def get_identifier(self, identifier: dict, primary_identifier: list ):
+    def get_identifier(self, identifier: dict, primary_identifier: list):
         for id in primary_identifier:
             if id == "acl_name":
                 identifier["ACLName"] = self.module.params.get("acl_name")
