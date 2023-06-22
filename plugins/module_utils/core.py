@@ -449,7 +449,9 @@ class CloudControlResource(object):
             params = scrub_keys(
                 params_to_set,
                 [
-                    "ACLName" if item == "acl_name" else item
+                    "ACLName"
+                    if item == "acl_name"
+                    else snake_to_camel(item, capitalize_first=True)
                     for item in create_only_params
                 ],
             )
