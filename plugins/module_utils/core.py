@@ -227,14 +227,9 @@ class CloudControlResource(object):
         identifier: Dict = {}
 
         if isinstance(primary_identifier, list):
-            for id in primary_identifier:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
-            primary_identifier = json.dumps(identifier)
+            primary_identifier = self.get_identifier(identifier, primary_identifier)
         elif isinstance(primary_identifier, dict):
             primary_identifier = json.dumps(primary_identifier)
-
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=primary_identifier, aws_retry=True
@@ -263,16 +258,10 @@ class CloudControlResource(object):
         identifier: Dict = {}
 
         resource = None
-
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
-            for id in primary_identifier:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
-            identifier = json.dumps(identifier)
-
+            identifier = self.get_identifier(identifier, primary_identifier)
         try:
             resource = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier, aws_retry=True
@@ -362,11 +351,7 @@ class CloudControlResource(object):
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
-            for id in primary_identifier:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
-            identifier = json.dumps(identifier)
+            identifier = self.get_identifier(identifier, primary_identifier)
 
         try:
             response = self.client.get_resource(
@@ -464,11 +449,12 @@ class CloudControlResource(object):
         params = scrub_keys(
             params_to_set,
             [
-                snake_to_camel(elem, capitalize_first=True)
-                for elem in create_only_params
+                "ACLName"
+                if item == "acl_name"
+                else snake_to_camel(item, capitalize_first=True)
+                for item in create_only_params
             ],
         )
-
         in_progress_requests = self.check_in_progress_requests(type_name, identifier)
 
         if not self.module.check_mode:
@@ -533,6 +519,16 @@ class CloudControlResource(object):
             results["diff"] = diffs
 
         return results
+
+    def get_identifier(self, identifier: dict, primary_identifier: list):
+        for id in primary_identifier:
+            if id == "acl_name":
+                identifier["ACLName"] = self.module.params.get("acl_name")
+            else:
+                identifier[
+                    snake_to_camel(id, capitalize_first=True)
+                ] = self.module.params.get(id)
+        return json.dumps(identifier)
 
 
 class AnsibleAmazonCloudModule(AnsibleAWSModule):

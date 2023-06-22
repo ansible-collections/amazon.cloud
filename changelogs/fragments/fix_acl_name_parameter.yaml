@@ -1,0 +1,3 @@
+---
+bugfixes:
+- "acl_name key of memorydb module should be converted to ACLName instead of AclName (https://github.com/ansible-collections/amazon.cloud/pull/93)."
