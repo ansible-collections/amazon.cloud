@@ -518,13 +518,13 @@ class CloudControlResource(object):
 
         return results
 
-    def get_identifier(self, identifier: dict = {} , primary_identifier: list = []):
+    def get_identifier(self, identifier: dict = {}, primary_identifier: list = []):
         for id in primary_identifier:
-            if id == "ACLName":
-                identifier[id] = self.module.params.get("acl_name")
+            if id == "acl_name":
+                identifier["ACLName"] = self.module.params.get("acl_name")
             else:
                 identifier[
-                   snake_to_camel(id, capitalize_first=True)
+                    snake_to_camel(id, capitalize_first=True)
                 ] = self.module.params.get(id)
         return json.dumps(identifier)
 
