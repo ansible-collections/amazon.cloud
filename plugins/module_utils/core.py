@@ -445,24 +445,15 @@ class CloudControlResource(object):
         obj = None
 
         # Ignore createOnlyProperties that can be set only during resource creation
-        if "acl_name" in create_only_params:
-            params = scrub_keys(
-                params_to_set,
-                [
-                    "ACLName"
-                    if item == "acl_name"
-                    else snake_to_camel(item, capitalize_first=True)
-                    for item in create_only_params
-                ],
-            )
-        else:
-            params = scrub_keys(
-                params_to_set,
-                [
-                    snake_to_camel(elem, capitalize_first=True)
-                    for elem in create_only_params
-                ],
-            )
+        params = scrub_keys(
+            params_to_set,
+            [
+                "ACLName"
+                if item == "acl_name"
+                else snake_to_camel(item, capitalize_first=True)
+                for item in create_only_params
+            ],
+        )
         in_progress_requests = self.check_in_progress_requests(type_name, identifier)
 
         if not self.module.check_mode:
