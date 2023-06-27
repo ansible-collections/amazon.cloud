@@ -12,11 +12,13 @@ Minor Changes
 -------------
 
 - Add unit ad sanity test workflows to GHA.
+- Bump collection requirement of amazon.aws to `6.0.0` to remove duplicate code for user agent (https://github.com/ansible-collections/amazon.cloud/pull/94).
 
 Bugfixes
 --------
 
 - Address a situation where the creation of a resource with ``wait: true`` was causing an exception in case of timeout (https://github.com/ansible-collections/amazon.cloud/pull/60).
+- acl_name key of memorydb module should be converted to ACLName instead of AclName (https://github.com/ansible-collections/amazon.cloud/pull/93).
 
 New Modules
 -----------
