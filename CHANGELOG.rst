@@ -12,7 +12,7 @@ Minor Changes
 -------------
 
 - Add unit ad sanity test workflows to GHA.
-- Bump collection requirement of amazon.aws to `6.0.0` to remove duplicate code for user agent (https://github.com/ansible-collections/amazon.cloud/pull/94).
+- Bump collection requirement of amazon.aws to ``6.0.0`` to remove duplicate code for user agent (https://github.com/ansible-collections/amazon.cloud/pull/94).
 
 Bugfixes
 --------
