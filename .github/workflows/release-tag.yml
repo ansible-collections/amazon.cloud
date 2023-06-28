@@ -17,6 +17,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: ansible-network/github_actions/.github/workflows/release-tag.yml@main
+    uses: abikouo/gha_testing/blob/release_tag/.github/workflows/tag.yml@release_tag
     secrets:
       gh_token: ${{ secrets.GH_TOKEN }}
