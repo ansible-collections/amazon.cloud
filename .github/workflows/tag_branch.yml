@@ -16,7 +16,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.branch_name }}
+          ref: ${{ inputs.branch }}
           token: ${{ secrets.GH_TOKEN }}
 
       - name: setup python
@@ -52,6 +52,6 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           repository: ${{ github.repository }}
           base_branch: ${{ steps.push-tag.outputs.default_branch }}
-          head_branch: ${{ inputs.branch_name }}
+          head_branch: ${{ inputs.branch }}
           title: "Push changes for release '${{ steps.read-tag.outputs.release_tag }}' on '${{ steps.push-tag.outputs.default_branch }}' branch"
           body: "Automatic changes for Release ${{ steps.read-tag.outputs.release_tag }} on Repository default branch"
