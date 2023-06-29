@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>amazon.cloud Release Notes &mdash; Ansible collections  documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/ansible.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/antsibull-minimal.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/rtd-ethical-ads.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/images/Ansible-Mark-RGB_Black.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Amazon.Cloud Collection Guide" href="guide_amazon_cloud.html" />
+    <link rel="prev" title="Amazon.Cloud" href="../index.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+
+
+
+
+</head>
+
+<body class="wy-body-for-nav"><!-- extra body elements for Ansible beyond RTD Sphinx Theme -->
+
+<div class="DocSite-globalNav ansibleNav">
+  <ul>
+    <li><a href="https://www.ansible.com/ansiblefest" target="_blank">AnsibleFest</a></li>
+    <li><a href="https://www.ansible.com/tower" target="_blank">Products</a></li>
+    <li><a href="https://www.ansible.com/community" target="_blank">Community</a></li>
+    <li><a href="https://www.ansible.com/webinars-training" target="_blank">Webinars & Training</a></li>
+    <li><a href="https://www.ansible.com/blog" target="_blank">Blog</a></li>
+  </ul>
+</div>
+
+<a class="DocSite-nav" href="/" style="padding-bottom: 30px;">
+
+  <img class="DocSiteNav-logo"
+    src="../../../../_static/images/Ansible-Mark-RGB_White.png"
+    alt="Ansible Logo">
+  <div class="DocSiteNav-title">Ansible Collections Documentation</div>
+</a>
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            Ansible collections
+          </a><!--- Based on https://github.com/rtfd/sphinx_rtd_theme/pull/438/files -->
+
+<div class="version">
+  
+    
+  
+</div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <label class="sr-only" for="q">Search docs:</label>
+    <input type="text" class="st-default-search-input" id="q" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+              <p class="caption" role="heading"><span class="caption-text">Collections:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Collection Index</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">Collections in the Amazon Namespace</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Amazon.Cloud</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../index.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../index.html#communication">Communication</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html#changelog">Changelog</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../index.html#scenario-guide">Scenario Guide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../index.html#plugin-index">Plugin Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plugin indexes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index_module.html">Index of all Modules</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference indexes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../environment_variables.html">Index of all Collection Environment Variables</a></li>
+</ul>
+<!-- extra nav elements for Ansible beyond RTD Sphinx Theme -->
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Ansible collections</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Collection Index</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Collections in the Amazon Namespace</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Amazon.Cloud</a></li>
+      <li class="breadcrumb-item active">amazon.cloud Release Notes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+  
+           <div itemprop="articleBody">
+             
+  <section id="amazon-cloud-release-notes">
+<h1><a class="toc-backref" href="#id3" role="doc-backlink">amazon.cloud Release Notes</a><a class="headerlink" href="#amazon-cloud-release-notes" title="Permalink to this heading"></a></h1>
+<nav class="contents" id="topics">
+<p class="topic-title">Topics</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#amazon-cloud-release-notes" id="id3">amazon.cloud Release Notes</a></p>
+<ul>
+<li><p><a class="reference internal" href="#v0-3-0" id="id4">v0.3.0</a></p>
+<ul>
+<li><p><a class="reference internal" href="#major-changes" id="id5">Major Changes</a></p></li>
+<li><p><a class="reference internal" href="#breaking-changes-porting-guide" id="id6">Breaking Changes / Porting Guide</a></p></li>
+<li><p><a class="reference internal" href="#new-modules" id="id7">New Modules</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#v0-2-0" id="id8">v0.2.0</a></p>
+<ul>
+<li><p><a class="reference internal" href="#minor-changes" id="id9">Minor Changes</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id10">New Modules</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#v0-1-0" id="id11">v0.1.0</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id12">New Modules</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="v0-3-0">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">v0.3.0</a><a class="headerlink" href="#v0-3-0" title="Permalink to this heading"></a></h2>
+<section id="major-changes">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Major Changes</a><a class="headerlink" href="#major-changes" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>amazon.cloud collection - The amazon.cloud collection collection has dropped support for <code class="docutils literal notranslate"><span class="pre">botocore&lt;1.28.0</span></code> and <code class="docutils literal notranslate"><span class="pre">boto3&lt;1.25.0</span></code>. (<a class="reference external" href="https://github.com/ansible-collections/amazon.cloud/pull/48">https://github.com/ansible-collections/amazon.cloud/pull/48</a>).</p></li>
+</ul>
+</section>
+<section id="breaking-changes-porting-guide">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Breaking Changes / Porting Guide</a><a class="headerlink" href="#breaking-changes-porting-guide" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>amazon.cloud collection - Support for ansible-core &lt; 2.11 has been dropped (<a class="reference external" href="https://github.com/ansible-collections/amazon.cloud/pull/49">https://github.com/ansible-collections/amazon.cloud/pull/49</a>).</p></li>
+</ul>
+</section>
+<section id="new-modules">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">New Modules</a><a class="headerlink" href="#new-modules" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>autoscaling_launch_configuration - Creates and manages a web ACL association.</p></li>
+<li><p>autoscaling_lifecycle_hook - Creates and manages an Auto Scaling group</p></li>
+<li><p>autoscaling_warm_pool - Creates and manages a pool of pre-initialized EC2 instances that sits alongside the Auto Scaling group</p></li>
+<li><p>ec2_placement_group - Creates and manages a placement group</p></li>
+<li><p>ecr_repository - Creates and manages an AWS ECR Repository resource</p></li>
+<li><p>ecs_capacity_provider - Creates and manages a capacity provider</p></li>
+<li><p>ecs_cluster - Creates and manages an Amazon Elastic Container Service (Amazon ECS) cluster</p></li>
+<li><p>ecs_cluster_capacity_provider_associations - Creates and manages the association between one or more capacity providers and a default capacity provider strategy with a cluster</p></li>
+<li><p>ecs_primary_task_set - Specifies which task set in a service is the primary task set.</p></li>
+<li><p>iam_instance_profile - Creates and manages an instance profile</p></li>
+<li><p>logs_metric_filter - Specifies a metric filter that describes how CloudWatch Logs extracts information from logs and transforms it into Amazon CloudWatch metrics</p></li>
+<li><p>rds_db_cluster_parameter_group - Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster</p></li>
+<li><p>rds_db_instance - Creates and manages resource creates an Amazon DB instance</p></li>
+<li><p>rds_db_subnet_group - Creates and manages a database subnet group</p></li>
+<li><p>rds_global_cluster - Creates and manages an Amazon Aurora global database spread across multiple AWS Regions</p></li>
+<li><p>rds_option_group - Creates and manages an option group</p></li>
+<li><p>ssm_document - Creates and manages a Systems Manager (SSM) document</p></li>
+<li><p>ssm_resource_data_sync - Creates and manages a resource data sync</p></li>
+<li><p>wafv2_ip_set - Creates and manages and IP set</p></li>
+<li><p>wafv2_logging_configuration - Creates and manages an association between logging destinations and a web ACL resource</p></li>
+<li><p>wafv2_regex_pattern_set - Creates and manages an AWS WAFv2 Regex Pattern Set</p></li>
+<li><p>wafv2_web_acl_association - Creates and manages a web ACL association</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-2-0">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">v0.2.0</a><a class="headerlink" href="#v0-2-0" title="Permalink to this heading"></a></h2>
+<section id="minor-changes">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Minor Changes</a><a class="headerlink" href="#minor-changes" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>rdsdb_proxy - module renamed to <code class="docutils literal notranslate"><span class="pre">rds_db_proxy</span></code>.</p></li>
+<li><p>s3_object_lambda_access_point - module renamed to <code class="docutils literal notranslate"><span class="pre">s3objectlambda_access_point</span></code>.</p></li>
+<li><p>s3_object_lambda_access_point_policy - module renamed to <code class="docutils literal notranslate"><span class="pre">s3objectlambda_access_point_policy</span></code>.</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">New Modules</a><a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>cloudtrail_event_data_store - Creates and manages a new event data store</p></li>
+<li><p>cloudtrail_trail - Creates and manages a trail that specifies the settings for delivery of log data to an Amazon S3 bucket.</p></li>
+<li><p>cloudwatch_composite_alarm - Creates and manages a composite alarm</p></li>
+<li><p>cloudwatch_metric_stream - Creates and manages a metric stream</p></li>
+<li><p>dynamodb_global_table - Creates and manages a Version 2019.11.21 global table</p></li>
+<li><p>eks_addon - Creates and manages Amazon EKS add-ons</p></li>
+<li><p>eks_fargate_profile - Creates and manage AWS Fargate profiles</p></li>
+<li><p>iam_server_certificate - Uploads and manages a server certificate entity for the AWS account</p></li>
+<li><p>kms_alias - Specifies a display name for a KMS key.</p></li>
+<li><p>kms_replica_key - Creates andn manages a multi-Region replica key that is based on a multi-Region primary key</p></li>
+<li><p>rds_db_proxy - Create and manage DB proxies</p></li>
+<li><p>rds_db_proxy_endpoint - Creates and manages a DB proxy endpoint</p></li>
+<li><p>redshift_endpoint_access - Creates and manages Redshift-managed VPC endpoint</p></li>
+<li><p>redshift_endpoint_authorization - Describes an endpoint authorization for authorizing Redshift-managed VPC endpoint access to a cluster across AWS accounts.</p></li>
+<li><p>redshift_scheduled_action - Creates and manages a scheduled action</p></li>
+<li><p>route53_dnssec - Is used to enable DNSSEC signing in a hosted zone</p></li>
+<li><p>route53_key_signing_key - Creates a new key-signing key (KSK) in a hosted zone</p></li>
+<li><p>s3objectlambda_access_point - Create and manage Object Lambda Access Points used to access S3 buckets</p></li>
+<li><p>s3objectlambda_access_point_policy - Specifies the Object Lambda Access Point resource policy document</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-1-0">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">v0.1.0</a><a class="headerlink" href="#v0-1-0" title="Permalink to this heading"></a></h2>
+<section id="id2">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">New Modules</a><a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>backup_backup_vault - Create and manage logical containers where backups are stored</p></li>
+<li><p>backup_framework - Create and manage frameworks with one or more controls</p></li>
+<li><p>backup_report_plan - Create and manage report plans</p></li>
+<li><p>eks_cluster - Create and manages Amazon EKS control planes</p></li>
+<li><p>iam_role - Create and manage roles</p></li>
+<li><p>lambda_code_signing_config - Code signing for AWS Lambda</p></li>
+<li><p>lambda_event_source_mapping - Create a mapping between an event source and an AWS Lambda function</p></li>
+<li><p>lambda_function - Create and manage Lambda functions</p></li>
+<li><p>logs_log_group - Create and manage log groups</p></li>
+<li><p>logs_query_definition - Create and manage query definitions</p></li>
+<li><p>logs_resource_policy - Create and manage resource policies</p></li>
+<li><p>rdsdb_proxy - Create and manage DB proxies</p></li>
+<li><p>redshift_cluster - Create and manage clusters</p></li>
+<li><p>redshift_event_subscription - Create and manage Amazon Redshift event notification subscriptions</p></li>
+<li><p>s3_access_point - Create and manage Amazon S3 access points to use to access S3 buckets</p></li>
+<li><p>s3_bucket - Create and manage S3 buckets</p></li>
+<li><p>s3_multi_region_access_point - Create and manage Amazon S3 Multi-Region Access Points</p></li>
+<li><p>s3_multi_region_access_point_policy - Manage Amazon S3 access policies</p></li>
+<li><p>s3_object_lambda_access_point - Create and manage Object Lambda Access Points used to access S3 buckets</p></li>
+<li><p>s3_object_lambda_access_point_policy - Specifies the Object Lambda Access Point resource policy document</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          
+
+<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Amazon.Cloud" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="guide_amazon_cloud.html" class="btn btn-neutral float-right" title="Amazon.Cloud Collection Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Ansible contributors.</p>
+  </div>
+
+  
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script><!-- extra footer elements for Ansible beyond RTD Sphinx Theme -->
+
+</body>
+</html>
