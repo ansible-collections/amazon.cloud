@@ -1,0 +1,57 @@
+---
+name: TagManually
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch to tag
+        required: true
+        type: string
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: install python libraries
+        run: pip3 install yq pygithub
+        shell: bash
+
+      - name: extract tag name from 'galaxy.yml'
+        id: read-tag
+        run: echo "release_tag=$(yq -r '.version' 'galaxy.yml')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: create and push tag to Github repository
+        id: push-tag
+        run: |
+          # git tag ${RELEASE_TAG}
+          # git push origin ${RELEASE_TAG}
+          # read repository default branch
+          GIT_DEFAULT_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+          echo "default_branch=$GIT_DEFAULT_BRANCH" >> $GITHUB_OUTPUT
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ steps.read-tag.outputs.release_tag }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Create Pull Request from Release branch to default branch
+        uses: ansible-network/github_actions/.github/actions/create_pullrequest@main
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: ${{ github.repository }}
+          base_branch: ${{ steps.push-tag.outputs.default_branch }}
+          head_branch: ${{ inputs.branch }}
+          title: "Push changes for release '${{ steps.read-tag.outputs.release_tag }}' on '${{ steps.push-tag.outputs.default_branch }}' branch"
+          body: "Automatic changes for Release ${{ steps.read-tag.outputs.release_tag }} on Repository default branch"
