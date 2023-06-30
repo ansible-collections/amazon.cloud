@@ -16,10 +16,14 @@ description:
     information, see U(https://docs.aws.amazon.com/MemoryDB/latest/devguide/parametergroups.html)
 options:
     description:
+        aliases:
+        - Description
         description:
         - A description of the parameter group.
         type: str
     family:
+        aliases:
+        - Family
         description:
         - The name of the parameter group family that this parameter group is compatible
             with.
@@ -34,10 +38,14 @@ options:
             be performed on it.
         type: bool
     parameter_group_name:
+        aliases:
+        - ParameterGroupName
         description:
         - The name of the parameter group.
         type: str
     parameters:
+        aliases:
+        - Parameters
         description:
         - An map of parameter names and values for the parameter update.
         - You must supply at least one parameter name and value; subsequent arguments
@@ -66,7 +74,7 @@ options:
         type: str
     tags:
         aliases:
-        - resource_tags
+        - Tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -82,7 +90,7 @@ options:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
 author: Ansible Cloud Team (@ansible-collections)
-version_added: 0.4.0
+version_added: 0.3.0
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -132,11 +140,12 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    snake_dict_to_camel_dict,
-)
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     ansible_dict_to_boto3_tag_list,
 )
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    scrub_none_parameters,
+)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
 
 
 def main():
@@ -148,11 +157,14 @@ def main():
         ),
     )
 
-    argument_spec["parameter_group_name"] = {"type": "str"}
-    argument_spec["family"] = {"type": "str"}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
-    argument_spec["parameters"] = {"type": "dict"}
+    argument_spec["parameter_group_name"] = {
+        "type": "str",
+        "aliases": ["ParameterGroupName"],
+    }
+    argument_spec["family"] = {"type": "str", "aliases": ["Family"]}
+    argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["parameters"] = {"type": "dict", "aliases": ["Parameters"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -164,7 +176,12 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["family", "parameter_group_name"], True],
+        [
+            "state",
+            "present",
+            ["parameter_group_name", "Family", "ParameterGroupName"],
+            True,
+        ],
         ["state", "absent", ["parameter_group_name"], True],
         ["state", "get", ["parameter_group_name"], True],
     ]
@@ -189,24 +206,23 @@ def main():
     params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
-    _params_to_set = {k: v for k, v in params.items() if v is not None}
+    _params_to_set = scrub_none_parameters(params)
 
     # Only if resource is taggable
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    if "AclName" in params_to_set:
-        params_to_set["ACLName"] = params_to_set.pop("AclName")
+    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["parameter_group_name", "family", "description"]
+    create_only_params = ["ParameterGroupName", "Family", "Description"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["parameter_group_name"]
+    identifier = ["ParameterGroupName"]
 
     results = {"changed": False, "result": {}}
 

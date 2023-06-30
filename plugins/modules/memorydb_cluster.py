@@ -14,10 +14,14 @@ description:
 - Creates or manages a MemoryDB for Redis cluster. For more information, see U(https://docs.aws.amazon.com/cli/latest/reference/memorydb/create-cluster.html)
 options:
     acl_name:
+        aliases:
+        - ACLName
         description:
         - The name of the Access Control List to associate with the cluster.
         type: str
     auto_minor_version_upgrade:
+        aliases:
+        - AutoMinorVersionUpgrade
         description:
         - A flag that enables automatic minor version upgrade when set to true.
         - You cannot modify the value of AutoMinorVersionUpgrade after the cluster
@@ -26,16 +30,22 @@ options:
             to true when you create a cluster.
         type: bool
     cluster_endpoint:
+        aliases:
+        - ClusterEndpoint
         description:
         - The cluster endpoint.
         suboptions: {}
         type: dict
     cluster_name:
+        aliases:
+        - ClusterName
         description:
         - The name of the cluster.
         - This value must be unique as it also serves as the cluster identifier.
         type: str
     data_tiering:
+        aliases:
+        - DataTiering
         choices:
         - 'false'
         - 'true'
@@ -45,14 +55,20 @@ options:
         - This parameter must be set when using r6gd nodes.
         type: str
     description:
+        aliases:
+        - Description
         description:
         - An optional description of the cluster.
         type: str
     engine_version:
+        aliases:
+        - EngineVersion
         description:
         - The Redis engine version used by the cluster.
         type: str
     final_snapshot_name:
+        aliases:
+        - FinalSnapshotName
         description:
         - The user-supplied name of a final cluster snapshot.
         - This is the unique name that identifies the snapshot.
@@ -69,10 +85,14 @@ options:
             be performed on it.
         type: bool
     kms_key_id:
+        aliases:
+        - KmsKeyId
         description:
         - The ID of the KMS key used to encrypt the cluster.
         type: str
     maintenance_window:
+        aliases:
+        - MaintenanceWindow
         description:
         - Specifies the weekly time range during which maintenance on the cluster
             is performed.
@@ -80,19 +100,27 @@ options:
             UTC). The minimum maintenance window is a 60 minute period.
         type: str
     node_type:
+        aliases:
+        - NodeType
         description:
         - The compute and memory capacity of the nodes in the cluster.
         type: str
     num_replicas_per_shard:
+        aliases:
+        - NumReplicasPerShard
         description:
         - The number of replicas to apply to each shard.
         - The limit is 5.
         type: int
     num_shards:
+        aliases:
+        - NumShards
         description:
         - The number of shards the cluster will contain.
         type: int
     parameter_group_name:
+        aliases:
+        - ParameterGroupName
         description:
         - The name of the parameter group associated with the cluster.
         type: str
@@ -102,11 +130,15 @@ options:
         - Remove tags not listed in I(tags).
         type: bool
     security_group_ids:
+        aliases:
+        - SecurityGroupIds
         description:
         - One or more Amazon VPC security groups associated with this cluster.
         elements: str
         type: list
     snapshot_arns:
+        aliases:
+        - SnapshotArns
         description:
         - A list of Amazon Resource Names (ARN) that uniquely identify the RDB snapshot
             files stored in Amazon S3. The snapshot files are used to populate the
@@ -115,12 +147,16 @@ options:
         elements: str
         type: list
     snapshot_name:
+        aliases:
+        - SnapshotName
         description:
         - The name of a snapshot from which to restore data into the new cluster.
         - The snapshot status changes to restoring while the new cluster is being
             created.
         type: str
     snapshot_retention_limit:
+        aliases:
+        - SnapshotRetentionLimit
         description:
         - The number of days for which MemoryDB retains automatic snapshots before
             deleting them.
@@ -128,16 +164,22 @@ options:
             taken today is retained for 5 days before being deleted.
         type: int
     snapshot_window:
+        aliases:
+        - SnapshotWindow
         description:
         - The daily time range (in UTC) during which MemoryDB begins taking a daily
             snapshot of your cluster.
         type: str
     sns_topic_arn:
+        aliases:
+        - SnsTopicArn
         description:
         - The Amazon Resource Name (ARN) of the Amazon Simple Notification Service
             (SNS) topic to which notifications are sent.
         type: str
     sns_topic_status:
+        aliases:
+        - SnsTopicStatus
         description:
         - The status of the Amazon SNS notification topic.
         - Notifications are sent only if the status is enabled.
@@ -159,17 +201,21 @@ options:
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
     subnet_group_name:
+        aliases:
+        - SubnetGroupName
         description:
         - The name of the subnet group to be used for the cluster.
         type: str
     tags:
         aliases:
-        - resource_tags
+        - Tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
         type: dict
     tls_enabled:
+        aliases:
+        - TLSEnabled
         description:
         - A flag that enables in-transit encryption when set to true.
         - You cannot modify the value of TransitEncryptionEnabled after the cluster
@@ -188,7 +234,7 @@ options:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
 author: Ansible Cloud Team (@ansible-collections)
-version_added: 0.4.0
+version_added: 0.3.0
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -244,11 +290,12 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    snake_dict_to_camel_dict,
-)
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     ansible_dict_to_boto3_tag_list,
 )
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    scrub_none_parameters,
+)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
 
 
 def main():
@@ -260,30 +307,64 @@ def main():
         ),
     )
 
-    argument_spec["cluster_name"] = {"type": "str"}
-    argument_spec["description"] = {"type": "str"}
-    argument_spec["node_type"] = {"type": "str"}
-    argument_spec["num_shards"] = {"type": "int"}
-    argument_spec["num_replicas_per_shard"] = {"type": "int"}
-    argument_spec["subnet_group_name"] = {"type": "str"}
-    argument_spec["security_group_ids"] = {"type": "list", "elements": "str"}
-    argument_spec["maintenance_window"] = {"type": "str"}
-    argument_spec["parameter_group_name"] = {"type": "str"}
-    argument_spec["snapshot_retention_limit"] = {"type": "int"}
-    argument_spec["snapshot_window"] = {"type": "str"}
-    argument_spec["acl_name"] = {"type": "str"}
-    argument_spec["sns_topic_arn"] = {"type": "str"}
-    argument_spec["sns_topic_status"] = {"type": "str"}
-    argument_spec["tls_enabled"] = {"type": "bool"}
-    argument_spec["data_tiering"] = {"type": "str", "choices": ["false", "true"]}
-    argument_spec["kms_key_id"] = {"type": "str"}
-    argument_spec["snapshot_arns"] = {"type": "list", "elements": "str"}
-    argument_spec["snapshot_name"] = {"type": "str"}
-    argument_spec["final_snapshot_name"] = {"type": "str"}
-    argument_spec["engine_version"] = {"type": "str"}
-    argument_spec["cluster_endpoint"] = {"type": "dict", "options": {}}
-    argument_spec["auto_minor_version_upgrade"] = {"type": "bool"}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
+    argument_spec["cluster_name"] = {"type": "str", "aliases": ["ClusterName"]}
+    argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
+    argument_spec["node_type"] = {"type": "str", "aliases": ["NodeType"]}
+    argument_spec["num_shards"] = {"type": "int", "aliases": ["NumShards"]}
+    argument_spec["num_replicas_per_shard"] = {
+        "type": "int",
+        "aliases": ["NumReplicasPerShard"],
+    }
+    argument_spec["subnet_group_name"] = {"type": "str", "aliases": ["SubnetGroupName"]}
+    argument_spec["security_group_ids"] = {
+        "type": "list",
+        "elements": "str",
+        "aliases": ["SecurityGroupIds"],
+    }
+    argument_spec["maintenance_window"] = {
+        "type": "str",
+        "aliases": ["MaintenanceWindow"],
+    }
+    argument_spec["parameter_group_name"] = {
+        "type": "str",
+        "aliases": ["ParameterGroupName"],
+    }
+    argument_spec["snapshot_retention_limit"] = {
+        "type": "int",
+        "aliases": ["SnapshotRetentionLimit"],
+    }
+    argument_spec["snapshot_window"] = {"type": "str", "aliases": ["SnapshotWindow"]}
+    argument_spec["acl_name"] = {"type": "str", "aliases": ["ACLName"]}
+    argument_spec["sns_topic_arn"] = {"type": "str", "aliases": ["SnsTopicArn"]}
+    argument_spec["sns_topic_status"] = {"type": "str", "aliases": ["SnsTopicStatus"]}
+    argument_spec["tls_enabled"] = {"type": "bool", "aliases": ["TLSEnabled"]}
+    argument_spec["data_tiering"] = {
+        "type": "str",
+        "choices": ["false", "true"],
+        "aliases": ["DataTiering"],
+    }
+    argument_spec["kms_key_id"] = {"type": "str", "aliases": ["KmsKeyId"]}
+    argument_spec["snapshot_arns"] = {
+        "type": "list",
+        "elements": "str",
+        "aliases": ["SnapshotArns"],
+    }
+    argument_spec["snapshot_name"] = {"type": "str", "aliases": ["SnapshotName"]}
+    argument_spec["final_snapshot_name"] = {
+        "type": "str",
+        "aliases": ["FinalSnapshotName"],
+    }
+    argument_spec["engine_version"] = {"type": "str", "aliases": ["EngineVersion"]}
+    argument_spec["cluster_endpoint"] = {
+        "type": "dict",
+        "options": {},
+        "aliases": ["ClusterEndpoint"],
+    }
+    argument_spec["auto_minor_version_upgrade"] = {
+        "type": "bool",
+        "aliases": ["AutoMinorVersionUpgrade"],
+    }
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -295,7 +376,12 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["acl_name", "cluster_name", "node_type"], True],
+        [
+            "state",
+            "present",
+            ["NodeType", "ACLName", "cluster_name", "ClusterName"],
+            True,
+        ],
         ["state", "absent", ["cluster_name"], True],
         ["state", "get", ["cluster_name"], True],
     ]
@@ -341,33 +427,32 @@ def main():
     params["tls_enabled"] = module.params.get("tls_enabled")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
-    _params_to_set = {k: v for k, v in params.items() if v is not None}
+    _params_to_set = scrub_none_parameters(params)
 
     # Only if resource is taggable
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    if "AclName" in params_to_set:
-        params_to_set["ACLName"] = params_to_set.pop("AclName")
+    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "cluster_name",
-        "tls_enabled",
-        "data_tiering",
-        "kms_key_id",
-        "port",
-        "subnet_group_name",
-        "snapshot_arns",
-        "snapshot_name",
+        "ClusterName",
+        "TLSEnabled",
+        "DataTiering",
+        "KmsKeyId",
+        "Port",
+        "SubnetGroupName",
+        "SnapshotArns",
+        "SnapshotName",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["cluster_name"]
+    identifier = ["ClusterName"]
 
     results = {"changed": False, "result": {}}
 

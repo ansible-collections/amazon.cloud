@@ -9,7 +9,7 @@
     - amazon.cloud
 
   block:
-    - name: Set S3 bucket name 
+    - name: Set S3 bucket name
       set_fact:
         bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
 
@@ -52,7 +52,7 @@
       register: _result
       tags:
         - docs
-    
+
     - assert:
         that:
             - _result is success
@@ -127,14 +127,17 @@
       register: _result
       tags:
         - docs
-    
+
     - assert:
         that:
             - _result is success
             - _result is changed
             - "'diff' in _result"
             - _result.diff.after != {}
-            - _result.diff.before == {}
+            # public_access_block_configuration settings are now all true by default and
+            # they will be always returned by the API. That's why _result.diff.before won't be
+            # expected to be empty anymore.
+            # - _result.diff.before == {}
 
     - name: Update S3 bucket public access block configuration and tags - idempotence (diff=true)
       amazon.cloud.s3_bucket:
@@ -224,9 +227,9 @@
         that:
             - _result is success
             - _result is not changed
-    
+
     - include_tasks: tagging.yml
-    
+
     - name: Delete S3 bucket - check_mode
       amazon.cloud.s3_bucket:
         bucket_name: "{{ output.result.identifier }}"

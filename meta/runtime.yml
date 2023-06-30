@@ -59,6 +59,11 @@ action_groups:
   - autoscaling_launch_configuration
   - autoscaling_lifecycle_hook
   - autoscaling_warm_pool
+  - memorydb_acl
+  - memorydb_cluster
+  - memorydb_parameter_group
+  - memorydb_subnet_group
+  - memorydb_user
   - rdsdb_proxy
   - s3_object_lambda_access_point
   - s3_object_lambda_access_point_policy

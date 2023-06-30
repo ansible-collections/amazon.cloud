@@ -14,20 +14,29 @@ description:
 - Creates a MemoryDB user. For more information, see U(https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html)
 options:
     access_string:
+        aliases:
+        - AccessString
         description:
         - Access permissions string used for this user account.
         type: str
     authentication_mode:
+        aliases:
+        - AuthenticationMode
         description:
         - Not Provived.
         suboptions:
             passwords:
+                $comment: List of passwords.
+                aliases:
+                - Passwords
                 description:
                 - Passwords used for this user account.
                 - You can create up to two passwords for each user.
                 elements: str
                 type: list
             type:
+                aliases:
+                - Type
                 choices:
                 - iam
                 - password
@@ -67,12 +76,14 @@ options:
         type: str
     tags:
         aliases:
-        - resource_tags
+        - Tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
         type: dict
     user_name:
+        aliases:
+        - UserName
         description:
         - The name of the user.
         type: str
@@ -87,7 +98,7 @@ options:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
 author: Ansible Cloud Team (@ansible-collections)
-version_added: 0.4.0
+version_added: 0.3.0
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -122,11 +133,12 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    snake_dict_to_camel_dict,
-)
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     ansible_dict_to_boto3_tag_list,
 )
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    scrub_none_parameters,
+)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
 
 
 def main():
@@ -138,20 +150,26 @@ def main():
         ),
     )
 
-    argument_spec["user_name"] = {"type": "str"}
-    argument_spec["access_string"] = {"type": "str"}
+    argument_spec["user_name"] = {"type": "str", "aliases": ["UserName"]}
+    argument_spec["access_string"] = {"type": "str", "aliases": ["AccessString"]}
     argument_spec["authentication_mode"] = {
         "type": "dict",
         "options": {
-            "type": {"type": "str", "choices": ["iam", "password"]},
+            "type": {
+                "type": "str",
+                "choices": ["iam", "password"],
+                "aliases": ["Type"],
+            },
             "passwords": {
                 "type": "list",
+                "$comment": "List of passwords.",
                 "elements": "str",
-                "no_log": True,
+                "aliases": ["Passwords"],
             },
         },
+        "aliases": ["AuthenticationMode"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -163,7 +181,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["user_name"], True],
+        ["state", "present", ["user_name", "UserName"], True],
         ["state", "absent", ["user_name"], True],
         ["state", "get", ["user_name"], True],
     ]
@@ -187,24 +205,23 @@ def main():
     params["user_name"] = module.params.get("user_name")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
-    _params_to_set = {k: v for k, v in params.items() if v is not None}
+    _params_to_set = scrub_none_parameters(params)
 
     # Only if resource is taggable
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    if "AclName" in params_to_set:
-        params_to_set["ACLName"] = params_to_set.pop("AclName")
+    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["user_name"]
+    create_only_params = ["UserName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["user_name"]
+    identifier = ["UserName"]
 
     results = {"changed": False, "result": {}}
 

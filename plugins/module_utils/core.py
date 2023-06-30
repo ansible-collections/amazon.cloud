@@ -54,12 +54,18 @@ from .utils import (
     to_async,
     diff_dicts,
     snake_to_camel,
+    camel_to_snake,
     json_patch,
     get_patch,
 )
 from .utils import ansible_dict_to_boto3_tag_list  # pylint: disable=unused-import
 from .utils import snake_dict_to_camel_dict  # pylint: disable=unused-import
+from .utils import map_key_to_alias  # pylint: disable=unused-import
 from ansible_collections.amazon.cloud.plugins.module_utils.waiters import get_waiter
+from ansible_collections.amazon.aws.plugins.module_utils.transformation import (
+    scrub_none_parameters,
+)  # pylint: disable=unused-import
+
 
 BOTO3_IMP_ERR = None
 try:
@@ -227,7 +233,9 @@ class CloudControlResource(object):
         identifier: Dict = {}
 
         if isinstance(primary_identifier, list):
-            primary_identifier = self.get_identifier(identifier, primary_identifier)
+            for id in primary_identifier:
+                identifier[id] = self.module.params.get(camel_to_snake(id))
+            primary_identifier = json.dumps(identifier)
         elif isinstance(primary_identifier, dict):
             primary_identifier = json.dumps(primary_identifier)
         try:
@@ -258,10 +266,17 @@ class CloudControlResource(object):
         identifier: Dict = {}
 
         resource = None
+
+        if "PromotionTier" in params:
+            params.pop("PromotionTier")
+
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
-            identifier = self.get_identifier(identifier, primary_identifier)
+            for id in primary_identifier:
+                identifier[id] = self.module.params.get(camel_to_snake(id))
+            identifier = json.dumps(identifier)
+
         try:
             resource = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier, aws_retry=True
@@ -351,8 +366,9 @@ class CloudControlResource(object):
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
-            identifier = self.get_identifier(identifier, primary_identifier)
-
+            for id in primary_identifier:
+                identifier[id] = self.module.params.get(camel_to_snake(id))
+            identifier = json.dumps(identifier)
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier, aws_retry=True
@@ -446,15 +462,8 @@ class CloudControlResource(object):
         obj = None
 
         # Ignore createOnlyProperties that can be set only during resource creation
-        params = scrub_keys(
-            params_to_set,
-            [
-                "ACLName"
-                if item == "acl_name"
-                else snake_to_camel(item, capitalize_first=True)
-                for item in create_only_params
-            ],
-        )
+        params = scrub_keys(params_to_set, create_only_params)
+
         in_progress_requests = self.check_in_progress_requests(type_name, identifier)
 
         if not self.module.check_mode:

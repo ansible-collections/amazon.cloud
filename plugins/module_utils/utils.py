@@ -205,6 +205,22 @@ def boto3_tag_list_to_ansible_dict(
     )
 
 
+def map_key_to_alias(data, mapping):
+    mapped_data = {}
+    for key, value in data.items():
+        if key in mapping:
+            mapped_key = mapping[key].get("aliases", [key])[0]
+            if isinstance(value, dict):
+                mapped_data[mapped_key] = map_key_to_alias(
+                    value,
+                    mapping[key].get("options", {})
+                    or mapping[key].get("suboptions", {}),
+                )
+            else:
+                mapped_data[mapped_key] = value
+    return mapped_data
+
+
 def diff_dicts(existing: Dict, new: Dict) -> Union[bool, Dict]:
     result: Dict = {}
 

@@ -18,8 +18,12 @@ logger.setLevel(logging.DEBUG)
 def main() -> None:
     """Read collection info and update aws user agent if needed."""
 
-    parser = ArgumentParser(description="Update collection constants with galaxy.yml version")
-    parser.add_argument("--path", help="The path to the collection", type=PosixPath, default="")
+    parser = ArgumentParser(
+        description="Update collection constants with galaxy.yml version"
+    )
+    parser.add_argument(
+        "--path", help="The path to the collection", type=PosixPath, default=""
+    )
     args = parser.parse_args()
 
     # Read collection information from galaxy.yml
@@ -40,7 +44,12 @@ def main() -> None:
         for line in item.read_text().split("\n"):
             m = re.match(variable_regex, line)
             if m and m.group(1) != galaxy_version:
-                logger.info("-- %s -- match variable [%s] with value [%s]", item.name, variable_name, m.group(1))
+                logger.info(
+                    "-- %s -- match variable [%s] with value [%s]",
+                    item.name,
+                    variable_name,
+                    m.group(1),
+                )
                 updated_content.append(f'{variable_name} = "{galaxy_version}"')
                 continue
             updated_content.append(line)

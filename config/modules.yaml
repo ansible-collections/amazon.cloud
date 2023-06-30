@@ -443,6 +443,7 @@
       - Whenever your application needs to scale out, the Auto Scaling group can draw
         on the warm pool to meet its new desired capacity.
     resource: AWS::AutoScaling::WarmPool
+# 0.4.0
 - memorydb_acl:
     documentation:
       short_description: Creates and manages a MemoryDB ACL
