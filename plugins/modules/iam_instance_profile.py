@@ -139,7 +139,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["Roles", "instance_profile_name"], True],
+        ["state", "present", ["roles", "instance_profile_name"], True],
         ["state", "absent", ["instance_profile_name"], True],
         ["state", "get", ["instance_profile_name"], True],
     ]

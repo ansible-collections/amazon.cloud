@@ -183,11 +183,11 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["Name", "Id"], True],
+        ["state", "list", ["name", "id"], True],
         [
             "state",
             "present",
-            ["scope", "identifier", "RegularExpressionList", "name", "id", "Scope"],
+            ["regular_expression_list", "scope", "name", "id", "identifier"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],
@@ -238,11 +238,13 @@ def main():
         and module.params.get("identifier") is None
     ):
         if (
-            not module.params.get("Name")
-            or not module.params.get("Id")
-            or not module.params.get("Scope")
+            not module.params.get("name")
+            or not module.params.get("id")
+            or not module.params.get("scope")
         ):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

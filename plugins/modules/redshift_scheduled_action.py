@@ -288,7 +288,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["scheduled_action_name", "ScheduledActionName"], True],
+        ["state", "present", ["scheduled_action_name"], True],
         ["state", "absent", ["scheduled_action_name"], True],
         ["state", "get", ["scheduled_action_name"], True],
     ]

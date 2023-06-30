@@ -200,12 +200,7 @@ def main():
         [
             "state",
             "present",
-            [
-                "cluster",
-                "CapacityProviders",
-                "DefaultCapacityProviderStrategy",
-                "Cluster",
-            ],
+            ["capacity_providers", "cluster", "default_capacity_provider_strategy"],
             True,
         ],
         ["state", "absent", ["cluster"], True],

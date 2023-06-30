@@ -153,9 +153,9 @@ class CloudControlResource(object):
             if identifiers:
                 additional_properties: Dict = {}
                 for id in identifiers:
-                    additional_properties[
-                        snake_to_camel(id, capitalize_first=True)
-                    ] = self.module.params.get(id)
+                    additional_properties[id] = self.module.params.get(
+                        camel_to_snake(id)
+                    )
                 params["ResourceModel"] = json.dumps(additional_properties)
 
             if i == 0 or "NextToken" in response:
@@ -263,19 +263,12 @@ class CloudControlResource(object):
     ) -> bool:
         results = {"changed": False, "result": {}}
         create_only_params = create_only_params or []
-        identifier: Dict = {}
-
         resource = None
 
         if "PromotionTier" in params:
             params.pop("PromotionTier")
 
-        if self.module.params.get("identifier"):
-            identifier = self.module.params.get("identifier")
-        else:
-            for id in primary_identifier:
-                identifier[id] = self.module.params.get(camel_to_snake(id))
-            identifier = json.dumps(identifier)
+        identifier = self.get_identifier(primary_identifier)
 
         try:
             resource = self.client.get_resource(
@@ -360,15 +353,10 @@ class CloudControlResource(object):
 
     def absent(self, type_name: str, primary_identifier: List):
         changed: bool = False
-        identifier: Dict = {}
         response: Dict = {}
 
-        if self.module.params.get("identifier"):
-            identifier = self.module.params.get("identifier")
-        else:
-            for id in primary_identifier:
-                identifier[id] = self.module.params.get(camel_to_snake(id))
-            identifier = json.dumps(identifier)
+        identifier = self.get_identifier(primary_identifier)
+
         try:
             response = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier, aws_retry=True
@@ -529,14 +517,13 @@ class CloudControlResource(object):
 
         return results
 
-    def get_identifier(self, identifier: dict, primary_identifier: list):
-        for id in primary_identifier:
-            if id == "acl_name":
-                identifier["ACLName"] = self.module.params.get("acl_name")
-            else:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
+    def get_identifier(self, primary_identifier: list):
+        identifier: Dict = {}
+        if self.module.params.get("identifier"):
+            identifier = self.module.params.get("identifier")
+        else:
+            for id in primary_identifier:
+                identifier[id] = self.module.params.get(camel_to_snake(id))
         return json.dumps(identifier)
 
 

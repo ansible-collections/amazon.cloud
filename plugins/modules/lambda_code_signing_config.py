@@ -188,7 +188,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["code_signing_config_arn", "AllowedPublishers"], True],
+        ["state", "present", ["allowed_publishers", "code_signing_config_arn"], True],
         ["state", "absent", ["code_signing_config_arn"], True],
         ["state", "get", ["code_signing_config_arn"], True],
     ]

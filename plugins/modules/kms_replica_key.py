@@ -182,7 +182,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["KeyPolicy", "key_id", "PrimaryKeyArn"], True],
+        ["state", "present", ["key_id", "key_policy", "primary_key_arn"], True],
         ["state", "absent", ["key_id"], True],
         ["state", "get", ["key_id"], True],
     ]

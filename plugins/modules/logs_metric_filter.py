@@ -297,17 +297,16 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["LogGroupName"], True],
+        ["state", "list", ["log_group_name"], True],
         [
             "state",
             "present",
             [
-                "FilterPattern",
-                "identifier",
                 "log_group_name",
+                "filter_pattern",
                 "filter_name",
-                "LogGroupName",
-                "MetricTransformations",
+                "identifier",
+                "metric_transformations",
             ],
             True,
         ],
@@ -356,8 +355,12 @@ def main():
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("LogGroupName") or not module.params.get("FilterName"):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+        if not module.params.get("log_group_name") or not module.params.get(
+            "filter_name"
+        ):
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

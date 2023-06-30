@@ -286,7 +286,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["sync_name", "SyncName"], True],
+        ["state", "present", ["sync_name"], True],
         ["state", "absent", ["sync_name"], True],
         ["state", "get", ["sync_name"], True],
     ]

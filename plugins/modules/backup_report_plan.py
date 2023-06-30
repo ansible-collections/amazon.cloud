@@ -296,7 +296,7 @@ def main():
         [
             "state",
             "present",
-            ["ReportDeliveryChannel", "ReportSetting", "report_plan_arn"],
+            ["report_delivery_channel", "report_setting", "report_plan_arn"],
             True,
         ],
         ["state", "absent", ["report_plan_arn"], True],

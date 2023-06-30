@@ -219,7 +219,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["AlarmRule", "alarm_name"], True],
+        ["state", "present", ["alarm_name", "alarm_rule"], True],
         ["state", "absent", ["alarm_name"], True],
         ["state", "get", ["alarm_name"], True],
     ]

@@ -147,7 +147,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["query_definition_id", "Name", "QueryString"], True],
+        ["state", "present", ["name", "query_string", "query_definition_id"], True],
         ["state", "absent", ["query_definition_id"], True],
         ["state", "get", ["query_definition_id"], True],
     ]

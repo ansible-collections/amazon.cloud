@@ -216,16 +216,15 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["AutoScalingGroupName"], True],
+        ["state", "list", ["auto_scaling_group_name"], True],
         [
             "state",
             "present",
             [
-                "AutoScalingGroupName",
-                "identifier",
-                "lifecycle_hook_name",
-                "LifecycleTransition",
                 "auto_scaling_group_name",
+                "identifier",
+                "lifecycle_transition",
+                "lifecycle_hook_name",
             ],
             True,
         ],
@@ -290,10 +289,12 @@ def main():
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("AutoScalingGroupName") or not module.params.get(
-            "LifecycleHookName"
+        if not module.params.get("auto_scaling_group_name") or not module.params.get(
+            "lifecycle_hook_name"
         ):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

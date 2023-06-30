@@ -161,18 +161,16 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["HostedZoneId"], True],
+        ["state", "list", ["hosted_zone_id"], True],
         [
             "state",
             "present",
             [
-                "HostedZoneId",
-                "Name",
-                "Status",
-                "identifier",
                 "hosted_zone_id",
                 "name",
-                "KeyManagementServiceArn",
+                "key_management_service_arn",
+                "status",
+                "identifier",
             ],
             True,
         ],
@@ -223,8 +221,10 @@ def main():
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("HostedZoneId") or not module.params.get("Name"):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+        if not module.params.get("hosted_zone_id") or not module.params.get("name"):
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

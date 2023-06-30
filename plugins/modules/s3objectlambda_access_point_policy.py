@@ -130,12 +130,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        [
-            "state",
-            "present",
-            ["PolicyDocument", "ObjectLambdaAccessPoint", "object_lambda_access_point"],
-            True,
-        ],
+        ["state", "present", ["policy_document", "object_lambda_access_point"], True],
         ["state", "absent", ["object_lambda_access_point"], True],
         ["state", "get", ["object_lambda_access_point"], True],
     ]

@@ -225,17 +225,16 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["ClusterName"], True],
+        ["state", "list", ["cluster_name"], True],
         [
             "state",
             "present",
             [
-                "PodExecutionRoleArn",
-                "identifier",
-                "Selectors",
-                "ClusterName",
                 "cluster_name",
+                "selectors",
                 "fargate_profile_name",
+                "pod_execution_role_arn",
+                "identifier",
             ],
             True,
         ],
@@ -297,10 +296,12 @@ def main():
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("ClusterName") or not module.params.get(
-            "FargateProfileName"
+        if not module.params.get("cluster_name") or not module.params.get(
+            "fargate_profile_name"
         ):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

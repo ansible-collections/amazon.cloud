@@ -126,7 +126,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["PolicyName", "PolicyDocument", "policy_name"], True],
+        ["state", "present", ["policy_document", "policy_name"], True],
         ["state", "absent", ["policy_name"], True],
         ["state", "get", ["policy_name"], True],
     ]

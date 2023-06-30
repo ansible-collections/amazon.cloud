@@ -135,13 +135,8 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["ResourceArn"], True],
-        [
-            "state",
-            "present",
-            ["identifier", "WebACLArn", "ResourceArn", "web_acl_arn", "resource_arn"],
-            True,
-        ],
+        ["state", "list", ["resource_arn"], True],
+        ["state", "present", ["identifier", "web_acl_arn", "resource_arn"], True],
         ["state", "absent", ["resource_arn", "web_acl_arn", "identifier"], True],
         ["state", "get", ["resource_arn", "web_acl_arn", "identifier"], True],
     ]
@@ -185,8 +180,12 @@ def main():
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("ResourceArn") or not module.params.get("WebACLArn"):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+        if not module.params.get("resource_arn") or not module.params.get(
+            "web_acl_arn"
+        ):
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

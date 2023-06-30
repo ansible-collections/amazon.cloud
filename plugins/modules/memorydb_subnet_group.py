@@ -175,12 +175,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        [
-            "state",
-            "present",
-            ["subnet_group_name", "SubnetGroupName", "SubnetIds"],
-            True,
-        ],
+        ["state", "present", ["subnet_group_name", "subnet_ids"], True],
         ["state", "absent", ["subnet_group_name"], True],
         ["state", "get", ["subnet_group_name"], True],
     ]

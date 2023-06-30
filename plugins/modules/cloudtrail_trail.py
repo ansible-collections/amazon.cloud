@@ -518,7 +518,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["trail_name", "IsLogging", "S3BucketName"], True],
+        ["state", "present", ["is_logging", "trail_name", "s3_bucket_name"], True],
         ["state", "absent", ["trail_name"], True],
         ["state", "get", ["trail_name"], True],
     ]

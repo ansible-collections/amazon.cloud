@@ -165,7 +165,7 @@ def main():
         [
             "state",
             "present",
-            ["Description", "Family", "db_cluster_parameter_group_name", "Parameters"],
+            ["parameters", "db_cluster_parameter_group_name", "description", "family"],
             True,
         ],
         ["state", "absent", ["db_cluster_parameter_group_name"], True],

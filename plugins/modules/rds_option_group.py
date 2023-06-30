@@ -256,10 +256,10 @@ def main():
             "state",
             "present",
             [
-                "MajorEngineVersion",
-                "EngineName",
-                "OptionGroupDescription",
                 "option_group_name",
+                "engine_name",
+                "major_engine_version",
+                "option_group_description",
             ],
             True,
         ],

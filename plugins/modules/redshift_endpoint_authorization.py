@@ -150,19 +150,8 @@ def main():
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["ClusterIdentifier"], True],
-        [
-            "state",
-            "present",
-            [
-                "Account",
-                "cluster_identifier",
-                "identifier",
-                "ClusterIdentifier",
-                "account",
-            ],
-            True,
-        ],
+        ["state", "list", ["cluster_identifier"], True],
+        ["state", "present", ["identifier", "cluster_identifier", "account"], True],
         ["state", "absent", ["cluster_identifier", "account", "identifier"], True],
         ["state", "get", ["cluster_identifier", "account", "identifier"], True],
     ]
@@ -207,10 +196,12 @@ def main():
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("ClusterIdentifier") or not module.params.get(
-            "Account"
+        if not module.params.get("cluster_identifier") or not module.params.get(
+            "account"
         ):
-            module.fail_json(f"You must specify both {*identifier, } identifiers.")
+            module.fail_json(
+                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+            )
 
     results = {"changed": False, "result": {}}
 

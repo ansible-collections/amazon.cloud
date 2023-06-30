@@ -169,7 +169,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["auto_scaling_group_name", "AutoScalingGroupName"], True],
+        ["state", "present", ["auto_scaling_group_name"], True],
         ["state", "absent", ["auto_scaling_group_name"], True],
         ["state", "get", ["auto_scaling_group_name"], True],
     ]

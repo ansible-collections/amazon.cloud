@@ -324,7 +324,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["framework_arn", "FrameworkControls"], True],
+        ["state", "present", ["framework_controls", "framework_arn"], True],
         ["state", "absent", ["framework_arn"], True],
         ["state", "get", ["framework_arn"], True],
     ]
