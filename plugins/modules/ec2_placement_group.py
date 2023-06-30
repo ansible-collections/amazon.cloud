@@ -75,6 +75,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -146,7 +147,7 @@ def main():
     argument_spec["group_name"] = {"type": "str", "aliases": ["GroupName"]}
     argument_spec["spread_level"] = {"type": "str", "aliases": ["SpreadLevel"]}
     argument_spec["partition_count"] = {"type": "int", "aliases": ["PartitionCount"]}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],

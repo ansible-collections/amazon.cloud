@@ -409,6 +409,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -547,7 +548,7 @@ def main():
         "elements": "str",
         "aliases": ["IamRoles"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["vpc_security_group_ids"] = {
         "type": "list",
         "elements": "str",
@@ -649,12 +650,12 @@ def main():
             "state",
             "present",
             [
-                "cluster_identifier",
-                "master_user_password",
-                "node_type",
-                "cluster_type",
                 "master_username",
                 "db_name",
+                "node_type",
+                "cluster_identifier",
+                "master_user_password",
+                "cluster_type",
             ],
             True,
         ],

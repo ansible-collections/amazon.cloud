@@ -134,6 +134,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -240,7 +241,7 @@ def main():
         },
         "aliases": ["OptionConfigurations"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -256,10 +257,10 @@ def main():
             "state",
             "present",
             [
-                "option_group_name",
-                "engine_name",
                 "major_engine_version",
+                "option_group_name",
                 "option_group_description",
+                "engine_name",
             ],
             True,
         ],

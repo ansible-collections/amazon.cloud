@@ -53,12 +53,12 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
         type: dict
     user_names:
-        $comment: List of users.
         aliases:
         - UserNames
         description:
@@ -148,11 +148,10 @@ def main():
     argument_spec["acl_name"] = {"type": "str", "aliases": ["ACLName"]}
     argument_spec["user_names"] = {
         "type": "list",
-        "$comment": "List of users.",
         "elements": "str",
         "aliases": ["UserNames"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],

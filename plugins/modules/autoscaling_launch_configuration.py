@@ -420,7 +420,7 @@ def main():
         [
             "state",
             "present",
-            ["instance_type", "launch_configuration_name", "image_id"],
+            ["image_id", "launch_configuration_name", "instance_type"],
             True,
         ],
         ["state", "absent", ["launch_configuration_name"], True],

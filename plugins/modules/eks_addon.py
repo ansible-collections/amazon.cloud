@@ -103,6 +103,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -190,7 +191,7 @@ def main():
         "type": "str",
         "aliases": ["ConfigurationValues"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -204,7 +205,7 @@ def main():
 
     required_if = [
         ["state", "list", ["cluster_name"], True],
-        ["state", "present", ["identifier", "addon_name", "cluster_name"], True],
+        ["state", "present", ["addon_name", "identifier", "cluster_name"], True],
         ["state", "absent", ["cluster_name", "addon_name", "identifier"], True],
         ["state", "get", ["cluster_name", "addon_name", "identifier"], True],
     ]

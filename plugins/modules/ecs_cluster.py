@@ -195,6 +195,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -262,7 +263,7 @@ def main():
         ),
     )
 
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["cluster_name"] = {"type": "str", "aliases": ["ClusterName"]}
     argument_spec["cluster_settings"] = {
         "type": "list",

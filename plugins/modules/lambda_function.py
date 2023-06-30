@@ -299,6 +299,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -484,7 +485,7 @@ def main():
         "aliases": ["CodeSigningConfigArn"],
     }
     argument_spec["layers"] = {"type": "list", "elements": "str", "aliases": ["Layers"]}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["image_config"] = {
         "type": "dict",
         "options": {
@@ -545,7 +546,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["code", "function_name", "role"], True],
+        ["state", "present", ["code", "role", "function_name"], True],
         ["state", "absent", ["function_name"], True],
         ["state", "get", ["function_name"], True],
     ]

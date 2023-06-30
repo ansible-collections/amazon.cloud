@@ -26,7 +26,6 @@ options:
         - Not Provived.
         suboptions:
             passwords:
-                $comment: List of passwords.
                 aliases:
                 - Passwords
                 description:
@@ -77,6 +76,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -160,16 +160,11 @@ def main():
                 "choices": ["iam", "password"],
                 "aliases": ["Type"],
             },
-            "passwords": {
-                "type": "list",
-                "$comment": "List of passwords.",
-                "elements": "str",
-                "aliases": ["Passwords"],
-            },
+            "passwords": {"type": "list", "elements": "str", "aliases": ["Passwords"]},
         },
         "aliases": ["AuthenticationMode"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],

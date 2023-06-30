@@ -75,6 +75,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -163,7 +164,7 @@ def main():
     }
     argument_spec["family"] = {"type": "str", "aliases": ["Family"]}
     argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["parameters"] = {"type": "dict", "aliases": ["Parameters"]}
     argument_spec["state"] = {
         "type": "str",

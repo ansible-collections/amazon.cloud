@@ -230,12 +230,9 @@ class CloudControlResource(object):
     ) -> List:
         # This is the "describe" equivalent for AWS Cloud Control API
         response: Dict = {}
-        identifier: Dict = {}
 
         if isinstance(primary_identifier, list):
-            for id in primary_identifier:
-                identifier[id] = self.module.params.get(camel_to_snake(id))
-            primary_identifier = json.dumps(identifier)
+            primary_identifier = self.get_identifier(primary_identifier)
         elif isinstance(primary_identifier, dict):
             primary_identifier = json.dumps(primary_identifier)
         try:
@@ -264,11 +261,15 @@ class CloudControlResource(object):
         results = {"changed": False, "result": {}}
         create_only_params = create_only_params or []
         resource = None
+        identifier: Dict = {}
 
         if "PromotionTier" in params:
             params.pop("PromotionTier")
 
-        identifier = self.get_identifier(primary_identifier)
+        if self.module.params.get("identifier"):
+            identifier = self.module.params.get("identifier")
+        else:
+            identifier = self.get_identifier(primary_identifier)
 
         try:
             resource = self.client.get_resource(
@@ -353,9 +354,13 @@ class CloudControlResource(object):
 
     def absent(self, type_name: str, primary_identifier: List):
         changed: bool = False
+        identifier: Dict = {}
         response: Dict = {}
 
-        identifier = self.get_identifier(primary_identifier)
+        if self.module.params.get("identifier"):
+            identifier = self.module.params.get("identifier")
+        else:
+            identifier = self.get_identifier(primary_identifier)
 
         try:
             response = self.client.get_resource(
@@ -517,13 +522,10 @@ class CloudControlResource(object):
 
         return results
 
-    def get_identifier(self, primary_identifier: list):
+    def get_identifier(self, primary_identifier: list) -> Dict:
         identifier: Dict = {}
-        if self.module.params.get("identifier"):
-            identifier = self.module.params.get("identifier")
-        else:
-            for id in primary_identifier:
-                identifier[id] = self.module.params.get(camel_to_snake(id))
+        for id in primary_identifier:
+            identifier[id] = self.module.params.get(camel_to_snake(id))
         return json.dumps(identifier)
 
 

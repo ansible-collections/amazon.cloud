@@ -64,6 +64,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -175,7 +176,7 @@ def main():
         "choices": ["READ_ONLY", "READ_WRITE"],
         "aliases": ["TargetRole"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -190,7 +191,7 @@ def main():
         [
             "state",
             "present",
-            ["vpc_subnet_ids", "db_proxy_name", "db_proxy_endpoint_name"],
+            ["db_proxy_endpoint_name", "db_proxy_name", "vpc_subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_proxy_endpoint_name"], True],

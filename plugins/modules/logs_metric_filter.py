@@ -97,8 +97,6 @@ options:
                 - Metric name must be in ASCII format.
                 type: str
             metric_namespace:
-                $comment: Namespaces can be up to 256 characters long; valid characters
-                    include 0-9A-Za-z.-_/#
                 aliases:
                 - MetricNamespace
                 description:
@@ -235,11 +233,7 @@ def main():
         "options": {
             "default_value": {"type": "int", "aliases": ["DefaultValue"]},
             "metric_name": {"type": "str", "aliases": ["MetricName"]},
-            "metric_namespace": {
-                "$comment": "Namespaces can be up to 256 characters long; valid characters include 0-9A-Za-z.-_/#",
-                "type": "str",
-                "aliases": ["MetricNamespace"],
-            },
+            "metric_namespace": {"type": "str", "aliases": ["MetricNamespace"]},
             "metric_value": {"type": "str", "aliases": ["MetricValue"]},
             "unit": {
                 "type": "str",
@@ -302,11 +296,11 @@ def main():
             "state",
             "present",
             [
-                "log_group_name",
                 "filter_pattern",
                 "filter_name",
-                "identifier",
+                "log_group_name",
                 "metric_transformations",
+                "identifier",
             ],
             True,
         ],

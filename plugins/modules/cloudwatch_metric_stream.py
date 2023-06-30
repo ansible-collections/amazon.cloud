@@ -168,6 +168,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -286,7 +287,7 @@ def main():
         },
         "aliases": ["StatisticsConfigurations"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["include_linked_accounts_metrics"] = {
         "type": "bool",
         "aliases": ["IncludeLinkedAccountsMetrics"],
@@ -305,7 +306,7 @@ def main():
         [
             "state",
             "present",
-            ["firehose_arn", "name", "output_format", "role_arn"],
+            ["role_arn", "name", "firehose_arn", "output_format"],
             True,
         ],
         ["state", "absent", ["name"], True],

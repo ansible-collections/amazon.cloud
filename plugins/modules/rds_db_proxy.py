@@ -150,6 +150,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -273,7 +274,7 @@ def main():
     }
     argument_spec["require_tls"] = {"type": "bool", "aliases": ["RequireTLS"]}
     argument_spec["role_arn"] = {"type": "str", "aliases": ["RoleArn"]}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["vpc_security_group_ids"] = {
         "type": "list",
         "elements": "str",
@@ -298,7 +299,7 @@ def main():
         [
             "state",
             "present",
-            ["auth", "vpc_subnet_ids", "db_proxy_name", "role_arn", "engine_family"],
+            ["role_arn", "db_proxy_name", "vpc_subnet_ids", "engine_family", "auth"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],

@@ -94,6 +94,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -169,7 +170,7 @@ def main():
         "type": "int",
         "aliases": ["PendingWindowInDays"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["key_id"] = {"type": "str", "aliases": ["KeyId"]}
     argument_spec["state"] = {
         "type": "str",
@@ -182,7 +183,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["key_id", "key_policy", "primary_key_arn"], True],
+        ["state", "present", ["key_id", "primary_key_arn", "key_policy"], True],
         ["state", "absent", ["key_id"], True],
         ["state", "get", ["key_id"], True],
     ]

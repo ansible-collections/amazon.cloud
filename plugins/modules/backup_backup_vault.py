@@ -115,6 +115,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -221,7 +222,7 @@ def main():
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
     argument_spec["force"] = {"type": "bool", "default": False}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [

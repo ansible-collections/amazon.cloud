@@ -114,6 +114,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -212,7 +213,7 @@ def main():
         },
         "aliases": ["Selectors"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -230,11 +231,11 @@ def main():
             "state",
             "present",
             [
-                "cluster_name",
                 "selectors",
                 "fargate_profile_name",
-                "pod_execution_role_arn",
                 "identifier",
+                "pod_execution_role_arn",
+                "cluster_name",
             ],
             True,
         ],

@@ -317,6 +317,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -499,7 +500,7 @@ def main():
     argument_spec["s3_bucket_name"] = {"type": "str", "aliases": ["S3BucketName"]}
     argument_spec["s3_key_prefix"] = {"type": "str", "aliases": ["S3KeyPrefix"]}
     argument_spec["sns_topic_name"] = {"type": "str", "aliases": ["SnsTopicName"]}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["trail_name"] = {"type": "str", "aliases": ["TrailName"]}
     argument_spec["insight_selectors"] = {
         "type": "list",

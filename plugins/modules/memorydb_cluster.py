@@ -209,6 +209,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -364,7 +365,7 @@ def main():
         "type": "bool",
         "aliases": ["AutoMinorVersionUpgrade"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -376,7 +377,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["node_type", "acl_name", "cluster_name"], True],
+        ["state", "present", ["acl_name", "cluster_name", "node_type"], True],
         ["state", "absent", ["cluster_name"], True],
         ["state", "get", ["cluster_name"], True],
     ]

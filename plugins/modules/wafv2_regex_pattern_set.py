@@ -90,6 +90,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -170,7 +171,7 @@ def main():
         "choices": ["CLOUDFRONT", "REGIONAL"],
         "aliases": ["Scope"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -187,7 +188,7 @@ def main():
         [
             "state",
             "present",
-            ["regular_expression_list", "scope", "name", "id", "identifier"],
+            ["regular_expression_list", "identifier", "id", "name", "scope"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],

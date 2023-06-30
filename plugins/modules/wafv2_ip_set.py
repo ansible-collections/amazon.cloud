@@ -102,6 +102,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -187,7 +188,7 @@ def main():
         "elements": "str",
         "aliases": ["Addresses"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -204,7 +205,7 @@ def main():
         [
             "state",
             "present",
-            ["scope", "ip_address_version", "name", "addresses", "id", "identifier"],
+            ["ip_address_version", "identifier", "id", "name", "scope", "addresses"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],

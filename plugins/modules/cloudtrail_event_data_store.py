@@ -181,6 +181,7 @@ options:
     tags:
         aliases:
         - Tags
+        - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
@@ -319,7 +320,7 @@ def main():
         "aliases": ["TerminationProtectionEnabled"],
     }
     argument_spec["kms_key_id"] = {"type": "str", "aliases": ["KmsKeyId"]}
-    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["ingestion_enabled"] = {
         "type": "bool",
         "aliases": ["IngestionEnabled"],
