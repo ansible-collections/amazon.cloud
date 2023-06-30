@@ -461,7 +461,9 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    AnsibleAmazonCloudModule,
+)
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -649,12 +651,12 @@ def main():
             "state",
             "present",
             [
-                "node_type",
-                "cluster_type",
-                "master_username",
-                "db_name",
                 "cluster_identifier",
                 "master_user_password",
+                "master_username",
+                "cluster_type",
+                "db_name",
+                "node_type",
             ],
             True,
         ],
@@ -663,7 +665,7 @@ def main():
     ]
     mutually_exclusive = []
 
-    module = AnsibleAWSModule(
+    module = AnsibleAmazonCloudModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

@@ -102,7 +102,9 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    AnsibleAmazonCloudModule,
+)
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -146,13 +148,13 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["query_string", "name", "query_definition_id"], True],
+        ["state", "present", ["name", "query_definition_id", "query_string"], True],
         ["state", "absent", ["query_definition_id"], True],
         ["state", "get", ["query_definition_id"], True],
     ]
     mutually_exclusive = []
 
-    module = AnsibleAWSModule(
+    module = AnsibleAmazonCloudModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

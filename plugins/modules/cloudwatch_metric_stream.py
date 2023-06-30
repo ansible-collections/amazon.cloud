@@ -212,7 +212,9 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    AnsibleAmazonCloudModule,
+)
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -305,7 +307,7 @@ def main():
         [
             "state",
             "present",
-            ["name", "role_arn", "output_format", "firehose_arn"],
+            ["name", "role_arn", "firehose_arn", "output_format"],
             True,
         ],
         ["state", "absent", ["name"], True],
@@ -313,7 +315,7 @@ def main():
     ]
     mutually_exclusive = []
 
-    module = AnsibleAWSModule(
+    module = AnsibleAmazonCloudModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

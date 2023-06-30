@@ -672,7 +672,9 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    AnsibleAmazonCloudModule,
+)
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -1041,7 +1043,7 @@ def main():
         [
             "state",
             "present",
-            ["table_name", "replicas", "key_schema", "attribute_definitions"],
+            ["attribute_definitions", "key_schema", "table_name", "replicas"],
             True,
         ],
         ["state", "absent", ["table_name"], True],
@@ -1049,7 +1051,7 @@ def main():
     ]
     mutually_exclusive = []
 
-    module = AnsibleAWSModule(
+    module = AnsibleAmazonCloudModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,
