@@ -1,0 +1,2 @@
+bugfixes:
+  - "Cleanup set_collection_info imports sicen they do not exist in amazon.aws."
