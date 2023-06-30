@@ -221,6 +221,7 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
+from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -299,7 +300,7 @@ def main():
         [
             "state",
             "present",
-            ["role_arn", "db_proxy_name", "vpc_subnet_ids", "engine_family", "auth"],
+            ["db_proxy_name", "engine_family", "auth", "role_arn", "vpc_subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],

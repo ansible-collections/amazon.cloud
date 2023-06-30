@@ -126,6 +126,7 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
+from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -164,9 +165,9 @@ def main():
             "present",
             [
                 "cluster_identifier",
-                "endpoint_name",
-                "vpc_security_group_ids",
                 "subnet_group_name",
+                "vpc_security_group_ids",
+                "endpoint_name",
             ],
             True,
         ],

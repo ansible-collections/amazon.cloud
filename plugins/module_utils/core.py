@@ -263,9 +263,6 @@ class CloudControlResource(object):
         resource = None
         identifier: Dict = {}
 
-        if "PromotionTier" in params:
-            params.pop("PromotionTier")
-
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:

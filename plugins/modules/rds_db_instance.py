@@ -90,7 +90,20 @@ options:
         - CertificateDetails
         description:
         - Returns the details of the DB instances server certificate.
-        suboptions: {}
+        suboptions:
+            ca_identifier:
+                aliases:
+                - CAIdentifier
+                description:
+                - The CA identifier of the CA certificate used for the DB instances
+                    server certificate.
+                type: str
+            valid_till:
+                aliases:
+                - ValidTill
+                description:
+                - "The expiration date of the DB instance\u2019s server certificate."
+                type: str
         type: dict
     certificate_rotation_restart:
         aliases:
@@ -158,6 +171,12 @@ options:
         - '* Cant be the identifier of an Aurora DB cluster snapshot.'
         - '* Cant be the identifier of an RDS for PostgreSQL Multi-AZ DB cluster snapshot.'
         type: str
+    db_instance_arn:
+        aliases:
+        - DBInstanceArn
+        description:
+        - The Amazon Resource Name (ARN) for the DB instance.
+        type: str
     db_instance_class:
         aliases:
         - DBInstanceClass
@@ -214,6 +233,22 @@ options:
         - A DB subnet group to associate with the DB instance.
         - If you update this value, the new subnet group must be a subnet group in
             a new VPC.
+        type: str
+    db_system_id:
+        aliases:
+        - DBSystemId
+        description:
+        - The Oracle system ID (Oracle SID) for a container database (CDB). The Oracle
+            SID is also the name of the CDB. This setting is valid for RDS Custom
+            only.
+        type: str
+    dbi_resource_id:
+        aliases:
+        - DbiResourceId
+        description:
+        - The AWS Region-unique, immutable identifier for the DB instance.
+        - This identifier is found in AWS CloudTrail log entries whenever the AWS
+            KMS key for the DB instance is accessed.
         type: str
     delete_automated_backups:
         aliases:
@@ -277,7 +312,26 @@ options:
         - Endpoint
         description:
         - Specifies the connection endpoint.
-        suboptions: {}
+        suboptions:
+            address:
+                aliases:
+                - Address
+                description:
+                - Specifies the DNS address of the DB instance.
+                type: str
+            hosted_zone_id:
+                aliases:
+                - HostedZoneId
+                description:
+                - Specifies the ID that Amazon Route 53 assigns when you create a
+                    hosted zone.
+                type: str
+            port:
+                aliases:
+                - Port
+                description:
+                - Specifies the port that the database engine is listening on.
+                type: str
         type: dict
     engine:
         aliases:
@@ -344,6 +398,12 @@ options:
                 - KmsKeyId
                 description:
                 - The AWS KMS key identifier that is used to encrypt the secret.
+                type: str
+            secret_arn:
+                aliases:
+                - SecretArn
+                description:
+                - The Amazon Resource Name (ARN) of the secret.
                 type: str
         type: dict
     master_username:
@@ -418,6 +478,12 @@ options:
         - The amount of time, in days, to retain Performance Insights data.
         - Valid values are 7 or 731 (2 years).
         type: int
+    port:
+        aliases:
+        - Port
+        description:
+        - The port number on which the database accepts connections.
+        type: str
     preferred_backup_window:
         aliases:
         - PreferredBackupWindow
@@ -668,6 +734,7 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
+from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -715,7 +782,10 @@ def main():
     }
     argument_spec["certificate_details"] = {
         "type": "dict",
-        "options": {},
+        "options": {
+            "ca_identifier": {"type": "str", "aliases": ["CAIdentifier"]},
+            "valid_till": {"type": "str", "aliases": ["ValidTill"]},
+        },
         "aliases": ["CertificateDetails"],
     }
     argument_spec["certificate_rotation_restart"] = {
@@ -742,11 +812,13 @@ def main():
         "type": "str",
         "aliases": ["DBClusterSnapshotIdentifier"],
     }
+    argument_spec["db_instance_arn"] = {"type": "str", "aliases": ["DBInstanceArn"]}
     argument_spec["db_instance_class"] = {"type": "str", "aliases": ["DBInstanceClass"]}
     argument_spec["db_instance_identifier"] = {
         "type": "str",
         "aliases": ["DBInstanceIdentifier"],
     }
+    argument_spec["dbi_resource_id"] = {"type": "str", "aliases": ["DbiResourceId"]}
     argument_spec["db_name"] = {"type": "str", "aliases": ["DBName"]}
     argument_spec["db_parameter_group_name"] = {
         "type": "str",
@@ -765,6 +837,7 @@ def main():
         "type": "str",
         "aliases": ["DBSubnetGroupName"],
     }
+    argument_spec["db_system_id"] = {"type": "str", "aliases": ["DBSystemId"]}
     argument_spec["delete_automated_backups"] = {
         "type": "bool",
         "aliases": ["DeleteAutomatedBackups"],
@@ -791,7 +864,15 @@ def main():
         "type": "bool",
         "aliases": ["EnablePerformanceInsights"],
     }
-    argument_spec["endpoint"] = {"type": "dict", "options": {}, "aliases": ["Endpoint"]}
+    argument_spec["endpoint"] = {
+        "type": "dict",
+        "options": {
+            "address": {"type": "str", "aliases": ["Address"]},
+            "port": {"type": "str", "aliases": ["Port"]},
+            "hosted_zone_id": {"type": "str", "aliases": ["HostedZoneId"]},
+        },
+        "aliases": ["Endpoint"],
+    }
     argument_spec["engine"] = {"type": "str", "aliases": ["Engine"]}
     argument_spec["engine_version"] = {"type": "str", "aliases": ["EngineVersion"]}
     argument_spec["manage_master_user_password"] = {
@@ -808,7 +889,10 @@ def main():
     }
     argument_spec["master_user_secret"] = {
         "type": "dict",
-        "options": {"kms_key_id": {"type": "str", "aliases": ["KmsKeyId"]}},
+        "options": {
+            "secret_arn": {"type": "str", "aliases": ["SecretArn"]},
+            "kms_key_id": {"type": "str", "aliases": ["KmsKeyId"]},
+        },
         "aliases": ["MasterUserSecret"],
     }
     argument_spec["max_allocated_storage"] = {
@@ -839,6 +923,7 @@ def main():
         "type": "int",
         "aliases": ["PerformanceInsightsRetentionPeriod"],
     }
+    argument_spec["port"] = {"type": "str", "aliases": ["Port"]}
     argument_spec["preferred_backup_window"] = {
         "type": "str",
         "aliases": ["PreferredBackupWindow"],
@@ -973,6 +1058,7 @@ def main():
     params["db_cluster_snapshot_identifier"] = module.params.get(
         "db_cluster_snapshot_identifier"
     )
+    params["db_instance_arn"] = module.params.get("db_instance_arn")
     params["db_instance_class"] = module.params.get("db_instance_class")
     params["db_instance_identifier"] = module.params.get("db_instance_identifier")
     params["db_name"] = module.params.get("db_name")
@@ -980,6 +1066,8 @@ def main():
     params["db_security_groups"] = module.params.get("db_security_groups")
     params["db_snapshot_identifier"] = module.params.get("db_snapshot_identifier")
     params["db_subnet_group_name"] = module.params.get("db_subnet_group_name")
+    params["db_system_id"] = module.params.get("db_system_id")
+    params["dbi_resource_id"] = module.params.get("dbi_resource_id")
     params["delete_automated_backups"] = module.params.get("delete_automated_backups")
     params["deletion_protection"] = module.params.get("deletion_protection")
     params["domain"] = module.params.get("domain")
@@ -1018,6 +1106,7 @@ def main():
     params["performance_insights_retention_period"] = module.params.get(
         "performance_insights_retention_period"
     )
+    params["port"] = module.params.get("port")
     params["preferred_backup_window"] = module.params.get("preferred_backup_window")
     params["preferred_maintenance_window"] = module.params.get(
         "preferred_maintenance_window"
@@ -1087,6 +1176,15 @@ def main():
     identifier = ["DBInstanceIdentifier"]
 
     results = {"changed": False, "result": {}}
+
+    if module.params.get("engine") not in (
+        "aurora",
+        "aurora-postgresql",
+        "aurora-mysql",
+    ):
+        # It can only be used when engine is one of ("aurora", "aurora-postgresql", "aurora-mysql").
+        # Since the CloudFormation template assigns 'default: 1', it is always set to 1.
+        params.pop("promotion_tier")
 
     if state == "list":
         if "list" not in handlers:
