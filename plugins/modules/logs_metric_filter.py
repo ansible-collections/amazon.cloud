@@ -200,9 +200,7 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    AnsibleAmazonCloudModule,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -297,11 +295,11 @@ def main():
             "state",
             "present",
             [
-                "identifier",
-                "filter_name",
                 "filter_pattern",
+                "identifier",
                 "log_group_name",
                 "metric_transformations",
+                "filter_name",
             ],
             True,
         ],
@@ -310,7 +308,7 @@ def main():
     ]
     mutually_exclusive = [[("log_group_name", "filter_name"), "identifier"]]
 
-    module = AnsibleAmazonCloudModule(
+    module = AnsibleAWSModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

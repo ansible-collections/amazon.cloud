@@ -208,9 +208,7 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    AnsibleAmazonCloudModule,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -300,7 +298,7 @@ def main():
         [
             "state",
             "present",
-            ["db_proxy_name", "engine_family", "auth", "role_arn", "vpc_subnet_ids"],
+            ["auth", "engine_family", "role_arn", "db_proxy_name", "vpc_subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],
@@ -308,7 +306,7 @@ def main():
     ]
     mutually_exclusive = []
 
-    module = AnsibleAmazonCloudModule(
+    module = AnsibleAWSModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

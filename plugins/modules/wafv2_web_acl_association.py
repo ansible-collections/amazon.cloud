@@ -98,9 +98,7 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    AnsibleAmazonCloudModule,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -137,13 +135,13 @@ def main():
 
     required_if = [
         ["state", "list", ["resource_arn"], True],
-        ["state", "present", ["web_acl_arn", "identifier", "resource_arn"], True],
+        ["state", "present", ["identifier", "resource_arn", "web_acl_arn"], True],
         ["state", "absent", ["resource_arn", "web_acl_arn", "identifier"], True],
         ["state", "get", ["resource_arn", "web_acl_arn", "identifier"], True],
     ]
     mutually_exclusive = [[("resource_arn", "web_acl_arn"), "identifier"]]
 
-    module = AnsibleAmazonCloudModule(
+    module = AnsibleAWSModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

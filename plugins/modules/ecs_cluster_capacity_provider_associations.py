@@ -18,14 +18,6 @@ options:
     capacity_providers:
         aliases:
         - CapacityProviders
-        any_of:
-        -   enum:
-            - FARGATE
-            - FARGATE_SPOT
-            type: string
-        -   maxLength: 2048
-            minLength: 1
-            type: string
         description:
         - If using ec2 auto-scaling, the name of the associated capacity provider.
         - Otherwise FARGATE, C(FARGATE_SPOT).
@@ -53,14 +45,6 @@ options:
             capacity_provider:
                 aliases:
                 - CapacityProvider
-                any_of:
-                -   enum:
-                    - FARGATE
-                    - FARGATE_SPOT
-                    type: string
-                -   maxLength: 2048
-                    minLength: 1
-                    type: string
                 description:
                 - If using ec2 auto-scaling, the name of the associated capacity provider.
                 - Otherwise FARGATE, C(FARGATE_SPOT).
@@ -136,9 +120,7 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    AnsibleAmazonCloudModule,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -164,10 +146,6 @@ def main():
     argument_spec["capacity_providers"] = {
         "type": "list",
         "elements": "str",
-        "any_of": [
-            {"type": "string", "enum": ["FARGATE", "FARGATE_SPOT"]},
-            {"type": "string", "minLength": 1, "maxLength": 2048},
-        ],
         "aliases": ["CapacityProviders"],
     }
     argument_spec["cluster"] = {"type": "str", "aliases": ["Cluster"]}
@@ -177,14 +155,7 @@ def main():
         "options": {
             "base": {"type": "int", "aliases": ["Base"]},
             "weight": {"type": "int", "aliases": ["Weight"]},
-            "capacity_provider": {
-                "type": "str",
-                "any_of": [
-                    {"type": "string", "enum": ["FARGATE", "FARGATE_SPOT"]},
-                    {"type": "string", "minLength": 1, "maxLength": 2048},
-                ],
-                "aliases": ["CapacityProvider"],
-            },
+            "capacity_provider": {"type": "str", "aliases": ["CapacityProvider"]},
         },
         "aliases": ["DefaultCapacityProviderStrategy"],
     }
@@ -201,7 +172,7 @@ def main():
         [
             "state",
             "present",
-            ["capacity_providers", "cluster", "default_capacity_provider_strategy"],
+            ["default_capacity_provider_strategy", "capacity_providers", "cluster"],
             True,
         ],
         ["state", "absent", ["cluster"], True],
@@ -209,7 +180,7 @@ def main():
     ]
     mutually_exclusive = []
 
-    module = AnsibleAmazonCloudModule(
+    module = AnsibleAWSModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

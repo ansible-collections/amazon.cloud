@@ -367,9 +367,7 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    AnsibleAmazonCloudModule,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -520,13 +518,13 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["is_logging", "s3_bucket_name", "trail_name"], True],
+        ["state", "present", ["s3_bucket_name", "is_logging", "trail_name"], True],
         ["state", "absent", ["trail_name"], True],
         ["state", "get", ["trail_name"], True],
     ]
     mutually_exclusive = []
 
-    module = AnsibleAmazonCloudModule(
+    module = AnsibleAWSModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,

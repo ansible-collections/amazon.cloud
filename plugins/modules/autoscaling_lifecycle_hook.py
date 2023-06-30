@@ -155,9 +155,7 @@ result:
 """
 
 
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    AnsibleAmazonCloudModule,
-)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import AnsibleAWSModule
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
@@ -222,10 +220,10 @@ def main():
             "state",
             "present",
             [
-                "lifecycle_hook_name",
                 "lifecycle_transition",
-                "auto_scaling_group_name",
                 "identifier",
+                "auto_scaling_group_name",
+                "lifecycle_hook_name",
             ],
             True,
         ],
@@ -246,7 +244,7 @@ def main():
         [("auto_scaling_group_name", "lifecycle_hook_name"), "identifier"]
     ]
 
-    module = AnsibleAmazonCloudModule(
+    module = AnsibleAWSModule(
         argument_spec=argument_spec,
         required_if=required_if,
         mutually_exclusive=mutually_exclusive,
