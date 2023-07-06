@@ -216,8 +216,23 @@ def map_key_to_alias(data, mapping):
                     mapping[key].get("options", {})
                     or mapping[key].get("suboptions", {}),
                 )
+            elif isinstance(value, list):
+                mapped_data[mapped_key] = []
+                for item in value:
+                    if isinstance(item, dict):
+                        mapped_data[mapped_key].append(
+                            map_key_to_alias(
+                                item,
+                                mapping[key].get("options", {})
+                                or mapping[key].get("suboptions", {}),
+                            )
+                        )
+                    else:
+                        mapped_data[mapped_key] = value
             else:
                 mapped_data[mapped_key] = value
+        else:
+            mapped_data[key] = value
     return mapped_data
 
 
