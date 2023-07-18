@@ -17,5 +17,10 @@
       region: '{{ aws_region }}'
 
   block:
-    - name: Test creation od memorydb acl
+    - name: Test creation of memorydb acl
       ansible.builtin.include_tasks: 'memorydb_acl.yml'
+    - name: Test creation of memorydb parameter group
+      ansible.builtin.include_tasks: 'memorydb_parameter_group.yml'
+  always:
+    - name: Cleanup
+      ansible.builtin.include_tasks: 'cleanup.yml'

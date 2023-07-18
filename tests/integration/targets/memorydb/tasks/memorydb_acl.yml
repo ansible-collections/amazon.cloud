@@ -1,7 +1,7 @@
 ---
 - name: Create memorydb acl
   block:
-    - name: Create memorydb acl with name test-acl`
+    - name: Create memorydb acl with name test-acl
       amazon.cloud.memorydb_acl:
         acl_name: "test-acl"
         tags:
@@ -10,20 +10,20 @@
       tags:
         - docs
 
-    - assert:
+    - name: Assert that the acl is created.
+      ansible.builtin.assert:
         that:
             - acl_output is success
             - acl_output is changed
 
     - name: Describe the acl
       amazon.cloud.memorydb_acl:
-        state: describe
-
-  always:
-    - name: Delete memorydb acl
-      amazon.cloud.memorydb_acl:
         acl_name: "test-acl"
-        state: absent
-      ignore_errors: true
-      tags:
-        - docs
+        state: describe
+      register: acl_describe
+
+    - name: Assert that the acl is described correctly.
+      ansible.builtin.assert:
+        that:
+            - acl_output.result == acl_describe.result
+            - acl_describe.result.properties.status == "active"

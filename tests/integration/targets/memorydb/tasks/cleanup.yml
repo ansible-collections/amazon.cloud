@@ -1,0 +1,17 @@
+---
+- name: Delete memorydb acl
+  amazon.cloud.memorydb_acl:
+    acl_name: "test-acl"
+    state: absent
+  ignore_errors: true
+  tags:
+    - docs
+
+- name: Delete memorydb parameter group
+  amazon.cloud.memorydb_parameter_group:
+    parameter_group_name: test-parameter-group
+    state: absent
+  ignore_errors: true
+  tags:
+    - docs
+  

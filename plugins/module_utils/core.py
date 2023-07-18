@@ -225,7 +225,6 @@ class CloudControlResource(object):
         # This is the "describe" equivalent for AWS Cloud Control API
         response: Dict = {}
         identifier: Dict = {}
-
         if isinstance(primary_identifier, list):
             primary_identifier = self.get_identifier(identifier, primary_identifier)
         elif isinstance(primary_identifier, dict):
