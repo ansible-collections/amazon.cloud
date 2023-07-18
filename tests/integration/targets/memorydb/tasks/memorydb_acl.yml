@@ -1,0 +1,29 @@
+---
+- name: Create memorydb acl
+  block:
+    - name: Create memorydb acl with name test-acl`
+      amazon.cloud.memorydb_acl:
+        acl_name: "test-acl"
+        tags:
+          env: "test"
+      register: acl_output
+      tags:
+        - docs
+
+    - assert:
+        that:
+            - acl_output is success
+            - acl_output is changed
+
+    - name: Describe the acl
+      amazon.cloud.memorydb_acl:
+        state: describe
+
+  always:
+    - name: Delete memorydb acl
+      amazon.cloud.memorydb_acl:
+        acl_name: "test-acl"
+        state: absent
+      ignore_errors: true
+      tags:
+        - docs
