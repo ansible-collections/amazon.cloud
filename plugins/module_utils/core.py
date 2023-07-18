@@ -75,7 +75,10 @@ try:
 except ImportError:
     BOTO3_IMP_ERR = traceback.format_exc()
     HAS_BOTO3 = False
-
+import logging
+logging.basicConfig(filename = '/tmp/file.log',
+                    level = logging.DEBUG,
+                    format = '%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 
 class CloudControlResource(object):
     def __init__(self, module):
@@ -299,12 +302,16 @@ class CloudControlResource(object):
                 response = self.client.create_resource(
                     TypeName=type_name, DesiredState=params
                 )
+                logging.debug("RESP")
+                logging.debug(response)
             except (
                 botocore.exceptions.BotoCoreError,
                 botocore.exceptions.ClientError,
             ) as e:
                 self.module.fail_json_aws(e, msg="Failed to create resource")
 
+            logging.debug("RESPAFTER")
+            logging.debug(response)
             self.wait_until_resource_request_success(
                 response["ProgressEvent"]["RequestToken"]
             )

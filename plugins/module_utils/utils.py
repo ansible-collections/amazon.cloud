@@ -128,6 +128,10 @@ def normalize_response(response: Iterable):
     else:
         return _normalize_response(resource_descriptions)
 
+import logging
+logging.basicConfig(filename = '/tmp/file.log',
+                    level = logging.DEBUG,
+                    format = '%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 
 def ansible_dict_to_boto3_tag_list(
     tags_dict, tag_name_key_name="Key", tag_value_key_name="Value"
@@ -281,6 +285,10 @@ def find_tag_by_key(key, tags):
 
 
 def tag_merge(t1, t2):
+    logging.debug("t2")
+    logging.debug(t2)
+    logging.debug("t1")
+    logging.debug(t1)
     for tag in t2:
         existing = find_tag_by_key(tag["Key"], t1)
         if existing:
@@ -295,7 +303,25 @@ def op(operation, path, value):
     return {"op": operation, "path": path, "value": value}
 
 
+def merge_dicts(list1, list2):
+    merged_list = list1.copy()
+
+    for dict2 in list2:
+        matching_dicts = [dict1 for dict1 in merged_list if all(item in dict1.items() for item in dict2.items())]
+        if matching_dicts:
+            for k, v in dict2.items():
+                matching_dicts[0][k] = v
+        else:
+            merged_list.append(dict2)
+
+    return merged_list
+
+
 def make_op(path, old, new, strategy):
+    logging.debug("old")
+    logging.debug(old)
+    logging.debug("new")
+    logging.debug(new)
     _new_cpy = copy.deepcopy(new)
 
     if isinstance(old, dict):
@@ -303,9 +329,14 @@ def make_op(path, old, new, strategy):
             _new_cpy = dict(old, **new)
     elif isinstance(old, list):
         if strategy == "merge":
-            _old_cpy = copy.deepcopy(old)
-            _new_cpy = tag_merge(_old_cpy, new)
+            if path == 'Tags':
+                _old_cpy = copy.deepcopy(old)
+                _new_cpy = tag_merge(_old_cpy, new)
+            else:
+                _new_cpy = merge_dicts(old, new)
 
+    logging.debug('op("replace", path, _new_cpy)')
+    logging.debug(op("replace", path, _new_cpy))
     return op("replace", path, _new_cpy)
 
 

@@ -1142,14 +1142,14 @@ def main():
     )
     params["vpc_security_groups"] = module.params.get("vpc_security_groups")
 
-    if module.params.get("engine") not in (
-        "aurora",
-        "aurora-postgresql",
-        "aurora-mysql",
-    ):
-        # It can only be used when engine is one of ("aurora", "aurora-postgresql", "aurora-mysql").
-        # Since the CloudFormation template assigns 'default: 1', it is always set to 1.
-        params.pop("promotion_tier")
+    # if module.params.get("engine") not in (
+    #     "aurora",
+    #     "aurora-postgresql",
+    #     "aurora-mysql",
+    # ):
+    #     # It can only be used when engine is one of ("aurora", "aurora-postgresql", "aurora-mysql").
+    #     # Since the CloudFormation template assigns 'default: 1', it is always set to 1.
+    #     params.pop("promotion_tier")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = scrub_none_parameters(params)
