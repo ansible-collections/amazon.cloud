@@ -1,0 +1,6 @@
+bugfixes:
+  - memorydb_acl - Add module to ``meta/runtime.yml``.
+  - memorydb_cluster - Add module to ``meta/runtime.yml``.
+  - memorydb_parameter_group - Add module to ``meta/runtime.yml``.
+  - memorydb_subnet_group - Add module to ``meta/runtime.yml``.
+  - memorydb_user - Add module to ``meta/runtime.yml``.
