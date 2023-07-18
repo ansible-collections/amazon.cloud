@@ -19,7 +19,7 @@ jobs:
         ansible-version:
           - devel
         python-version:
-          - "3.9"
+          - "3.10"
     name: "ansible-test-integration-py${{ matrix.python-version }}-${{ matrix.ansible-version }}"
     steps:
       - name: Checkout collection
@@ -27,7 +27,7 @@ jobs:
         with:
           path: ${{ env.source }}
           fetch-depth: "0"
-      
+
       - name: checkout amazon.aws
         uses: ansible-network/github_actions/.github/actions/checkout_dependency@main
         with:
@@ -41,7 +41,7 @@ jobs:
         with:
           install_python_dependencies: true
           source_path: ${{ env.source }}
-      
+
       - name: Build and install amazon.aws collection
         id: install-amazon
         uses: ansible-network/github_actions/.github/actions/build_install_collection@main
