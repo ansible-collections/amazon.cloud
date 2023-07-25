@@ -85,7 +85,7 @@ EXAMPLES = r"""
         tags:
           env: "test"
       register: acl_output
-  
+
     - name: Describe the acl
       amazon.cloud.memorydb_acl:
         acl_name: "test-acl"
