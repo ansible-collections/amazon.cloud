@@ -1,0 +1,34 @@
+---
+- name: Create memorydb cluster
+  block:
+    - name: Create memorydb cluster with name test-cluster
+      amazon.cloud.memorydb_cluster:
+        cluster_name: test-cluster
+        node_type: db.t4g.small
+        acl_name: test-acl
+        parameter_group_name: test-parameter-group
+        subnet_group_name: test-subnet-group
+        wait: True
+        wait_timeout: 700
+        tags:
+          env: "test"
+      register: cluster_output
+      tags:
+        - docs
+
+    - name: Assert that the cluster is created.
+      ansible.builtin.assert:
+        that:
+            - cluster_output is success
+            - cluster_output is changed
+
+    - name: Describe the cluster
+      amazon.cloud.memorydb_cluster:
+        cluster_name: test-cluster
+        state: describe
+      register: pg_describe
+
+    - name: Assert that the cluster is described correctly.
+      ansible.builtin.assert:
+        that:
+            - cluster_output.result == cluster_describe.result

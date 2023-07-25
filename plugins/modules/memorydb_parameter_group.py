@@ -90,6 +90,21 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+    - name: Create memorydb parameter group with name test-parameter-group
+      amazon.cloud.memorydb_parameter_group:
+        parameter_group_name: test-parameter-group
+        family: "memorydb_redis7"
+        description: "test parameter group"
+        tags:
+          env: "test"
+    - name: Describe the parameter group
+      amazon.cloud.memorydb_parameter_group:
+        parameter_group_name: test-parameter-group
+        state: describe
+    - name: Delete memorydb parameter group
+      amazon.cloud.memorydb_parameter_group:
+        parameter_group_name: test-parameter-group
+      state: absent
 """
 
 RETURN = r"""

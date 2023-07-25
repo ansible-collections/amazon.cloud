@@ -1,0 +1,71 @@
+---
+- name: Create memorydb subnet group
+  block:
+    - name: Create a VPC
+      amazon.aws.ec2_vpc_net:
+        name: "{{ resource_prefix }}-vpc"
+        state: present
+        cidr_block: "{{ vpc_cidr }}"
+        ipv6_cidr: True
+        tags:
+          Name: "{{ resource_prefix }}-vpc"
+          Description: "Created by ansible-test"
+      register: vpc_result
+
+    - name: Create subnet in 1st az
+      amazon.aws.ec2_vpc_subnet:
+        cidr: "{{ subnet1_cidr }}"
+        az: "us-east-1a"
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        tags:
+          Name: '{{ec2_vpc_subnet1_name}}'
+          Description: '{{ec2_vpc_subnet_description}}'
+        state: present
+      register: vpc_subnet_create1
+
+    - name: Create subnet in 2nd az
+      amazon.aws.ec2_vpc_subnet:
+        cidr: "{{ subnet2_cidr }}"
+        az: "us-east-1c"
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        tags:
+          Name: '{{ec2_vpc_subnet2_name}}'
+          Description: '{{ec2_vpc_subnet_description}}'
+        state: present
+      register: vpc_subnet_create2
+
+    - name: assert creation would happen
+      assert:
+        that:
+          - vpc_subnet_create1 is changed 
+          - vpc_subnet_create2 is changed 
+
+    - name: Create subnet group with name test-subnet-group
+      amazon.cloud.memorydb_subnet_group:
+        subnet_group_name: test-subnet-group
+        subnet_ids: 
+          - "{{ vpc_subnet_create1.subnet.id }}"
+          - "{{ vpc_subnet_create2.subnet.id }}"
+        description: "test subnet group"
+        tags:
+          env: "test"
+      register: sg_output
+      tags:
+        - docs
+
+    - name: Assert that the subnet group is created.
+      ansible.builtin.assert:
+        that:
+            - sg_output is success
+            - sg_output is changed
+
+    - name: Describe the parameter group
+      amazon.cloud.memorydb_subnet_group:
+        subnet_group_name: test-subnet-group
+        state: describe
+      register: sg_describe
+
+    - name: Assert that the subnet group is described correctly.
+      ansible.builtin.assert:
+        that:
+            - sg_output.result == sg_describe.result
