@@ -1,9 +1,9 @@
 ---
 - name: Create memorydb acl
   block:
-    - name: Create memorydb acl with name test-acl
+    - name: Create memorydb acl
       amazon.cloud.memorydb_acl:
-        acl_name: "test-acl"
+        acl_name: "{{ resource_prefix }}-test-acl"
         tags:
           env: "test"
       register: acl_output
@@ -18,7 +18,7 @@
 
     - name: Describe the acl
       amazon.cloud.memorydb_acl:
-        acl_name: "test-acl"
+        acl_name: "{{ resource_prefix }}-test-acl"
         state: describe
       register: acl_describe
 

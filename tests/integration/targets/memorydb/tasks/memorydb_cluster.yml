@@ -1,13 +1,13 @@
 ---
 - name: Create memorydb cluster
   block:
-    - name: Create memorydb cluster with name test-cluster
+    - name: Create memorydb cluster
       amazon.cloud.memorydb_cluster:
-        cluster_name: test-cluster
+        cluster_name: "{{ resource_prefix }}-cluster"
         node_type: db.t4g.small
-        acl_name: test-acl
-        parameter_group_name: test-parameter-group
-        subnet_group_name: test-subnet-group
+        acl_name: "{{ resource_prefix }}-test-acl"
+        parameter_group_name: "{{ resource_prefix }}-test-parameter-group"
+        subnet_group_name: "{{ resource_prefix }}-test-subnet-group"
         wait: True
         wait_timeout: 700
         tags:
@@ -24,7 +24,7 @@
 
     - name: Describe the cluster
       amazon.cloud.memorydb_cluster:
-        cluster_name: test-cluster
+        cluster_name: "{{ resource_prefix }}-cluster"
         state: describe
       register: pg_describe
 
