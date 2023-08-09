@@ -1,0 +1,6 @@
+bugfixes:
+  - "plugins/module_utils/utils.py - Fix how dictionaries are merged."
+
+minor_changes:
+  - "amazon.cloud - Add the original option name as an alias to avoid issues when snake cased option names are not correctly reversed to CamelCase."
+  - "Update README.md and meta/runtime.yml to reflect our ansible core testing versions."
