@@ -79,6 +79,23 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+    - name: Create memorydb acl with name test-acl
+      amazon.cloud.memorydb_acl:
+        acl_name: "test-acl"
+        tags:
+          env: "test"
+      register: acl_output
+
+    - name: Describe the acl
+      amazon.cloud.memorydb_acl:
+        acl_name: "test-acl"
+        state: describe
+      register: acl_describe
+
+    - name: Delete memorydb cluster
+      amazon.cloud.memorydb_cluster:
+        cluster_name: test-cluster
+        state: absent
 """
 
 RETURN = r"""

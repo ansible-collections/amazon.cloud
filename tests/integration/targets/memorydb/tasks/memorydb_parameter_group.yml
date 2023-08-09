@@ -1,0 +1,30 @@
+---
+- name: Create memorydb parameter group
+  block:
+    - name: Create memorydb parameter group
+      amazon.cloud.memorydb_parameter_group:
+        parameter_group_name: "{{ resource_prefix }}-test-parameter-group"
+        family: "memorydb_redis7"
+        description: "test parameter group"
+        tags:
+          env: "test"
+      register: pg_output
+      tags:
+        - docs
+
+    - name: Assert that the parameter group is created.
+      ansible.builtin.assert:
+        that:
+            - pg_output is success
+            - pg_output is changed
+
+    - name: Describe the parameter group
+      amazon.cloud.memorydb_parameter_group:
+        parameter_group_name: "{{ resource_prefix }}-test-parameter-group"
+        state: describe
+      register: pg_describe
+
+    - name: Assert that the parameter group is described correctly.
+      ansible.builtin.assert:
+        that:
+            - pg_output.result == pg_describe.result

@@ -1,0 +1,30 @@
+---
+- name: 'Run  MemoryDB integration testcases'
+  collections:
+    - amazon.aws
+    - community.aws
+    - amazon.cloud
+  module_defaults:
+    group/amazon.cloud.aws:
+      aws_access_key: '{{ aws_access_key }}'
+      aws_secret_key: '{{ aws_secret_key }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region }}'
+    group/aws:
+      aws_access_key: '{{ aws_access_key }}'
+      aws_secret_key: '{{ aws_secret_key }}'
+      security_token: '{{ security_token | default(omit) }}'
+      region: '{{ aws_region }}'
+
+  block:
+    - name: Test creation of memorydb acl
+      ansible.builtin.include_tasks: 'memorydb_acl.yml'
+    - name: Test creation of memorydb parameter group
+      ansible.builtin.include_tasks: 'memorydb_parameter_group.yml'
+    - name: Test creation of memorydb subnet group
+      ansible.builtin.include_tasks: 'memorydb_subnet_group.yml'
+    - name: Test creation of memorydb cluster
+      ansible.builtin.include_tasks: 'memorydb_cluster.yml'
+  always:
+    - name: Cleanup
+      ansible.builtin.include_tasks: 'cleanup.yml'

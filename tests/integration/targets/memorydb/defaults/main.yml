@@ -1,0 +1,8 @@
+---
+# defaults file for ec2_vpc_subnet
+ec2_vpc_subnet1_name: '{{resource_prefix}}-a'
+ec2_vpc_subnet2_name: '{{resource_prefix}}-b'
+ec2_vpc_subnet_description: 'Created by ansible integration tests'
+vpc_cidr: '10.{{ 256 | random(seed=resource_prefix) }}.0.0/16'
+subnet1_cidr: '10.{{ 256 | random(seed=resource_prefix) }}.1.0/24'
+subnet2_cidr: '10.{{ 256 | random(seed=resource_prefix) }}.2.0/24'

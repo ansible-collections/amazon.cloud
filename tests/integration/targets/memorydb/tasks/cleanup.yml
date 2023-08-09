@@ -1,0 +1,53 @@
+---
+- name: Delete memorydb cluster
+  amazon.cloud.memorydb_cluster:
+    cluster_name: "{{ resource_prefix }}-cluster"
+    state: absent
+  ignore_errors: true
+  tags:
+    - docs
+
+- name: Delete memorydb acl
+  amazon.cloud.memorydb_acl:
+    acl_name: "{{ resource_prefix }}-test-acl"
+    state: absent
+  ignore_errors: true
+  tags:
+    - docs
+
+- name: Delete memorydb parameter group
+  amazon.cloud.memorydb_parameter_group:
+    parameter_group_name: "{{ resource_prefix }}-test-parameter-group"
+    state: absent
+  ignore_errors: true
+  tags:
+    - docs
+  
+- name: Delete memorydb subnet group
+  amazon.cloud.memorydb_subnet_group:
+    subnet_group_name: "{{ resource_prefix }}-test-subnet-group"
+    state: absent
+  ignore_errors: true
+  tags:
+    - docs
+
+- name: Tidy up subnet1
+  amazon.aws.ec2_vpc_subnet:
+    cidr: "{{ subnet1_cidr }}"
+    vpc_id: "{{ vpc_result.vpc.id }}"
+    state: absent
+  ignore_errors: true
+
+- name: Tidy up subnet2
+  amazon.aws.ec2_vpc_subnet:
+    cidr: "{{ subnet2_cidr }}"
+    vpc_id: "{{ vpc_result.vpc.id }}"
+    state: absent
+  ignore_errors: true
+
+- name: Tidy up VPC
+  amazon.aws.ec2_vpc_net:
+    name: "{{ resource_prefix }}-vpc"
+    state: absent
+    cidr_block: "{{ vpc_cidr }}"
+  ignore_errors: true
