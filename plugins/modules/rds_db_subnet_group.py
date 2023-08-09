@@ -163,7 +163,7 @@ def main():
         [
             "state",
             "present",
-            ["db_subnet_group_name", "db_subnet_group_description", "subnet_ids"],
+            ["db_subnet_group_description", "db_subnet_group_name", "subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_subnet_group_name"], True],

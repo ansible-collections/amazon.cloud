@@ -448,7 +448,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["resource_arn", "log_destination_configs"], True],
+        ["state", "present", ["log_destination_configs", "resource_arn"], True],
         ["state", "absent", ["resource_arn"], True],
         ["state", "get", ["resource_arn"], True],
     ]

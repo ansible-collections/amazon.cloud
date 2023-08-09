@@ -650,11 +650,11 @@ def main():
             "state",
             "present",
             [
-                "master_username",
                 "db_name",
                 "node_type",
-                "master_user_password",
                 "cluster_identifier",
+                "master_username",
+                "master_user_password",
                 "cluster_type",
             ],
             True,

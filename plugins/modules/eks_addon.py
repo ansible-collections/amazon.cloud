@@ -205,7 +205,7 @@ def main():
 
     required_if = [
         ["state", "list", ["cluster_name"], True],
-        ["state", "present", ["cluster_name", "addon_name", "identifier"], True],
+        ["state", "present", ["identifier", "addon_name", "cluster_name"], True],
         ["state", "absent", ["cluster_name", "addon_name", "identifier"], True],
         ["state", "get", ["cluster_name", "addon_name", "identifier"], True],
     ]

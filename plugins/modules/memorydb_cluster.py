@@ -372,7 +372,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["cluster_name", "node_type", "acl_name"], True],
+        ["state", "present", ["node_type", "acl_name", "cluster_name"], True],
         ["state", "absent", ["cluster_name"], True],
         ["state", "get", ["cluster_name"], True],
     ]

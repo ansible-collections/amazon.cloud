@@ -221,10 +221,10 @@ def main():
             "state",
             "present",
             [
-                "lifecycle_transition",
-                "identifier",
-                "lifecycle_hook_name",
                 "auto_scaling_group_name",
+                "lifecycle_hook_name",
+                "identifier",
+                "lifecycle_transition",
             ],
             True,
         ],

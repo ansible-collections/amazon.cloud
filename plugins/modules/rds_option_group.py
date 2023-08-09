@@ -257,10 +257,10 @@ def main():
             "state",
             "present",
             [
-                "option_group_description",
                 "major_engine_version",
-                "engine_name",
                 "option_group_name",
+                "option_group_description",
+                "engine_name",
             ],
             True,
         ],
