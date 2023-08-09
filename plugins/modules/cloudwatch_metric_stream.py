@@ -307,7 +307,7 @@ def main():
         [
             "state",
             "present",
-            ["firehose_arn", "output_format", "role_arn", "name"],
+            ["role_arn", "firehose_arn", "output_format", "name"],
             True,
         ],
         ["state", "absent", ["name"], True],

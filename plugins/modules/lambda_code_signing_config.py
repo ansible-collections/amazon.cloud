@@ -30,6 +30,12 @@ options:
                 elements: str
                 type: list
         type: dict
+    code_signing_config_arn:
+        aliases:
+        - CodeSigningConfigArn
+        description:
+        - A unique Arn for CodeSigningConfig resource.
+        type: str
     code_signing_policies:
         aliases:
         - CodeSigningPolicies
@@ -169,6 +175,10 @@ def main():
         },
         "aliases": ["CodeSigningPolicies"],
     }
+    argument_spec["code_signing_config_arn"] = {
+        "type": "str",
+        "aliases": ["CodeSigningConfigArn"],
+    }
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -179,7 +189,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["code_signing_config_arn", "allowed_publishers"], True],
+        ["state", "present", ["allowed_publishers", "code_signing_config_arn"], True],
         ["state", "absent", ["code_signing_config_arn"], True],
         ["state", "get", ["code_signing_config_arn"], True],
     ]
@@ -198,6 +208,7 @@ def main():
     params = {}
 
     params["allowed_publishers"] = module.params.get("allowed_publishers")
+    params["code_signing_config_arn"] = module.params.get("code_signing_config_arn")
     params["code_signing_policies"] = module.params.get("code_signing_policies")
     params["description"] = module.params.get("description")
 

@@ -132,6 +132,13 @@ options:
             or updated before the function.
         elements: dict
         suboptions:
+            arn:
+                aliases:
+                - Arn
+                description:
+                - The Amazon Resource Name (ARN) of the Amazon EFS access point that
+                    provides access to the file system.
+                type: str
             local_mount_path:
                 aliases:
                 - LocalMountPath
@@ -485,7 +492,10 @@ def main():
     argument_spec["file_system_configs"] = {
         "type": "list",
         "elements": "dict",
-        "options": {"local_mount_path": {"type": "str", "aliases": ["LocalMountPath"]}},
+        "options": {
+            "arn": {"type": "str", "aliases": ["Arn"]},
+            "local_mount_path": {"type": "str", "aliases": ["LocalMountPath"]},
+        },
         "aliases": ["FileSystemConfigs"],
     }
     argument_spec["function_name"] = {"type": "str", "aliases": ["FunctionName"]}
@@ -562,7 +572,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["function_name", "code", "role"], True],
+        ["state", "present", ["role", "code", "function_name"], True],
         ["state", "absent", ["function_name"], True],
         ["state", "get", ["function_name"], True],
     ]

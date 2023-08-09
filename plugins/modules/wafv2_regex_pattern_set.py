@@ -30,6 +30,12 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
+    id:
+        aliases:
+        - Id
+        description:
+        - Id of the RegexPatternSet.
+        type: str
     identifier:
         description:
         - For compound primary identifiers, to specify the primary identifier as a
@@ -155,6 +161,7 @@ def main():
 
     argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
     argument_spec["name"] = {"type": "str", "aliases": ["Name"]}
+    argument_spec["id"] = {"type": "str", "aliases": ["Id"]}
     argument_spec["regular_expression_list"] = {
         "type": "list",
         "elements": "str",
@@ -182,7 +189,7 @@ def main():
         [
             "state",
             "present",
-            ["identifier", "id", "regular_expression_list", "name", "scope"],
+            ["id", "regular_expression_list", "scope", "identifier", "name"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],
@@ -203,6 +210,7 @@ def main():
     params = {}
 
     params["description"] = module.params.get("description")
+    params["id"] = module.params.get("id")
     params["identifier"] = module.params.get("identifier")
     params["name"] = module.params.get("name")
     params["regular_expression_list"] = module.params.get("regular_expression_list")

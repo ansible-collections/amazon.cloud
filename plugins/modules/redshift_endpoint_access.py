@@ -164,10 +164,10 @@ def main():
             "state",
             "present",
             [
-                "endpoint_name",
-                "cluster_identifier",
                 "subnet_group_name",
                 "vpc_security_group_ids",
+                "cluster_identifier",
+                "endpoint_name",
             ],
             True,
         ],

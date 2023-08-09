@@ -367,7 +367,13 @@ options:
                 - KinesisStreamSpecification
                 description:
                 - Not Provived.
-                suboptions: {}
+                suboptions:
+                    stream_arn:
+                        aliases:
+                        - StreamArn
+                        description:
+                        - Not Provived.
+                        type: str
                 type: dict
             point_in_time_recovery_specification:
                 aliases:
@@ -1002,7 +1008,7 @@ def main():
             },
             "kinesis_stream_specification": {
                 "type": "dict",
-                "options": {},
+                "options": {"stream_arn": {"type": "str", "aliases": ["StreamArn"]}},
                 "aliases": ["KinesisStreamSpecification"],
             },
         },
@@ -1043,7 +1049,7 @@ def main():
         [
             "state",
             "present",
-            ["table_name", "replicas", "key_schema", "attribute_definitions"],
+            ["attribute_definitions", "replicas", "key_schema", "table_name"],
             True,
         ],
         ["state", "absent", ["table_name"], True],

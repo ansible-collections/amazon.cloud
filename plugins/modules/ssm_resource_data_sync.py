@@ -106,6 +106,12 @@ options:
         description:
         - Not Provived.
         type: str
+    sync_name:
+        aliases:
+        - SyncName
+        description:
+        - Not Provived.
+        type: str
     sync_source:
         aliases:
         - SyncSource
@@ -268,6 +274,7 @@ def main():
     argument_spec["bucket_name"] = {"type": "str", "aliases": ["BucketName"]}
     argument_spec["bucket_region"] = {"type": "str", "aliases": ["BucketRegion"]}
     argument_spec["sync_format"] = {"type": "str", "aliases": ["SyncFormat"]}
+    argument_spec["sync_name"] = {"type": "str", "aliases": ["SyncName"]}
     argument_spec["sync_type"] = {"type": "str", "aliases": ["SyncType"]}
     argument_spec["bucket_prefix"] = {"type": "str", "aliases": ["BucketPrefix"]}
     argument_spec["state"] = {
@@ -304,6 +311,7 @@ def main():
     params["kms_key_arn"] = module.params.get("kms_key_arn")
     params["s3_destination"] = module.params.get("s3_destination")
     params["sync_format"] = module.params.get("sync_format")
+    params["sync_name"] = module.params.get("sync_name")
     params["sync_source"] = module.params.get("sync_source")
     params["sync_type"] = module.params.get("sync_type")
 

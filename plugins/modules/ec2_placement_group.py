@@ -25,6 +25,12 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
+    group_name:
+        aliases:
+        - GroupName
+        description:
+        - The Group Name of Placement Group.
+        type: str
     partition_count:
         aliases:
         - PartitionCount
@@ -139,6 +145,7 @@ def main():
     )
 
     argument_spec["strategy"] = {"type": "str", "aliases": ["Strategy"]}
+    argument_spec["group_name"] = {"type": "str", "aliases": ["GroupName"]}
     argument_spec["spread_level"] = {"type": "str", "aliases": ["SpreadLevel"]}
     argument_spec["partition_count"] = {"type": "int", "aliases": ["PartitionCount"]}
     argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
@@ -171,6 +178,7 @@ def main():
 
     params = {}
 
+    params["group_name"] = module.params.get("group_name")
     params["partition_count"] = module.params.get("partition_count")
     params["spread_level"] = module.params.get("spread_level")
     params["strategy"] = module.params.get("strategy")

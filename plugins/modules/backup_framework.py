@@ -22,6 +22,12 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
+    framework_arn:
+        aliases:
+        - FrameworkArn
+        description:
+        - An Amazon Resource Name (ARN) that uniquely identifies Framework as a resource.
+        type: str
     framework_controls:
         aliases:
         - FrameworkControls
@@ -256,6 +262,7 @@ def main():
         "type": "str",
         "aliases": ["FrameworkDescription"],
     }
+    argument_spec["framework_arn"] = {"type": "str", "aliases": ["FrameworkArn"]}
     argument_spec["framework_controls"] = {
         "type": "list",
         "elements": "dict",
@@ -337,6 +344,7 @@ def main():
 
     params = {}
 
+    params["framework_arn"] = module.params.get("framework_arn")
     params["framework_controls"] = module.params.get("framework_controls")
     params["framework_description"] = module.params.get("framework_description")
     params["framework_name"] = module.params.get("framework_name")

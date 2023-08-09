@@ -58,6 +58,13 @@ options:
                 - If not specified, there is no prefix.
                 type: str
         type: dict
+    report_plan_arn:
+        aliases:
+        - ReportPlanArn
+        description:
+        - An Amazon Resource Name (ARN) that uniquely identifies a resource.
+        - The format of the ARN depends on the resource type.
+        type: str
     report_plan_description:
         aliases:
         - ReportPlanDescription
@@ -234,6 +241,7 @@ def main():
     )
 
     argument_spec["report_plan_name"] = {"type": "str", "aliases": ["ReportPlanName"]}
+    argument_spec["report_plan_arn"] = {"type": "str", "aliases": ["ReportPlanArn"]}
     argument_spec["report_plan_description"] = {
         "type": "str",
         "aliases": ["ReportPlanDescription"],
@@ -290,7 +298,7 @@ def main():
         [
             "state",
             "present",
-            ["report_delivery_channel", "report_plan_arn", "report_setting"],
+            ["report_delivery_channel", "report_setting", "report_plan_arn"],
             True,
         ],
         ["state", "absent", ["report_plan_arn"], True],
@@ -311,6 +319,7 @@ def main():
     params = {}
 
     params["report_delivery_channel"] = module.params.get("report_delivery_channel")
+    params["report_plan_arn"] = module.params.get("report_plan_arn")
     params["report_plan_description"] = module.params.get("report_plan_description")
     params["report_plan_name"] = module.params.get("report_plan_name")
     params["report_plan_tags"] = module.params.get("report_plan_tags")

@@ -300,7 +300,7 @@ def main():
         [
             "state",
             "present",
-            ["engine_family", "role_arn", "auth", "db_proxy_name", "vpc_subnet_ids"],
+            ["role_arn", "engine_family", "db_proxy_name", "auth", "vpc_subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],

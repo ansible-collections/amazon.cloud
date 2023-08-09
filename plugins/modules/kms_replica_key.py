@@ -39,6 +39,12 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
+    key_id:
+        aliases:
+        - KeyId
+        description:
+        - Not Provived.
+        type: str
     key_policy:
         aliases:
         - KeyPolicy
@@ -166,6 +172,7 @@ def main():
         "aliases": ["PendingWindowInDays"],
     }
     argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
+    argument_spec["key_id"] = {"type": "str", "aliases": ["KeyId"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -177,7 +184,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["key_policy", "primary_key_arn", "key_id"], True],
+        ["state", "present", ["key_id", "primary_key_arn", "key_policy"], True],
         ["state", "absent", ["key_id"], True],
         ["state", "get", ["key_id"], True],
     ]
@@ -197,6 +204,7 @@ def main():
 
     params["description"] = module.params.get("description")
     params["enabled"] = module.params.get("enabled")
+    params["key_id"] = module.params.get("key_id")
     params["key_policy"] = module.params.get("key_policy")
     params["pending_window_in_days"] = module.params.get("pending_window_in_days")
     params["primary_key_arn"] = module.params.get("primary_key_arn")

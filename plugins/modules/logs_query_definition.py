@@ -35,6 +35,12 @@ options:
         description:
         - A name for the saved query definition.
         type: str
+    query_definition_id:
+        aliases:
+        - QueryDefinitionId
+        description:
+        - Unique identifier of a query definition.
+        type: str
     query_string:
         aliases:
         - QueryString
@@ -128,6 +134,10 @@ def main():
         "elements": "str",
         "aliases": ["LogGroupNames"],
     }
+    argument_spec["query_definition_id"] = {
+        "type": "str",
+        "aliases": ["QueryDefinitionId"],
+    }
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -158,6 +168,7 @@ def main():
 
     params["log_group_names"] = module.params.get("log_group_names")
     params["name"] = module.params.get("name")
+    params["query_definition_id"] = module.params.get("query_definition_id")
     params["query_string"] = module.params.get("query_string")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values

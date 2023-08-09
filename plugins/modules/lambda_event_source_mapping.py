@@ -153,6 +153,12 @@ options:
         - (Streams) A list of response types supported by the function.
         elements: str
         type: list
+    id:
+        aliases:
+        - Id
+        description:
+        - Event Source Mapping Identifier UUID.
+        type: str
     maximum_batching_window_in_seconds:
         aliases:
         - MaximumBatchingWindowInSeconds
@@ -377,6 +383,7 @@ def main():
         ),
     )
 
+    argument_spec["id"] = {"type": "str", "aliases": ["Id"]}
     argument_spec["batch_size"] = {"type": "int", "aliases": ["BatchSize"]}
     argument_spec["bisect_batch_on_function_error"] = {
         "type": "bool",
@@ -561,6 +568,7 @@ def main():
     params["filter_criteria"] = module.params.get("filter_criteria")
     params["function_name"] = module.params.get("function_name")
     params["function_response_types"] = module.params.get("function_response_types")
+    params["id"] = module.params.get("id")
     params["maximum_batching_window_in_seconds"] = module.params.get(
         "maximum_batching_window_in_seconds"
     )

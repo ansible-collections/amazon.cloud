@@ -103,6 +103,12 @@ options:
                     as Log data events for only two S3 buckets.
                 type: str
         type: list
+    event_data_store_arn:
+        aliases:
+        - EventDataStoreArn
+        description:
+        - The ARN of the event data store.
+        type: str
     force:
         default: false
         description:
@@ -296,6 +302,10 @@ def main():
         },
         "aliases": ["AdvancedEventSelectors"],
     }
+    argument_spec["event_data_store_arn"] = {
+        "type": "str",
+        "aliases": ["EventDataStoreArn"],
+    }
     argument_spec["multi_region_enabled"] = {
         "type": "bool",
         "aliases": ["MultiRegionEnabled"],
@@ -346,6 +356,7 @@ def main():
     params = {}
 
     params["advanced_event_selectors"] = module.params.get("advanced_event_selectors")
+    params["event_data_store_arn"] = module.params.get("event_data_store_arn")
     params["ingestion_enabled"] = module.params.get("ingestion_enabled")
     params["kms_key_id"] = module.params.get("kms_key_id")
     params["multi_region_enabled"] = module.params.get("multi_region_enabled")

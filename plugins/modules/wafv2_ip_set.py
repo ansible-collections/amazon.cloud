@@ -39,6 +39,12 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
+    id:
+        aliases:
+        - Id
+        description:
+        - Id of the IPSet.
+        type: str
     identifier:
         description:
         - For compound primary identifiers, to specify the primary identifier as a
@@ -167,6 +173,7 @@ def main():
 
     argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
     argument_spec["name"] = {"type": "str", "aliases": ["Name"]}
+    argument_spec["id"] = {"type": "str", "aliases": ["Id"]}
     argument_spec["scope"] = {
         "type": "str",
         "choices": ["CLOUDFRONT", "REGIONAL"],
@@ -199,7 +206,7 @@ def main():
         [
             "state",
             "present",
-            ["identifier", "id", "addresses", "name", "scope", "ip_address_version"],
+            ["id", "addresses", "scope", "identifier", "name", "ip_address_version"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],
@@ -221,6 +228,7 @@ def main():
 
     params["addresses"] = module.params.get("addresses")
     params["description"] = module.params.get("description")
+    params["id"] = module.params.get("id")
     params["identifier"] = module.params.get("identifier")
     params["ip_address_version"] = module.params.get("ip_address_version")
     params["name"] = module.params.get("name")
