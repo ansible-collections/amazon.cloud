@@ -47,6 +47,8 @@ from ansible_collections.amazon.cloud.plugins.module_utils.common import (
 from ansible_collections.amazon.cloud.plugins.module_utils.common import (
     AMAZON_CLOUD_COLLECTION_VERSION,
 )
+
+# pylint: disable=unused-import
 from .utils import (
     normalize_response,
     scrub_keys,
@@ -62,9 +64,11 @@ from .utils import ansible_dict_to_boto3_tag_list  # pylint: disable=unused-impo
 from .utils import snake_dict_to_camel_dict  # pylint: disable=unused-import
 from .utils import map_key_to_alias  # pylint: disable=unused-import
 from ansible_collections.amazon.cloud.plugins.module_utils.waiters import get_waiter
+
+# pylint: disable=unused-import
 from ansible_collections.amazon.aws.plugins.module_utils.transformation import (
     scrub_none_parameters,
-)  # pylint: disable=unused-import
+)
 
 
 BOTO3_IMP_ERR = None

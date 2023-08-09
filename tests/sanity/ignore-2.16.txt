@@ -91,4 +91,5 @@ plugins/modules/memorydb_cluster.py validate-modules:parameter-state-invalid-cho
 plugins/modules/memorydb_parameter_group.py validate-modules:parameter-state-invalid-choice
 plugins/modules/memorydb_subnet_group.py validate-modules:parameter-state-invalid-choice
 plugins/modules/memorydb_user.py validate-modules:parameter-state-invalid-choice
+plugins/modules/memorydb_user.py validate-modules:no-log-needed
 tools/update_constants.py shebang!skip
