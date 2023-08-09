@@ -166,10 +166,10 @@ def main():
             "state",
             "present",
             [
-                "status",
                 "hosted_zone_id",
                 "name",
                 "key_management_service_arn",
+                "status",
                 "identifier",
             ],
             True,

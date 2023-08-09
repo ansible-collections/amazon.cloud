@@ -136,7 +136,7 @@ def main():
 
     required_if = [
         ["state", "list", ["resource_arn"], True],
-        ["state", "present", ["identifier", "resource_arn", "web_acl_arn"], True],
+        ["state", "present", ["resource_arn", "identifier", "web_acl_arn"], True],
         ["state", "absent", ["resource_arn", "web_acl_arn", "identifier"], True],
         ["state", "get", ["resource_arn", "web_acl_arn", "identifier"], True],
     ]

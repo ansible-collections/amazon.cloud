@@ -296,10 +296,10 @@ def main():
             "state",
             "present",
             [
-                "log_group_name",
                 "filter_name",
-                "metric_transformations",
+                "log_group_name",
                 "filter_pattern",
+                "metric_transformations",
                 "identifier",
             ],
             True,

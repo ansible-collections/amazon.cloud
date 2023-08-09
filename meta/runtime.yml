@@ -57,7 +57,6 @@ action_groups:
   - rds_db_cluster
   - rds_db_parameter_group
   - rds_event_subscription
-  - rds_db_proxy_target_group
   - rdsdb_proxy
   - s3_object_lambda_access_point
   - s3_object_lambda_access_point_policy

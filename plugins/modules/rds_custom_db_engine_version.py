@@ -224,10 +224,10 @@ def main():
             "state",
             "present",
             [
-                "engine_version",
                 "database_installation_files_s3_bucket_name",
-                "identifier",
+                "engine_version",
                 "engine",
+                "identifier",
             ],
             True,
         ],

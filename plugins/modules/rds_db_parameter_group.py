@@ -162,7 +162,7 @@ def main():
         [
             "state",
             "present",
-            ["family", "db_parameter_group_name", "description"],
+            ["db_parameter_group_name", "family", "description"],
             True,
         ],
         ["state", "absent", ["db_parameter_group_name"], True],

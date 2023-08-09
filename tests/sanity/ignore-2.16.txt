@@ -76,9 +76,5 @@ plugins/modules/memorydb_subnet_group.py validate-modules:parameter-state-invali
 plugins/modules/memorydb_user.py validate-modules:parameter-state-invalid-choice
 plugins/modules/memorydb_user.py validate-modules:no-log-needed
 plugins/modules/rds_custom_db_engine_version.py validate-modules:mutually_exclusive-type
-plugins/modules/rds_custom_db_engine_version.py validate-modules:parameter-state-invalid-choice
 plugins/modules/rds_db_cluster.py validate-modules:no-log-needed
-plugins/modules/rds_db_cluster.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_db_parameter_group.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_event_subscription.py validate-modules:parameter-state-invalid-choice
 tools/update_constants.py shebang!skip
