@@ -244,7 +244,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["object_lambda_configuration", "name"], True],
+        ["state", "present", ["name", "object_lambda_configuration"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]

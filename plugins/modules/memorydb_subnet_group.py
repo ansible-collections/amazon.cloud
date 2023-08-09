@@ -94,25 +94,6 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
-    - name: Create subnet group with name test-subnet-group
-      amazon.cloud.memorydb_subnet_group:
-        subnet_group_name: test-subnet-group
-        subnet_ids:
-          - "{{ vpc_subnet_create1.subnet.id }}"
-          - "{{ vpc_subnet_create2.subnet.id }}"
-        description: "test subnet group"
-        tags:
-          env: "test"
-
-    - name: Describe the parameter group
-      amazon.cloud.memorydb_subnet_group:
-        subnet_group_name: test-subnet-group
-        state: describe
-
-    - name: Delete memorydb subnet group
-      amazon.cloud.memorydb_subnet_group:
-        subnet_group_name: test-subnet-group
-      state: absent
 """
 
 RETURN = r"""

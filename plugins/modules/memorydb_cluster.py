@@ -242,27 +242,6 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
-    - name: Create memorydb cluster with name test-cluster
-      amazon.cloud.memorydb_cluster:
-        cluster_name: test-cluster
-        node_type: db.t4g.small
-        acl_name: test-acl
-        parameter_group_name: test-parameter-group
-        subnet_group_name: test-subnet-group
-        wait: True
-        wait_timeout: 500
-        tags:
-          env: "test"
-
-    - name: Describe the cluster
-      amazon.cloud.memorydb_cluster:
-        cluster_name: test-cluster
-        state: describe
-
-    - name: Delete memorydb cluster
-      amazon.cloud.memorydb_cluster:
-        cluster_name: test-cluster
-        state: absent
 """
 
 RETURN = r"""
@@ -372,7 +351,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["node_type", "acl_name", "cluster_name"], True],
+        ["state", "present", ["acl_name", "node_type", "cluster_name"], True],
         ["state", "absent", ["cluster_name"], True],
         ["state", "get", ["cluster_name"], True],
     ]

@@ -328,10 +328,10 @@ def main():
             "state",
             "present",
             [
-                "pod_execution_role_arn",
-                "identifier",
                 "fargate_profile_name",
+                "pod_execution_role_arn",
                 "selectors",
+                "identifier",
                 "cluster_name",
             ],
             True,

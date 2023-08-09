@@ -8,13 +8,50 @@
 
 
 DOCUMENTATION = r"""
-module: wafv2_web_acl_association
-short_description: Creates and manages a web ACL association
+module: rds_custom_db_engine_version
+short_description: Creates and manages a custom DB engine version (CEV)
 description:
-- Creates and manages a web ACL association.
-- Use a web ACL association to define an association between a web ACL and a regional
-    application resource, to protect the resource.
+- Creates and manages a custom DB engine version (CEV). For more information, see
+    U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-customdbengineversion.html)
 options:
+    database_installation_files_s3_bucket_name:
+        aliases:
+        - DatabaseInstallationFilesS3BucketName
+        description:
+        - The name of an Amazon S3 bucket that contains database installation files
+            for your CEV. For example, a valid bucket name is my-custom-installation-files.
+        type: str
+    database_installation_files_s3_prefix:
+        aliases:
+        - DatabaseInstallationFilesS3Prefix
+        description:
+        - The Amazon S3 directory that contains the database installation files for
+            your CEV. For example, a valid bucket name is 123456789012/cev1.
+        - If this setting isnt specified, no prefix is assumed.
+        type: str
+    description:
+        aliases:
+        - Description
+        description:
+        - An optional description of your CEV.
+        type: str
+    engine:
+        aliases:
+        - Engine
+        description:
+        - The database engine to use for your custom engine version (CEV). The only
+            supported value is custom-oracle-ee.
+        type: str
+    engine_version:
+        aliases:
+        - EngineVersion
+        description:
+        - The name of your CEV. The name format is 19.customized_string .
+        - For example, a valid name is 19.my_cev1.
+        - This setting is required for RDS Custom for Oracle, but optional for Amazon
+            RDS. The combination of Engine and EngineVersion is unique per customer
+            per Region.
+        type: str
     force:
         default: false
         description:
@@ -31,12 +68,27 @@ options:
             list definition, separated by '|'.
         - For more details, visit U(https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/resource-identifier.html).
         type: str
-    resource_arn:
+    kms_key_id:
         aliases:
-        - ResourceArn
+        - KMSKeyId
         description:
-        - Not Provived.
+        - The AWS KMS key identifier for an encrypted CEV. A symmetric KMS key is
+            required for RDS Custom, but optional for Amazon RDS.
         type: str
+    manifest:
+        aliases:
+        - Manifest
+        description:
+        - The CEV manifest, which is a JSON document that describes the installation
+            .zip files stored in Amazon S3. Specify the name/value pairs in a file
+            or a quoted string.
+        - RDS Custom applies the patches in the order in which they are listed.
+        type: str
+    purge_tags:
+        default: true
+        description:
+        - Remove tags not listed in I(tags).
+        type: bool
     state:
         choices:
         - present
@@ -53,6 +105,25 @@ options:
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
+    status:
+        aliases:
+        - Status
+        choices:
+        - available
+        - inactive
+        - inactive-except-restore
+        default: available
+        description:
+        - The availability status to be assigned to the CEV.
+        type: str
+    tags:
+        aliases:
+        - Tags
+        - resource_tags
+        description:
+        - A dict of tags to apply to the resource.
+        - To remove all tags set I(tags={}) and I(purge_tags=true).
+        type: dict
     wait:
         default: false
         description:
@@ -63,12 +134,6 @@ options:
         description:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
-    web_acl_arn:
-        aliases:
-        - WebACLArn
-        description:
-        - Not Provived.
-        type: str
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.3.0
 extends_documentation_fragment:
@@ -122,8 +187,26 @@ def main():
         ),
     )
 
-    argument_spec["resource_arn"] = {"type": "str", "aliases": ["ResourceArn"]}
-    argument_spec["web_acl_arn"] = {"type": "str", "aliases": ["WebACLArn"]}
+    argument_spec["database_installation_files_s3_bucket_name"] = {
+        "type": "str",
+        "aliases": ["DatabaseInstallationFilesS3BucketName"],
+    }
+    argument_spec["database_installation_files_s3_prefix"] = {
+        "type": "str",
+        "aliases": ["DatabaseInstallationFilesS3Prefix"],
+    }
+    argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
+    argument_spec["engine"] = {"type": "str", "aliases": ["Engine"]}
+    argument_spec["engine_version"] = {"type": "str", "aliases": ["EngineVersion"]}
+    argument_spec["kms_key_id"] = {"type": "str", "aliases": ["KMSKeyId"]}
+    argument_spec["manifest"] = {"type": "str", "aliases": ["Manifest"]}
+    argument_spec["status"] = {
+        "type": "str",
+        "default": "available",
+        "choices": ["available", "inactive", "inactive-except-restore"],
+        "aliases": ["Status"],
+    }
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -132,15 +215,26 @@ def main():
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
     argument_spec["force"] = {"type": "bool", "default": False}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
     argument_spec["identifier"] = {"type": "str"}
 
     required_if = [
-        ["state", "list", ["resource_arn"], True],
-        ["state", "present", ["identifier", "resource_arn", "web_acl_arn"], True],
-        ["state", "absent", ["resource_arn", "web_acl_arn", "identifier"], True],
-        ["state", "get", ["resource_arn", "web_acl_arn", "identifier"], True],
+        ["state", "list", ["engine"], True],
+        [
+            "state",
+            "present",
+            [
+                "engine_version",
+                "database_installation_files_s3_bucket_name",
+                "identifier",
+                "engine",
+            ],
+            True,
+        ],
+        ["state", "absent", ["engine", "engine_version", "identifier"], True],
+        ["state", "get", ["engine", "engine_version", "identifier"], True],
     ]
-    mutually_exclusive = [[("resource_arn", "web_acl_arn"), "identifier"]]
+    mutually_exclusive = [[("engine", "engine_version"), "identifier"]]
 
     module = AnsibleAmazonCloudModule(
         argument_spec=argument_spec,
@@ -150,13 +244,24 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::WAFv2::WebACLAssociation"
+    type_name = "AWS::RDS::CustomDBEngineVersion"
 
     params = {}
 
+    params["database_installation_files_s3_bucket_name"] = module.params.get(
+        "database_installation_files_s3_bucket_name"
+    )
+    params["database_installation_files_s3_prefix"] = module.params.get(
+        "database_installation_files_s3_prefix"
+    )
+    params["description"] = module.params.get("description")
+    params["engine"] = module.params.get("engine")
+    params["engine_version"] = module.params.get("engine_version")
     params["identifier"] = module.params.get("identifier")
-    params["resource_arn"] = module.params.get("resource_arn")
-    params["web_acl_arn"] = module.params.get("web_acl_arn")
+    params["kms_key_id"] = module.params.get("kms_key_id")
+    params["manifest"] = module.params.get("manifest")
+    params["status"] = module.params.get("status")
+    params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = scrub_none_parameters(params)
@@ -169,22 +274,27 @@ def main():
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["/properties/ResourceArn", "/properties/WebACLArn"]
+    create_only_params = [
+        "/properties/Engine",
+        "/properties/EngineVersion",
+        "/properties/DatabaseInstallationFilesS3BucketName",
+        "/properties/DatabaseInstallationFilesS3Prefix",
+        "/properties/KMSKeyId",
+        "/properties/Manifest",
+    ]
 
     # Necessary to handle when module does not support all the states
-    handlers = ["create", "delete", "read", "update"]
+    handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["/properties/ResourceArn", "/properties/WebACLArn"]
+    identifier = ["/properties/Engine", "/properties/EngineVersion"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
-        if not module.params.get("resource_arn") or not module.params.get(
-            "web_acl_arn"
-        ):
+        if not module.params.get("engine") or not module.params.get("engine_version"):
             module.fail_json(
-                "You must specify all the ('resource_arn', 'web_acl_arn') identifiers."
+                "You must specify all the ('engine', 'engine_version') identifiers."
             )
 
     results = {"changed": False, "result": {}}

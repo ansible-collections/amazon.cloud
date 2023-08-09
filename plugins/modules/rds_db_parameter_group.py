@@ -8,13 +8,31 @@
 
 
 DOCUMENTATION = r"""
-module: wafv2_web_acl_association
-short_description: Creates and manages a web ACL association
+module: rds_db_parameter_group
+short_description: Creates and manages a custom parameter group for an RDS database
+    family
 description:
-- Creates and manages a web ACL association.
-- Use a web ACL association to define an association between a web ACL and a regional
-    application resource, to protect the resource.
+- Creates and manages a custom parameter group for an RDS database family. For more
+    information, see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html)
 options:
+    db_parameter_group_name:
+        aliases:
+        - DBParameterGroupName
+        description:
+        - Specifies the name of the DB parameter group.
+        type: str
+    description:
+        aliases:
+        - Description
+        description:
+        - Provides the customer-specified description for this DB parameter group.
+        type: str
+    family:
+        aliases:
+        - Family
+        description:
+        - The DB parameter group family name.
+        type: str
     force:
         default: false
         description:
@@ -24,19 +42,17 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
-    identifier:
-        description:
-        - For compound primary identifiers, to specify the primary identifier as a
-            string, list each in the order that they are specified in the identifier
-            list definition, separated by '|'.
-        - For more details, visit U(https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/resource-identifier.html).
-        type: str
-    resource_arn:
+    parameters:
         aliases:
-        - ResourceArn
+        - Parameters
         description:
-        - Not Provived.
-        type: str
+        - An array of parameter names and values for the parameter update.
+        type: dict
+    purge_tags:
+        default: true
+        description:
+        - Remove tags not listed in I(tags).
+        type: bool
     state:
         choices:
         - present
@@ -53,6 +69,14 @@ options:
         - I(state=list) get all the existing resources.
         - I(state=describe) or I(state=get) retrieves information on an existing resource.
         type: str
+    tags:
+        aliases:
+        - Tags
+        - resource_tags
+        description:
+        - A dict of tags to apply to the resource.
+        - To remove all tags set I(tags={}) and I(purge_tags=true).
+        type: dict
     wait:
         default: false
         description:
@@ -63,12 +87,6 @@ options:
         description:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
-    web_acl_arn:
-        aliases:
-        - WebACLArn
-        description:
-        - Not Provived.
-        type: str
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.3.0
 extends_documentation_fragment:
@@ -122,8 +140,14 @@ def main():
         ),
     )
 
-    argument_spec["resource_arn"] = {"type": "str", "aliases": ["ResourceArn"]}
-    argument_spec["web_acl_arn"] = {"type": "str", "aliases": ["WebACLArn"]}
+    argument_spec["db_parameter_group_name"] = {
+        "type": "str",
+        "aliases": ["DBParameterGroupName"],
+    }
+    argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
+    argument_spec["family"] = {"type": "str", "aliases": ["Family"]}
+    argument_spec["parameters"] = {"type": "dict", "aliases": ["Parameters"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -132,15 +156,19 @@ def main():
     argument_spec["wait"] = {"type": "bool", "default": False}
     argument_spec["wait_timeout"] = {"type": "int", "default": 320}
     argument_spec["force"] = {"type": "bool", "default": False}
-    argument_spec["identifier"] = {"type": "str"}
+    argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "list", ["resource_arn"], True],
-        ["state", "present", ["identifier", "resource_arn", "web_acl_arn"], True],
-        ["state", "absent", ["resource_arn", "web_acl_arn", "identifier"], True],
-        ["state", "get", ["resource_arn", "web_acl_arn", "identifier"], True],
+        [
+            "state",
+            "present",
+            ["family", "db_parameter_group_name", "description"],
+            True,
+        ],
+        ["state", "absent", ["db_parameter_group_name"], True],
+        ["state", "get", ["db_parameter_group_name"], True],
     ]
-    mutually_exclusive = [[("resource_arn", "web_acl_arn"), "identifier"]]
+    mutually_exclusive = []
 
     module = AnsibleAmazonCloudModule(
         argument_spec=argument_spec,
@@ -150,13 +178,15 @@ def main():
     )
     cloud = CloudControlResource(module)
 
-    type_name = "AWS::WAFv2::WebACLAssociation"
+    type_name = "AWS::RDS::DBParameterGroup"
 
     params = {}
 
-    params["identifier"] = module.params.get("identifier")
-    params["resource_arn"] = module.params.get("resource_arn")
-    params["web_acl_arn"] = module.params.get("web_acl_arn")
+    params["db_parameter_group_name"] = module.params.get("db_parameter_group_name")
+    params["description"] = module.params.get("description")
+    params["family"] = module.params.get("family")
+    params["parameters"] = module.params.get("parameters")
+    params["tags"] = module.params.get("tags")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = scrub_none_parameters(params)
@@ -169,23 +199,17 @@ def main():
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["/properties/ResourceArn", "/properties/WebACLArn"]
+    create_only_params = [
+        "/properties/DBParameterGroupName",
+        "/properties/Description",
+        "/properties/Family",
+    ]
 
     # Necessary to handle when module does not support all the states
-    handlers = ["create", "delete", "read", "update"]
+    handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["/properties/ResourceArn", "/properties/WebACLArn"]
-    if (
-        state in ("present", "absent", "get", "describe")
-        and module.params.get("identifier") is None
-    ):
-        if not module.params.get("resource_arn") or not module.params.get(
-            "web_acl_arn"
-        ):
-            module.fail_json(
-                "You must specify all the ('resource_arn', 'web_acl_arn') identifiers."
-            )
+    identifier = ["/properties/DBParameterGroupName"]
 
     results = {"changed": False, "result": {}}
 

@@ -191,7 +191,7 @@ def main():
         [
             "state",
             "present",
-            ["db_proxy_endpoint_name", "db_proxy_name", "vpc_subnet_ids"],
+            ["vpc_subnet_ids", "db_proxy_endpoint_name", "db_proxy_name"],
             True,
         ],
         ["state", "absent", ["db_proxy_endpoint_name"], True],

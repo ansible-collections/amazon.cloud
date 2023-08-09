@@ -237,7 +237,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["auto_scaling_group_provider", "name"], True],
+        ["state", "present", ["name", "auto_scaling_group_provider"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]
