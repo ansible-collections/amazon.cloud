@@ -120,7 +120,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -147,7 +146,7 @@ def main():
 
     required_if = [
         ["state", "list", ["cluster"], True],
-        ["state", "present", ["cluster", "task_set_id", "service", "identifier"], True],
+        ["state", "present", ["task_set_id", "service", "cluster", "identifier"], True],
         ["state", "absent", ["cluster", "service", "identifier"], True],
         ["state", "get", ["cluster", "service", "identifier"], True],
     ]

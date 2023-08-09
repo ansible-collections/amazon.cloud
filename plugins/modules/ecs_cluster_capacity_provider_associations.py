@@ -133,7 +133,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -174,7 +173,7 @@ def main():
         [
             "state",
             "present",
-            ["cluster", "default_capacity_provider_strategy", "capacity_providers"],
+            ["default_capacity_provider_strategy", "cluster", "capacity_providers"],
             True,
         ],
         ["state", "absent", ["cluster"], True],

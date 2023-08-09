@@ -133,7 +133,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -167,7 +166,7 @@ def main():
         [
             "state",
             "present",
-            ["description", "family", "parameters", "db_cluster_parameter_group_name"],
+            ["parameters", "family", "db_cluster_parameter_group_name", "description"],
             True,
         ],
         ["state", "absent", ["db_cluster_parameter_group_name"], True],

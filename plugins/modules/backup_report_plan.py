@@ -228,7 +228,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -298,7 +297,7 @@ def main():
         [
             "state",
             "present",
-            ["report_delivery_channel", "report_setting", "report_plan_arn"],
+            ["report_delivery_channel", "report_plan_arn", "report_setting"],
             True,
         ],
         ["state", "absent", ["report_plan_arn"], True],

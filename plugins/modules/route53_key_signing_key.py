@@ -128,7 +128,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -167,11 +166,11 @@ def main():
             "state",
             "present",
             [
-                "key_management_service_arn",
-                "status",
-                "identifier",
-                "hosted_zone_id",
                 "name",
+                "status",
+                "key_management_service_arn",
+                "hosted_zone_id",
+                "identifier",
             ],
             True,
         ],

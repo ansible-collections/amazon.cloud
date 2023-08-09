@@ -168,7 +168,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -222,10 +221,10 @@ def main():
             "state",
             "present",
             [
-                "auto_scaling_group_name",
-                "lifecycle_hook_name",
-                "identifier",
                 "lifecycle_transition",
+                "identifier",
+                "lifecycle_hook_name",
+                "auto_scaling_group_name",
             ],
             True,
         ],

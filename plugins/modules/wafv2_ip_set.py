@@ -159,7 +159,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -206,7 +205,7 @@ def main():
         [
             "state",
             "present",
-            ["id", "addresses", "scope", "identifier", "name", "ip_address_version"],
+            ["ip_address_version", "id", "scope", "name", "addresses", "identifier"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],

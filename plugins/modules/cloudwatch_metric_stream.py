@@ -225,7 +225,6 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     scrub_none_parameters,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
-from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
 
 def main():
@@ -307,7 +306,7 @@ def main():
         [
             "state",
             "present",
-            ["role_arn", "firehose_arn", "output_format", "name"],
+            ["name", "role_arn", "output_format", "firehose_arn"],
             True,
         ],
         ["state", "absent", ["name"], True],
