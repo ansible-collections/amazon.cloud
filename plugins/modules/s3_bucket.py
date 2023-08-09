@@ -1705,6 +1705,36 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Create S3 bucket
+  amazon.cloud.s3_bucket:
+    bucket_name: '{{ bucket_name }}'
+    state: present
+  register: output
+
+- name: Describe S3 bucket
+  amazon.cloud.s3_bucket:
+    state: describe
+    bucket_name: '{{ output.result.identifier }}'
+  register: _result
+
+- name: List S3 buckets
+  amazon.cloud.s3_bucket:
+    state: list
+  register: _result
+
+- name: Update S3 bucket public access block configuration and tags (diff=true)
+  amazon.cloud.s3_bucket:
+    bucket_name: '{{ output.result.identifier }}'
+    state: present
+    public_access_block_configuration:
+      block_public_acls: false
+      block_public_policy: false
+      ignore_public_acls: false
+      restrict_public_buckets: false
+    tags:
+      mykey: myval
+  diff: true
+  register: _result
 """
 
 RETURN = r"""
@@ -2720,17 +2750,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["BucketName", "ObjectLockEnabled"]
+    create_only_params = ["/properties/BucketName", "/properties/ObjectLockEnabled"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["BucketName"]
+    identifier = ["/properties/BucketName"]
 
     results = {"changed": False, "result": {}}
 

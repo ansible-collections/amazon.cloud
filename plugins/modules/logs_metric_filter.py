@@ -298,10 +298,10 @@ def main():
             "present",
             [
                 "metric_transformations",
-                "filter_pattern",
-                "filter_name",
                 "identifier",
                 "log_group_name",
+                "filter_name",
+                "filter_pattern",
             ],
             True,
         ],
@@ -335,17 +335,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["FilterName", "LogGroupName"]
+    create_only_params = ["/properties/FilterName", "/properties/LogGroupName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["LogGroupName", "FilterName"]
+    identifier = ["/properties/LogGroupName", "/properties/FilterName"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
@@ -354,7 +354,7 @@ def main():
             "filter_name"
         ):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('log_group_name', 'filter_name') identifiers."
             )
 
     results = {"changed": False, "result": {}}

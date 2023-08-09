@@ -137,7 +137,7 @@ def main():
 
     required_if = [
         ["state", "list", ["resource_arn"], True],
-        ["state", "present", ["identifier", "web_acl_arn", "resource_arn"], True],
+        ["state", "present", ["identifier", "resource_arn", "web_acl_arn"], True],
         ["state", "absent", ["resource_arn", "web_acl_arn", "identifier"], True],
         ["state", "get", ["resource_arn", "web_acl_arn", "identifier"], True],
     ]
@@ -166,17 +166,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["ResourceArn", "WebACLArn"]
+    create_only_params = ["/properties/ResourceArn", "/properties/WebACLArn"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "delete", "read", "update"]
 
     state = module.params.get("state")
-    identifier = ["ResourceArn", "WebACLArn"]
+    identifier = ["/properties/ResourceArn", "/properties/WebACLArn"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
@@ -185,7 +185,7 @@ def main():
             "web_acl_arn"
         ):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('resource_arn', 'web_acl_arn') identifiers."
             )
 
     results = {"changed": False, "result": {}}

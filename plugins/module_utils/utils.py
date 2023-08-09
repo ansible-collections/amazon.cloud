@@ -106,7 +106,11 @@ def scrub_keys(a_dict: Dict, list_of_keys_to_remove: List[str]) -> Dict:
     """Filter a_dict by removing unwanted key: values listed in list_of_keys_to_remove"""
     if not isinstance(a_dict, dict):
         return a_dict
-    return {k: v for k, v in a_dict.items() if k not in list_of_keys_to_remove}
+    return {
+        k: v
+        for k, v in a_dict.items()
+        if not any(k in item for item in list_of_keys_to_remove)
+    }
 
 
 def normalize_response(response: Iterable):
@@ -128,10 +132,6 @@ def normalize_response(response: Iterable):
     else:
         return _normalize_response(resource_descriptions)
 
-import logging
-logging.basicConfig(filename = '/tmp/file.log',
-                    level = logging.DEBUG,
-                    format = '%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 
 def ansible_dict_to_boto3_tag_list(
     tags_dict, tag_name_key_name="Key", tag_value_key_name="Value"
@@ -285,10 +285,6 @@ def find_tag_by_key(key, tags):
 
 
 def tag_merge(t1, t2):
-    logging.debug("t2")
-    logging.debug(t2)
-    logging.debug("t1")
-    logging.debug(t1)
     for tag in t2:
         existing = find_tag_by_key(tag["Key"], t1)
         if existing:
@@ -307,7 +303,11 @@ def merge_dicts(list1, list2):
     merged_list = list1.copy()
 
     for dict2 in list2:
-        matching_dicts = [dict1 for dict1 in merged_list if all(item in dict1.items() for item in dict2.items())]
+        matching_dicts = [
+            dict1
+            for dict1 in merged_list
+            if all(item in dict1.items() for item in dict2.items())
+        ]
         if matching_dicts:
             for k, v in dict2.items():
                 matching_dicts[0][k] = v
@@ -318,10 +318,6 @@ def merge_dicts(list1, list2):
 
 
 def make_op(path, old, new, strategy):
-    logging.debug("old")
-    logging.debug(old)
-    logging.debug("new")
-    logging.debug(new)
     _new_cpy = copy.deepcopy(new)
 
     if isinstance(old, dict):
@@ -329,14 +325,12 @@ def make_op(path, old, new, strategy):
             _new_cpy = dict(old, **new)
     elif isinstance(old, list):
         if strategy == "merge":
-            if path == 'Tags':
+            if path == "Tags":
                 _old_cpy = copy.deepcopy(old)
                 _new_cpy = tag_merge(_old_cpy, new)
             else:
                 _new_cpy = merge_dicts(old, new)
 
-    logging.debug('op("replace", path, _new_cpy)')
-    logging.debug(op("replace", path, _new_cpy))
     return op("replace", path, _new_cpy)
 
 

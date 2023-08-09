@@ -421,7 +421,7 @@ def main():
         [
             "state",
             "present",
-            ["instance_type", "image_id", "launch_configuration_name"],
+            ["image_id", "instance_type", "launch_configuration_name"],
             True,
         ],
         ["state", "absent", ["launch_configuration_name"], True],
@@ -472,37 +472,37 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "AssociatePublicIpAddress",
-        "BlockDeviceMappings",
-        "ClassicLinkVPCId",
-        "ClassicLinkVPCSecurityGroups",
-        "EbsOptimized",
-        "IamInstanceProfile",
-        "ImageId",
-        "InstanceId",
-        "InstanceMonitoring",
-        "InstanceType",
-        "KernelId",
-        "KeyName",
-        "LaunchConfigurationName",
-        "MetadataOptions",
-        "PlacementTenancy",
-        "RamDiskId",
-        "SecurityGroups",
-        "SpotPrice",
-        "UserData",
+        "/properties/AssociatePublicIpAddress",
+        "/properties/BlockDeviceMappings",
+        "/properties/ClassicLinkVPCId",
+        "/properties/ClassicLinkVPCSecurityGroups",
+        "/properties/EbsOptimized",
+        "/properties/IamInstanceProfile",
+        "/properties/ImageId",
+        "/properties/InstanceId",
+        "/properties/InstanceMonitoring",
+        "/properties/InstanceType",
+        "/properties/KernelId",
+        "/properties/KeyName",
+        "/properties/LaunchConfigurationName",
+        "/properties/MetadataOptions",
+        "/properties/PlacementTenancy",
+        "/properties/RamDiskId",
+        "/properties/SecurityGroups",
+        "/properties/SpotPrice",
+        "/properties/UserData",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["LaunchConfigurationName"]
+    identifier = ["/properties/LaunchConfigurationName"]
 
     results = {"changed": False, "result": {}}
 

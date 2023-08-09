@@ -39,12 +39,6 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
-    key_id:
-        aliases:
-        - KeyId
-        description:
-        - Not Provived.
-        type: str
     key_policy:
         aliases:
         - KeyPolicy
@@ -172,7 +166,6 @@ def main():
         "aliases": ["PendingWindowInDays"],
     }
     argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
-    argument_spec["key_id"] = {"type": "str", "aliases": ["KeyId"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -184,7 +177,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["primary_key_arn", "key_policy", "key_id"], True],
+        ["state", "present", ["key_policy", "primary_key_arn", "key_id"], True],
         ["state", "absent", ["key_id"], True],
         ["state", "get", ["key_id"], True],
     ]
@@ -204,7 +197,6 @@ def main():
 
     params["description"] = module.params.get("description")
     params["enabled"] = module.params.get("enabled")
-    params["key_id"] = module.params.get("key_id")
     params["key_policy"] = module.params.get("key_policy")
     params["pending_window_in_days"] = module.params.get("pending_window_in_days")
     params["primary_key_arn"] = module.params.get("primary_key_arn")
@@ -217,17 +209,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["PrimaryKeyArn"]
+    create_only_params = ["/properties/PrimaryKeyArn"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["KeyId"]
+    identifier = ["/properties/KeyId"]
 
     results = {"changed": False, "result": {}}
 

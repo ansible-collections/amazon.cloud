@@ -25,12 +25,6 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
-    group_name:
-        aliases:
-        - GroupName
-        description:
-        - The Group Name of Placement Group.
-        type: str
     partition_count:
         aliases:
         - PartitionCount
@@ -145,7 +139,6 @@ def main():
     )
 
     argument_spec["strategy"] = {"type": "str", "aliases": ["Strategy"]}
-    argument_spec["group_name"] = {"type": "str", "aliases": ["GroupName"]}
     argument_spec["spread_level"] = {"type": "str", "aliases": ["SpreadLevel"]}
     argument_spec["partition_count"] = {"type": "int", "aliases": ["PartitionCount"]}
     argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
@@ -178,7 +171,6 @@ def main():
 
     params = {}
 
-    params["group_name"] = module.params.get("group_name")
     params["partition_count"] = module.params.get("partition_count")
     params["spread_level"] = module.params.get("spread_level")
     params["strategy"] = module.params.get("strategy")
@@ -191,17 +183,21 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["Strategy", "SpreadLevel", "PartitionCount"]
+    create_only_params = [
+        "/properties/Strategy",
+        "/properties/SpreadLevel",
+        "/properties/PartitionCount",
+    ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["GroupName"]
+    identifier = ["/properties/GroupName"]
 
     results = {"changed": False, "result": {}}
 

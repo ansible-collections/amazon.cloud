@@ -35,12 +35,6 @@ options:
         description:
         - A name for the saved query definition.
         type: str
-    query_definition_id:
-        aliases:
-        - QueryDefinitionId
-        description:
-        - Unique identifier of a query definition.
-        type: str
     query_string:
         aliases:
         - QueryString
@@ -134,10 +128,6 @@ def main():
         "elements": "str",
         "aliases": ["LogGroupNames"],
     }
-    argument_spec["query_definition_id"] = {
-        "type": "str",
-        "aliases": ["QueryDefinitionId"],
-    }
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -148,7 +138,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["name", "query_definition_id", "query_string"], True],
+        ["state", "present", ["query_definition_id", "query_string", "name"], True],
         ["state", "absent", ["query_definition_id"], True],
         ["state", "get", ["query_definition_id"], True],
     ]
@@ -168,7 +158,6 @@ def main():
 
     params["log_group_names"] = module.params.get("log_group_names")
     params["name"] = module.params.get("name")
-    params["query_definition_id"] = module.params.get("query_definition_id")
     params["query_string"] = module.params.get("query_string")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
@@ -178,7 +167,7 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
@@ -188,7 +177,7 @@ def main():
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["QueryDefinitionId"]
+    identifier = ["/properties/QueryDefinitionId"]
 
     results = {"changed": False, "result": {}}
 

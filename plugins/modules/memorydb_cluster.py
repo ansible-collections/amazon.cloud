@@ -29,13 +29,6 @@ options:
         - To enable AutoMinorVersionUpgrade on a cluster you must set AutoMinorVersionUpgrade
             to true when you create a cluster.
         type: bool
-    cluster_endpoint:
-        aliases:
-        - ClusterEndpoint
-        description:
-        - The cluster endpoint.
-        suboptions: {}
-        type: dict
     cluster_name:
         aliases:
         - ClusterName
@@ -124,6 +117,12 @@ options:
         description:
         - The name of the parameter group associated with the cluster.
         type: str
+    port:
+        aliases:
+        - Port
+        description:
+        - The port number on which each member of the cluster accepts connections.
+        type: int
     purge_tags:
         default: true
         description:
@@ -331,6 +330,7 @@ def main():
         "type": "str",
         "aliases": ["ParameterGroupName"],
     }
+    argument_spec["port"] = {"type": "int", "aliases": ["Port"]}
     argument_spec["snapshot_retention_limit"] = {
         "type": "int",
         "aliases": ["SnapshotRetentionLimit"],
@@ -357,11 +357,6 @@ def main():
         "aliases": ["FinalSnapshotName"],
     }
     argument_spec["engine_version"] = {"type": "str", "aliases": ["EngineVersion"]}
-    argument_spec["cluster_endpoint"] = {
-        "type": "dict",
-        "options": {},
-        "aliases": ["ClusterEndpoint"],
-    }
     argument_spec["auto_minor_version_upgrade"] = {
         "type": "bool",
         "aliases": ["AutoMinorVersionUpgrade"],
@@ -378,7 +373,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["acl_name", "cluster_name", "node_type"], True],
+        ["state", "present", ["cluster_name", "acl_name", "node_type"], True],
         ["state", "absent", ["cluster_name"], True],
         ["state", "get", ["cluster_name"], True],
     ]
@@ -400,7 +395,6 @@ def main():
     params["auto_minor_version_upgrade"] = module.params.get(
         "auto_minor_version_upgrade"
     )
-    params["cluster_endpoint"] = module.params.get("cluster_endpoint")
     params["cluster_name"] = module.params.get("cluster_name")
     params["data_tiering"] = module.params.get("data_tiering")
     params["description"] = module.params.get("description")
@@ -412,6 +406,7 @@ def main():
     params["num_replicas_per_shard"] = module.params.get("num_replicas_per_shard")
     params["num_shards"] = module.params.get("num_shards")
     params["parameter_group_name"] = module.params.get("parameter_group_name")
+    params["port"] = module.params.get("port")
     params["security_group_ids"] = module.params.get("security_group_ids")
     params["snapshot_arns"] = module.params.get("snapshot_arns")
     params["snapshot_name"] = module.params.get("snapshot_name")
@@ -430,26 +425,26 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "ClusterName",
-        "TLSEnabled",
-        "DataTiering",
-        "KmsKeyId",
-        "Port",
-        "SubnetGroupName",
-        "SnapshotArns",
-        "SnapshotName",
+        "/properties/ClusterName",
+        "/properties/TLSEnabled",
+        "/properties/DataTiering",
+        "/properties/KmsKeyId",
+        "/properties/Port",
+        "/properties/SubnetGroupName",
+        "/properties/SnapshotArns",
+        "/properties/SnapshotName",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["ClusterName"]
+    identifier = ["/properties/ClusterName"]
 
     results = {"changed": False, "result": {}}
 

@@ -173,10 +173,7 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
 from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
 from ansible_collections.amazon.cloud.plugins.module_utils.core import camel_to_snake
 
-import logging
-logging.basicConfig(filename = '/tmp/file.log',
-                    level = logging.DEBUG,
-                    format = '%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+
 def main():
     argument_spec = dict(
         state=dict(
@@ -227,7 +224,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["role_name", "assume_role_policy_document"], True],
+        ["state", "present", ["assume_role_policy_document", "role_name"], True],
         ["state", "absent", ["role_name"], True],
         ["state", "get", ["role_name"], True],
     ]
@@ -264,20 +261,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
-    logging.debug("params_to_set")
-    logging.debug(params_to_set)
-
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["Path", "RoleName"]
+    create_only_params = ["/properties/Path", "/properties/RoleName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["RoleName"]
+    identifier = ["/properties/RoleName"]
 
     results = {"changed": False, "result": {}}
 

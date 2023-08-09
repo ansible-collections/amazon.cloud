@@ -278,7 +278,16 @@ options:
         - The I(snap_start) setting of your functionThe functions I(snap_start) setting.
         - When set to PublishedVersions, Lambda creates a snapshot of the execution
             environment when you publish a function version.
-        suboptions: {}
+        suboptions:
+            apply_on:
+                aliases:
+                - ApplyOn
+                choices:
+                - None
+                - PublishedVersions
+                description:
+                - Applying I(snap_start) setting on function resource type.
+                type: str
         type: dict
     state:
         choices:
@@ -464,7 +473,13 @@ def main():
     }
     argument_spec["snap_start"] = {
         "type": "dict",
-        "options": {},
+        "options": {
+            "apply_on": {
+                "type": "str",
+                "choices": ["None", "PublishedVersions"],
+                "aliases": ["ApplyOn"],
+            }
+        },
         "aliases": ["SnapStart"],
     }
     argument_spec["file_system_configs"] = {
@@ -547,7 +562,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["code", "role", "function_name"], True],
+        ["state", "present", ["function_name", "code", "role"], True],
         ["state", "absent", ["function_name"], True],
         ["state", "get", ["function_name"], True],
     ]
@@ -599,17 +614,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["FunctionName"]
+    create_only_params = ["/properties/FunctionName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["read", "create", "update", "list", "delete"]
 
     state = module.params.get("state")
-    identifier = ["FunctionName"]
+    identifier = ["/properties/FunctionName"]
 
     results = {"changed": False, "result": {}}
 

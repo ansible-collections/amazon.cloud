@@ -307,7 +307,7 @@ def main():
         [
             "state",
             "present",
-            ["name", "role_arn", "firehose_arn", "output_format"],
+            ["firehose_arn", "output_format", "role_arn", "name"],
             True,
         ],
         ["state", "absent", ["name"], True],
@@ -346,17 +346,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["Name"]
+    create_only_params = ["/properties/Name"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "update", "delete", "list", "read"]
 
     state = module.params.get("state")
-    identifier = ["Name"]
+    identifier = ["/properties/Name"]
 
     results = {"changed": False, "result": {}}
 

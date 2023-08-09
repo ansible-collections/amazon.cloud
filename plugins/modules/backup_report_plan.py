@@ -58,13 +58,6 @@ options:
                 - If not specified, there is no prefix.
                 type: str
         type: dict
-    report_plan_arn:
-        aliases:
-        - ReportPlanArn
-        description:
-        - An Amazon Resource Name (ARN) that uniquely identifies a resource.
-        - The format of the ARN depends on the resource type.
-        type: str
     report_plan_description:
         aliases:
         - ReportPlanDescription
@@ -241,7 +234,6 @@ def main():
     )
 
     argument_spec["report_plan_name"] = {"type": "str", "aliases": ["ReportPlanName"]}
-    argument_spec["report_plan_arn"] = {"type": "str", "aliases": ["ReportPlanArn"]}
     argument_spec["report_plan_description"] = {
         "type": "str",
         "aliases": ["ReportPlanDescription"],
@@ -298,7 +290,7 @@ def main():
         [
             "state",
             "present",
-            ["report_delivery_channel", "report_setting", "report_plan_arn"],
+            ["report_delivery_channel", "report_plan_arn", "report_setting"],
             True,
         ],
         ["state", "absent", ["report_plan_arn"], True],
@@ -319,7 +311,6 @@ def main():
     params = {}
 
     params["report_delivery_channel"] = module.params.get("report_delivery_channel")
-    params["report_plan_arn"] = module.params.get("report_plan_arn")
     params["report_plan_description"] = module.params.get("report_plan_description")
     params["report_plan_name"] = module.params.get("report_plan_name")
     params["report_plan_tags"] = module.params.get("report_plan_tags")
@@ -333,17 +324,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["ReportPlanName"]
+    create_only_params = ["/properties/ReportPlanName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["ReportPlanArn"]
+    identifier = ["/properties/ReportPlanArn"]
 
     results = {"changed": False, "result": {}}
 

@@ -54,35 +54,6 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
-    kubernetes_network_config:
-        aliases:
-        - KubernetesNetworkConfig
-        description:
-        - The Kubernetes network configuration for the cluster.
-        suboptions:
-            ip_family:
-                aliases:
-                - IpFamily
-                choices:
-                - ipv4
-                - ipv6
-                description:
-                - Ipv4 or Ipv6.
-                - You can only specify ipv6 for 1.21 and later clusters that use version
-                    1.10.1 or later of the Amazon VPC CNI add-on.
-                type: str
-            service_ipv4_cidr:
-                aliases:
-                - ServiceIpv4Cidr
-                description:
-                - The CIDR block to assign Kubernetes service IP addresses from.
-                - If you dont specify a block, Kubernetes assigns addresses from either
-                    the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks.
-                - We recommend that you specify a block that does not overlap with
-                    resources in other networks that are peered or connected to your
-                    VPC.
-                type: str
-        type: dict
     logging:
         aliases:
         - Logging
@@ -297,6 +268,36 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Set the cluster name
+  set_fact:
+    eks_cluster_name: '{{ _resource_prefix }}-cluster'
+
+- name: Create EKS cluster
+  amazon.cloud.eks_cluster:
+    name: '{{ eks_cluster_name }}'
+    resources_vpc_config:
+      security_group_ids: "{{ _result_create_security_groups.results | map(attribute='group_id') }}"
+      subnet_ids: "{{ _result_create_subnets.results | map(attribute='subnet.id') }}"
+      endpoint_public_access: true
+      endpoint_private_access: false
+      public_access_cidrs:
+      - 0.0.0.0/0
+    role_arn: '{{ _result_create_iam_role.arn }}'
+    tags:
+      Name: '{{ _resource_prefix }}-eks-cluster'
+    wait_timeout: 900
+  register: _result_create_cluster
+
+- name: Describe EKS cluster
+  amazon.cloud.eks_cluster:
+    name: '{{ eks_cluster_name }}'
+    state: describe
+  register: _result_get_cluster
+
+- name: List EKS clusters
+  amazon.cloud.eks_cluster:
+    state: list
+  register: _result_list_clusters
 """
 
 RETURN = r"""
@@ -354,18 +355,6 @@ def main():
             "resources": {"type": "list", "elements": "str", "aliases": ["Resources"]},
         },
         "aliases": ["EncryptionConfig"],
-    }
-    argument_spec["kubernetes_network_config"] = {
-        "type": "dict",
-        "options": {
-            "service_ipv4_cidr": {"type": "str", "aliases": ["ServiceIpv4Cidr"]},
-            "ip_family": {
-                "type": "str",
-                "choices": ["ipv4", "ipv6"],
-                "aliases": ["IpFamily"],
-            },
-        },
-        "aliases": ["KubernetesNetworkConfig"],
     }
     argument_spec["logging"] = {
         "type": "dict",
@@ -457,7 +446,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["name", "role_arn", "resources_vpc_config"], True],
+        ["state", "present", ["resources_vpc_config", "role_arn", "name"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]
@@ -476,7 +465,6 @@ def main():
     params = {}
 
     params["encryption_config"] = module.params.get("encryption_config")
-    params["kubernetes_network_config"] = module.params.get("kubernetes_network_config")
     params["logging"] = module.params.get("logging")
     params["name"] = module.params.get("name")
     params["outpost_config"] = module.params.get("outpost_config")
@@ -492,25 +480,25 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "OutpostConfig",
-        "EncryptionConfig",
-        "KubernetesNetworkConfig",
-        "Name",
-        "RoleArn",
-        "SubnetIds",
-        "SecurityGroupIds",
+        "/properties/OutpostConfig",
+        "/properties/EncryptionConfig",
+        "/properties/KubernetesNetworkConfig",
+        "/properties/Name",
+        "/properties/RoleArn",
+        "/properties/ResourcesVpcConfig/SubnetIds",
+        "/properties/ResourcesVpcConfig/SecurityGroupIds",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["Name"]
+    identifier = ["/properties/Name"]
 
     results = {"changed": False, "result": {}}
 

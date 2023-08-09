@@ -182,17 +182,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["ClusterIdentifier", "Account"]
+    create_only_params = ["/properties/ClusterIdentifier", "/properties/Account"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["ClusterIdentifier", "Account"]
+    identifier = ["/properties/ClusterIdentifier", "/properties/Account"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
@@ -201,7 +201,7 @@ def main():
             "account"
         ):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('cluster_identifier', 'account') identifiers."
             )
 
     results = {"changed": False, "result": {}}

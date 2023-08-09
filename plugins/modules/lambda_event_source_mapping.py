@@ -153,12 +153,6 @@ options:
         - (Streams) A list of response types supported by the function.
         elements: str
         type: list
-    id:
-        aliases:
-        - Id
-        description:
-        - Event Source Mapping Identifier UUID.
-        type: str
     maximum_batching_window_in_seconds:
         aliases:
         - MaximumBatchingWindowInSeconds
@@ -383,7 +377,6 @@ def main():
         ),
     )
 
-    argument_spec["id"] = {"type": "str", "aliases": ["Id"]}
     argument_spec["batch_size"] = {"type": "int", "aliases": ["BatchSize"]}
     argument_spec["bisect_batch_on_function_error"] = {
         "type": "bool",
@@ -534,7 +527,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["id", "function_name"], True],
+        ["state", "present", ["function_name", "id"], True],
         ["state", "absent", ["id"], True],
         ["state", "get", ["id"], True],
     ]
@@ -568,7 +561,6 @@ def main():
     params["filter_criteria"] = module.params.get("filter_criteria")
     params["function_name"] = module.params.get("function_name")
     params["function_response_types"] = module.params.get("function_response_types")
-    params["id"] = module.params.get("id")
     params["maximum_batching_window_in_seconds"] = module.params.get(
         "maximum_batching_window_in_seconds"
     )
@@ -602,24 +594,24 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "EventSourceArn",
-        "StartingPosition",
-        "StartingPositionTimestamp",
-        "SelfManagedEventSource",
-        "AmazonManagedKafkaEventSourceConfig",
-        "SelfManagedKafkaEventSourceConfig",
+        "/properties/EventSourceArn",
+        "/properties/StartingPosition",
+        "/properties/StartingPositionTimestamp",
+        "/properties/SelfManagedEventSource",
+        "/properties/AmazonManagedKafkaEventSourceConfig",
+        "/properties/SelfManagedKafkaEventSourceConfig",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "delete", "list", "read", "update"]
 
     state = module.params.get("state")
-    identifier = ["Id"]
+    identifier = ["/properties/Id"]
 
     results = {"changed": False, "result": {}}
 

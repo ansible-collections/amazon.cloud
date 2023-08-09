@@ -75,10 +75,7 @@ try:
 except ImportError:
     BOTO3_IMP_ERR = traceback.format_exc()
     HAS_BOTO3 = False
-import logging
-logging.basicConfig(filename = '/tmp/file.log',
-                    level = logging.DEBUG,
-                    format = '%(asctime)s:%(levelname)s:%(name)s:%(message)s')
+
 
 class CloudControlResource(object):
     def __init__(self, module):
@@ -156,8 +153,9 @@ class CloudControlResource(object):
             if identifiers:
                 additional_properties: Dict = {}
                 for id in identifiers:
-                    additional_properties[id] = self.module.params.get(
-                        camel_to_snake(id)
+                    _id = id.split("/")[-1]
+                    additional_properties[_id] = self.module.params.get(
+                        camel_to_snake(_id)
                     )
                 params["ResourceModel"] = json.dumps(additional_properties)
 
@@ -278,8 +276,9 @@ class CloudControlResource(object):
             results = self.update_resource(resource, params, create_only_params)
         except self.client.exceptions.ResourceNotFoundException:
             if self.module.params.get("identifier"):
+                _primary_identifier = [id.split("/")[-1] for id in primary_identifier]
                 self.module.fail_json(
-                    f"""You must specify both {*primary_identifier, } to create a new resource.
+                    f"""You must specify together {*_primary_identifier, } to create a new resource.
                         The identifier parameter can only be used to manipulate an existing resource."""
                 )
             results["changed"] |= self.create_resource(type_name, params)
@@ -302,16 +301,12 @@ class CloudControlResource(object):
                 response = self.client.create_resource(
                     TypeName=type_name, DesiredState=params
                 )
-                logging.debug("RESP")
-                logging.debug(response)
             except (
                 botocore.exceptions.BotoCoreError,
                 botocore.exceptions.ClientError,
             ) as e:
                 self.module.fail_json_aws(e, msg="Failed to create resource")
 
-            logging.debug("RESPAFTER")
-            logging.debug(response)
             self.wait_until_resource_request_success(
                 response["ProgressEvent"]["RequestToken"]
             )
@@ -529,7 +524,8 @@ class CloudControlResource(object):
     def get_identifier(self, primary_identifier: list) -> Dict:
         identifier: Dict = {}
         for id in primary_identifier:
-            identifier[id] = self.module.params.get(camel_to_snake(id))
+            _id = id.split("/")[-1]
+            identifier[_id] = self.module.params.get(camel_to_snake(_id))
         return json.dumps(identifier)
 
 

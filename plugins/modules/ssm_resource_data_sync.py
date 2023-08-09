@@ -106,12 +106,6 @@ options:
         description:
         - Not Provived.
         type: str
-    sync_name:
-        aliases:
-        - SyncName
-        description:
-        - Not Provived.
-        type: str
     sync_source:
         aliases:
         - SyncSource
@@ -274,7 +268,6 @@ def main():
     argument_spec["bucket_name"] = {"type": "str", "aliases": ["BucketName"]}
     argument_spec["bucket_region"] = {"type": "str", "aliases": ["BucketRegion"]}
     argument_spec["sync_format"] = {"type": "str", "aliases": ["SyncFormat"]}
-    argument_spec["sync_name"] = {"type": "str", "aliases": ["SyncName"]}
     argument_spec["sync_type"] = {"type": "str", "aliases": ["SyncType"]}
     argument_spec["bucket_prefix"] = {"type": "str", "aliases": ["BucketPrefix"]}
     argument_spec["state"] = {
@@ -311,7 +304,6 @@ def main():
     params["kms_key_arn"] = module.params.get("kms_key_arn")
     params["s3_destination"] = module.params.get("s3_destination")
     params["sync_format"] = module.params.get("sync_format")
-    params["sync_name"] = module.params.get("sync_name")
     params["sync_source"] = module.params.get("sync_source")
     params["sync_type"] = module.params.get("sync_type")
 
@@ -322,26 +314,26 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "KMSKeyArn",
-        "SyncFormat",
-        "BucketPrefix",
-        "SyncName",
-        "BucketRegion",
-        "BucketName",
-        "S3Destination",
-        "SyncType",
+        "/properties/KMSKeyArn",
+        "/properties/SyncFormat",
+        "/properties/BucketPrefix",
+        "/properties/SyncName",
+        "/properties/BucketRegion",
+        "/properties/BucketName",
+        "/properties/S3Destination",
+        "/properties/SyncType",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "delete", "update", "list", "read"]
 
     state = module.params.get("state")
-    identifier = ["SyncName"]
+    identifier = ["/properties/SyncName"]
 
     results = {"changed": False, "result": {}}
 

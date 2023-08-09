@@ -125,6 +125,37 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Create log group
+  amazon.cloud.logs_log_group:
+    state: present
+    log_group_name: '{{ log_group_name }}'
+    retention_in_days: 7
+    tags:
+      testkey: testvalue
+    wait: true
+  register: output
+
+- name: Describe log group
+  amazon.cloud.logs_log_group:
+    state: describe
+    log_group_name: '{{ log_group_name }}'
+  register: output
+
+- name: Update log group
+  amazon.cloud.logs_log_group:
+    state: present
+    log_group_name: '{{ log_group_name }}'
+    tags:
+      anotherkey: anothervalue
+    purge_tags: false
+    wait: true
+  register: output
+
+- name: Delete log group
+  amazon.cloud.logs_log_group:
+    state: absent
+    log_group_name: '{{ log_group_name }}'
+  register: output
 """
 
 RETURN = r"""
@@ -247,17 +278,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["LogGroupName"]
+    create_only_params = ["/properties/LogGroupName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["LogGroupName"]
+    identifier = ["/properties/LogGroupName"]
 
     results = {"changed": False, "result": {}}
 

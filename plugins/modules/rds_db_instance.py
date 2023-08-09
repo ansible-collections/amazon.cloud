@@ -85,26 +85,6 @@ options:
         description:
         - The identifier of the CA certificate for this DB instance.
         type: str
-    certificate_details:
-        aliases:
-        - CertificateDetails
-        description:
-        - Returns the details of the DB instances server certificate.
-        suboptions:
-            ca_identifier:
-                aliases:
-                - CAIdentifier
-                description:
-                - The CA identifier of the CA certificate used for the DB instances
-                    server certificate.
-                type: str
-            valid_till:
-                aliases:
-                - ValidTill
-                description:
-                - "The expiration date of the DB instance\u2019s server certificate."
-                type: str
-        type: dict
     certificate_rotation_restart:
         aliases:
         - CertificateRotationRestart
@@ -171,12 +151,6 @@ options:
         - '* Cant be the identifier of an Aurora DB cluster snapshot.'
         - '* Cant be the identifier of an RDS for PostgreSQL Multi-AZ DB cluster snapshot.'
         type: str
-    db_instance_arn:
-        aliases:
-        - DBInstanceArn
-        description:
-        - The Amazon Resource Name (ARN) for the DB instance.
-        type: str
     db_instance_class:
         aliases:
         - DBInstanceClass
@@ -233,22 +207,6 @@ options:
         - A DB subnet group to associate with the DB instance.
         - If you update this value, the new subnet group must be a subnet group in
             a new VPC.
-        type: str
-    db_system_id:
-        aliases:
-        - DBSystemId
-        description:
-        - The Oracle system ID (Oracle SID) for a container database (CDB). The Oracle
-            SID is also the name of the CDB. This setting is valid for RDS Custom
-            only.
-        type: str
-    dbi_resource_id:
-        aliases:
-        - DbiResourceId
-        description:
-        - The AWS Region-unique, immutable identifier for the DB instance.
-        - This identifier is found in AWS CloudTrail log entries whenever the AWS
-            KMS key for the DB instance is accessed.
         type: str
     delete_automated_backups:
         aliases:
@@ -307,32 +265,6 @@ options:
         - A value that indicates whether to enable Performance Insights for the DB
             instance.
         type: bool
-    endpoint:
-        aliases:
-        - Endpoint
-        description:
-        - Specifies the connection endpoint.
-        suboptions:
-            address:
-                aliases:
-                - Address
-                description:
-                - Specifies the DNS address of the DB instance.
-                type: str
-            hosted_zone_id:
-                aliases:
-                - HostedZoneId
-                description:
-                - Specifies the ID that Amazon Route 53 assigns when you create a
-                    hosted zone.
-                type: str
-            port:
-                aliases:
-                - Port
-                description:
-                - Specifies the port that the database engine is listening on.
-                type: str
-        type: dict
     engine:
         aliases:
         - Engine
@@ -386,26 +318,6 @@ options:
         description:
         - The password for the master user.
         type: str
-    master_user_secret:
-        aliases:
-        - MasterUserSecret
-        description:
-        - Contains the secret managed by RDS in AWS Secrets Manager for the master
-            user password.
-        suboptions:
-            kms_key_id:
-                aliases:
-                - KmsKeyId
-                description:
-                - The AWS KMS key identifier that is used to encrypt the secret.
-                type: str
-            secret_arn:
-                aliases:
-                - SecretArn
-                description:
-                - The Amazon Resource Name (ARN) of the secret.
-                type: str
-        type: dict
     master_username:
         aliases:
         - MasterUsername
@@ -780,14 +692,6 @@ def main():
         "type": "str",
         "aliases": ["CACertificateIdentifier"],
     }
-    argument_spec["certificate_details"] = {
-        "type": "dict",
-        "options": {
-            "ca_identifier": {"type": "str", "aliases": ["CAIdentifier"]},
-            "valid_till": {"type": "str", "aliases": ["ValidTill"]},
-        },
-        "aliases": ["CertificateDetails"],
-    }
     argument_spec["certificate_rotation_restart"] = {
         "type": "bool",
         "aliases": ["CertificateRotationRestart"],
@@ -812,13 +716,11 @@ def main():
         "type": "str",
         "aliases": ["DBClusterSnapshotIdentifier"],
     }
-    argument_spec["db_instance_arn"] = {"type": "str", "aliases": ["DBInstanceArn"]}
     argument_spec["db_instance_class"] = {"type": "str", "aliases": ["DBInstanceClass"]}
     argument_spec["db_instance_identifier"] = {
         "type": "str",
         "aliases": ["DBInstanceIdentifier"],
     }
-    argument_spec["dbi_resource_id"] = {"type": "str", "aliases": ["DbiResourceId"]}
     argument_spec["db_name"] = {"type": "str", "aliases": ["DBName"]}
     argument_spec["db_parameter_group_name"] = {
         "type": "str",
@@ -837,7 +739,6 @@ def main():
         "type": "str",
         "aliases": ["DBSubnetGroupName"],
     }
-    argument_spec["db_system_id"] = {"type": "str", "aliases": ["DBSystemId"]}
     argument_spec["delete_automated_backups"] = {
         "type": "bool",
         "aliases": ["DeleteAutomatedBackups"],
@@ -864,15 +765,6 @@ def main():
         "type": "bool",
         "aliases": ["EnablePerformanceInsights"],
     }
-    argument_spec["endpoint"] = {
-        "type": "dict",
-        "options": {
-            "address": {"type": "str", "aliases": ["Address"]},
-            "port": {"type": "str", "aliases": ["Port"]},
-            "hosted_zone_id": {"type": "str", "aliases": ["HostedZoneId"]},
-        },
-        "aliases": ["Endpoint"],
-    }
     argument_spec["engine"] = {"type": "str", "aliases": ["Engine"]}
     argument_spec["engine_version"] = {"type": "str", "aliases": ["EngineVersion"]}
     argument_spec["manage_master_user_password"] = {
@@ -886,14 +778,6 @@ def main():
     argument_spec["master_user_password"] = {
         "type": "str",
         "aliases": ["MasterUserPassword"],
-    }
-    argument_spec["master_user_secret"] = {
-        "type": "dict",
-        "options": {
-            "secret_arn": {"type": "str", "aliases": ["SecretArn"]},
-            "kms_key_id": {"type": "str", "aliases": ["KmsKeyId"]},
-        },
-        "aliases": ["MasterUserSecret"],
     }
     argument_spec["max_allocated_storage"] = {
         "type": "int",
@@ -1045,7 +929,6 @@ def main():
     params["availability_zone"] = module.params.get("availability_zone")
     params["backup_retention_period"] = module.params.get("backup_retention_period")
     params["ca_certificate_identifier"] = module.params.get("ca_certificate_identifier")
-    params["certificate_details"] = module.params.get("certificate_details")
     params["certificate_rotation_restart"] = module.params.get(
         "certificate_rotation_restart"
     )
@@ -1058,7 +941,6 @@ def main():
     params["db_cluster_snapshot_identifier"] = module.params.get(
         "db_cluster_snapshot_identifier"
     )
-    params["db_instance_arn"] = module.params.get("db_instance_arn")
     params["db_instance_class"] = module.params.get("db_instance_class")
     params["db_instance_identifier"] = module.params.get("db_instance_identifier")
     params["db_name"] = module.params.get("db_name")
@@ -1066,8 +948,6 @@ def main():
     params["db_security_groups"] = module.params.get("db_security_groups")
     params["db_snapshot_identifier"] = module.params.get("db_snapshot_identifier")
     params["db_subnet_group_name"] = module.params.get("db_subnet_group_name")
-    params["db_system_id"] = module.params.get("db_system_id")
-    params["dbi_resource_id"] = module.params.get("dbi_resource_id")
     params["delete_automated_backups"] = module.params.get("delete_automated_backups")
     params["deletion_protection"] = module.params.get("deletion_protection")
     params["domain"] = module.params.get("domain")
@@ -1081,7 +961,6 @@ def main():
     params["enable_performance_insights"] = module.params.get(
         "enable_performance_insights"
     )
-    params["endpoint"] = module.params.get("endpoint")
     params["engine"] = module.params.get("engine")
     params["engine_version"] = module.params.get("engine_version")
     params["iops"] = module.params.get("iops")
@@ -1091,7 +970,6 @@ def main():
         "manage_master_user_password"
     )
     params["master_user_password"] = module.params.get("master_user_password")
-    params["master_user_secret"] = module.params.get("master_user_secret")
     params["master_username"] = module.params.get("master_username")
     params["max_allocated_storage"] = module.params.get("max_allocated_storage")
     params["monitoring_interval"] = module.params.get("monitoring_interval")
@@ -1142,14 +1020,14 @@ def main():
     )
     params["vpc_security_groups"] = module.params.get("vpc_security_groups")
 
-    # if module.params.get("engine") not in (
-    #     "aurora",
-    #     "aurora-postgresql",
-    #     "aurora-mysql",
-    # ):
-    #     # It can only be used when engine is one of ("aurora", "aurora-postgresql", "aurora-mysql").
-    #     # Since the CloudFormation template assigns 'default: 1', it is always set to 1.
-    #     params.pop("promotion_tier")
+    if module.params.get("engine") not in (
+        "aurora",
+        "aurora-postgresql",
+        "aurora-mysql",
+    ):
+        # It can only be used when engine is one of ("aurora", "aurora-postgresql", "aurora-mysql").
+        # Since the CloudFormation template assigns 'default: 1', it is always set to 1.
+        params.pop("promotion_tier")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
     _params_to_set = scrub_none_parameters(params)
@@ -1158,31 +1036,31 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "CharacterSetName",
-        "CustomIAMInstanceProfile",
-        "DBClusterIdentifier",
-        "DBInstanceIdentifier",
-        "DBName",
-        "DBSubnetGroupName",
-        "KmsKeyId",
-        "MasterUsername",
-        "NcharCharacterSetName",
-        "Port",
-        "SourceRegion",
-        "StorageEncrypted",
-        "Timezone",
+        "/properties/CharacterSetName",
+        "/properties/CustomIAMInstanceProfile",
+        "/properties/DBClusterIdentifier",
+        "/properties/DBInstanceIdentifier",
+        "/properties/DBName",
+        "/properties/DBSubnetGroupName",
+        "/properties/KmsKeyId",
+        "/properties/MasterUsername",
+        "/properties/NcharCharacterSetName",
+        "/properties/Port",
+        "/properties/SourceRegion",
+        "/properties/StorageEncrypted",
+        "/properties/Timezone",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["DBInstanceIdentifier"]
+    identifier = ["/properties/DBInstanceIdentifier"]
 
     results = {"changed": False, "result": {}}
 

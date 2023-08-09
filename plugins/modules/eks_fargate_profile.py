@@ -138,6 +138,103 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Set the cluster name
+  set_fact:
+    eks_cluster_name: '{{ _resource_prefix }}-cluster'
+
+- name: Define EKS facts
+  set_fact:
+    eks_fargate_profile_name_a: '{{ _resource_prefix }}-fp-a'
+    eks_fargate_profile_name_b: '{{ _resource_prefix }}-fp-b'
+    eks_subnets:
+    - zone: a
+      cidr: 10.0.1.0/24
+      type: private
+      tag: internal-elb
+    - zone: b
+      cidr: 10.0.2.0/24
+      type: public
+      tag: elb
+    eks_security_groups:
+    - name: '{{ eks_cluster_name }}-control-plane-sg'
+      description: EKS Control Plane Security Group
+      rules:
+      - group_name: '{{ eks_cluster_name }}-workers-sg'
+        group_desc: EKS Worker Security Group
+        ports: 443
+        proto: tcp
+      rules_egress:
+      - group_name: '{{ eks_cluster_name }}-workers-sg'
+        group_desc: EKS Worker Security Group
+        from_port: 1025
+        to_port: 65535
+        proto: tcp
+    - name: '{{ eks_cluster_name }}-workers-sg'
+      description: EKS Worker Security Group
+      rules:
+      - group_name: '{{ eks_cluster_name }}-workers-sg'
+        proto: tcp
+        from_port: 1
+        to_port: 65535
+      - group_name: '{{ eks_cluster_name }}-control-plane-sg'
+        ports: 10250
+        proto: tcp
+
+- name: Define selector
+  set_fact:
+    selectors:
+    - labels:
+      - key: test
+        value: test
+      namespace: fp-default
+
+- name: Define the tags
+  set_fact:
+    tags:
+      Foo: foo
+      bar: Bar
+
+- name: Create Fargate Profile a with wait
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: '{{ eks_fargate_profile_name_a }}'
+    state: present
+    cluster_name: '{{ eks_cluster_name }}'
+    pod_execution_role_arn: '{{ _result_create_iam_role_fp.arn }}'
+    subnets: "{{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains', 'private') | map(attribute='subnet.id') }}"
+    selectors: '{{ selectors }}'
+    wait: true
+    tags: '{{ tags }}'
+  register: _result_create_fp
+
+- name: List Fargate Profiles
+  amazon.cloud.eks_fargate_profile:
+    state: list
+    cluster_name: '{{ eks_cluster_name }}'
+  register: _result_list_fp
+
+- name: Update tags in Fargate Profile a with wait (check mode)
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: '{{ eks_fargate_profile_name_a }}'
+    state: present
+    cluster_name: '{{ eks_cluster_name }}'
+    pod_execution_role_arn: '{{ _result_create_iam_role_fp.arn }}'
+    subnets: "{{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains', 'private') | map(attribute='subnet.id') }}"
+    selectors: '{{ selectors }}'
+    wait: true
+    tags:
+      env: test
+      test: foo
+  check_mode: true
+  register: _result_update_tags_fp
+
+- name: Delete Fargate Profile a
+  amazon.cloud.eks_fargate_profile:
+    fargate_profile_name: '{{ eks_fargate_profile_name_a }}'
+    cluster_name: '{{ eks_cluster_name }}'
+    state: absent
+    wait: true
+    wait_timeout: 900
+  register: _result_delete_fp
 """
 
 RETURN = r"""
@@ -232,11 +329,11 @@ def main():
             "state",
             "present",
             [
-                "cluster_name",
                 "pod_execution_role_arn",
-                "fargate_profile_name",
-                "selectors",
                 "identifier",
+                "fargate_profile_name",
+                "cluster_name",
+                "selectors",
             ],
             True,
         ],
@@ -277,23 +374,23 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "ClusterName",
-        "FargateProfileName",
-        "PodExecutionRoleArn",
-        "Subnets",
-        "Selectors",
+        "/properties/ClusterName",
+        "/properties/FargateProfileName",
+        "/properties/PodExecutionRoleArn",
+        "/properties/Subnets",
+        "/properties/Selectors",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "delete", "list", "update"]
 
     state = module.params.get("state")
-    identifier = ["ClusterName", "FargateProfileName"]
+    identifier = ["/properties/ClusterName", "/properties/FargateProfileName"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
@@ -302,7 +399,7 @@ def main():
             "fargate_profile_name"
         ):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('cluster_name', 'fargate_profile_name') identifiers."
             )
 
     results = {"changed": False, "result": {}}

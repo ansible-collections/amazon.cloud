@@ -100,6 +100,42 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Load the certificate data
+  set_fact:
+    cert_a_data: '{{ lookup("file", path_cert_a) }}'
+    cert_b_data: '{{ lookup("file", path_cert_b) }}'
+    chain_cert_data: '{{ lookup("file", path_intermediate_cert) }}'
+
+- name: Create Certificate
+  amazon.cloud.iam_server_certificate:
+    server_certificate_name: '{{ cert_name }}'
+    state: present
+    certificate_body: '{{ cert_a_data }}'
+    private_key: '{{ lookup("file", path_cert_key) }}'
+    wait: true
+  register: create_cert
+
+- name: Delete certificate
+  amazon.cloud.iam_server_certificate:
+    server_certificate_name: '{{ cert_name }}'
+    state: absent
+  register: delete_cert
+
+- name: Create Certificate with Chain and path
+  amazon.cloud.iam_server_certificate:
+    server_certificate_name: '{{ cert_name }}'
+    state: present
+    certificate_body: '{{ cert_a_data }}'
+    private_key: '{{ lookup("file", path_cert_key) }}'
+    certificate_chain: '{{ chain_cert_data }}'
+    path: /example/
+  register: create_cert
+
+- name: Gather information about a certificate
+  amazon.cloud.iam_server_certificate:
+    server_certificate_name: '{{ cert_name }}'
+    state: get
+  register: create_info
 """
 
 RETURN = r"""
@@ -200,22 +236,22 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "ServerCertificateName",
-        "PrivateKey",
-        "CertificateBody",
-        "CertificateChain",
+        "/properties/ServerCertificateName",
+        "/properties/PrivateKey",
+        "/properties/CertificateBody",
+        "/properties/CertificateChain",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["ServerCertificateName"]
+    identifier = ["/properties/ServerCertificateName"]
 
     results = {"changed": False, "result": {}}
 

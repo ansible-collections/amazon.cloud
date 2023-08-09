@@ -103,12 +103,6 @@ options:
                     as Log data events for only two S3 buckets.
                 type: str
         type: list
-    event_data_store_arn:
-        aliases:
-        - EventDataStoreArn
-        description:
-        - The ARN of the event data store.
-        type: str
     force:
         default: false
         description:
@@ -302,10 +296,6 @@ def main():
         },
         "aliases": ["AdvancedEventSelectors"],
     }
-    argument_spec["event_data_store_arn"] = {
-        "type": "str",
-        "aliases": ["EventDataStoreArn"],
-    }
     argument_spec["multi_region_enabled"] = {
         "type": "bool",
         "aliases": ["MultiRegionEnabled"],
@@ -356,7 +346,6 @@ def main():
     params = {}
 
     params["advanced_event_selectors"] = module.params.get("advanced_event_selectors")
-    params["event_data_store_arn"] = module.params.get("event_data_store_arn")
     params["ingestion_enabled"] = module.params.get("ingestion_enabled")
     params["kms_key_id"] = module.params.get("kms_key_id")
     params["multi_region_enabled"] = module.params.get("multi_region_enabled")
@@ -375,7 +364,7 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
@@ -385,7 +374,7 @@ def main():
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["EventDataStoreArn"]
+    identifier = ["/properties/EventDataStoreArn"]
 
     results = {"changed": False, "result": {}}
 

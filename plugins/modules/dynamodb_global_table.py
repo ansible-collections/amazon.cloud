@@ -1043,7 +1043,7 @@ def main():
         [
             "state",
             "present",
-            ["attribute_definitions", "key_schema", "table_name", "replicas"],
+            ["table_name", "replicas", "key_schema", "attribute_definitions"],
             True,
         ],
         ["state", "absent", ["table_name"], True],
@@ -1086,17 +1086,21 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["LocalSecondaryIndexes", "TableName", "KeySchema"]
+    create_only_params = [
+        "/properties/LocalSecondaryIndexes",
+        "/properties/TableName",
+        "/properties/KeySchema",
+    ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["TableName"]
+    identifier = ["/properties/TableName"]
 
     results = {"changed": False, "result": {}}
 

@@ -22,12 +22,6 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
-    framework_arn:
-        aliases:
-        - FrameworkArn
-        description:
-        - An Amazon Resource Name (ARN) that uniquely identifies Framework as a resource.
-        type: str
     framework_controls:
         aliases:
         - FrameworkControls
@@ -262,7 +256,6 @@ def main():
         "type": "str",
         "aliases": ["FrameworkDescription"],
     }
-    argument_spec["framework_arn"] = {"type": "str", "aliases": ["FrameworkArn"]}
     argument_spec["framework_controls"] = {
         "type": "list",
         "elements": "dict",
@@ -344,7 +337,6 @@ def main():
 
     params = {}
 
-    params["framework_arn"] = module.params.get("framework_arn")
     params["framework_controls"] = module.params.get("framework_controls")
     params["framework_description"] = module.params.get("framework_description")
     params["framework_name"] = module.params.get("framework_name")
@@ -358,17 +350,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["FrameworkName"]
+    create_only_params = ["/properties/FrameworkName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["FrameworkArn"]
+    identifier = ["/properties/FrameworkArn"]
 
     results = {"changed": False, "result": {}}
 

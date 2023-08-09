@@ -173,13 +173,6 @@ options:
         description:
         - If true, the data in the cluster is encrypted at rest.
         type: bool
-    endpoint:
-        aliases:
-        - Endpoint
-        description:
-        - Not Provived.
-        suboptions: {}
-        type: dict
     enhanced_vpc_routing:
         aliases:
         - EnhancedVpcRouting
@@ -312,6 +305,13 @@ options:
         description:
         - Not Provived.
         type: str
+    port:
+        aliases:
+        - Port
+        description:
+        - The port number on which the cluster accepts incoming connections.
+        - The cluster is accessible only via the JDBC and ODBC connection strings.
+        type: int
     preferred_maintenance_window:
         aliases:
         - PreferredMaintenanceWindow
@@ -531,6 +531,7 @@ def main():
     }
     argument_spec["kms_key_id"] = {"type": "str", "aliases": ["KmsKeyId"]}
     argument_spec["number_of_nodes"] = {"type": "int", "aliases": ["NumberOfNodes"]}
+    argument_spec["port"] = {"type": "int", "aliases": ["Port"]}
     argument_spec["preferred_maintenance_window"] = {
         "type": "str",
         "aliases": ["PreferredMaintenanceWindow"],
@@ -572,7 +573,6 @@ def main():
         },
         "aliases": ["LoggingProperties"],
     }
-    argument_spec["endpoint"] = {"type": "dict", "options": {}, "aliases": ["Endpoint"]}
     argument_spec["destination_region"] = {
         "type": "str",
         "aliases": ["DestinationRegion"],
@@ -651,12 +651,12 @@ def main():
             "state",
             "present",
             [
-                "cluster_identifier",
-                "master_user_password",
-                "master_username",
-                "cluster_type",
-                "db_name",
                 "node_type",
+                "cluster_identifier",
+                "db_name",
+                "cluster_type",
+                "master_username",
+                "master_user_password",
             ],
             True,
         ],
@@ -712,7 +712,6 @@ def main():
     params["destination_region"] = module.params.get("destination_region")
     params["elastic_ip"] = module.params.get("elastic_ip")
     params["encrypted"] = module.params.get("encrypted")
-    params["endpoint"] = module.params.get("endpoint")
     params["enhanced_vpc_routing"] = module.params.get("enhanced_vpc_routing")
     params["hsm_client_certificate_identifier"] = module.params.get(
         "hsm_client_certificate_identifier"
@@ -732,6 +731,7 @@ def main():
     params["node_type"] = module.params.get("node_type")
     params["number_of_nodes"] = module.params.get("number_of_nodes")
     params["owner_account"] = module.params.get("owner_account")
+    params["port"] = module.params.get("port")
     params["preferred_maintenance_window"] = module.params.get(
         "preferred_maintenance_window"
     )
@@ -758,25 +758,25 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
     create_only_params = [
-        "ClusterIdentifier",
-        "OwnerAccount",
-        "SnapshotIdentifier",
-        "DBName",
-        "SnapshotClusterIdentifier",
-        "ClusterSubnetGroupName",
-        "MasterUsername",
+        "/properties/ClusterIdentifier",
+        "/properties/OwnerAccount",
+        "/properties/SnapshotIdentifier",
+        "/properties/DBName",
+        "/properties/SnapshotClusterIdentifier",
+        "/properties/ClusterSubnetGroupName",
+        "/properties/MasterUsername",
     ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["ClusterIdentifier"]
+    identifier = ["/properties/ClusterIdentifier"]
 
     results = {"changed": False, "result": {}}
 

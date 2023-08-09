@@ -222,10 +222,10 @@ def main():
             "state",
             "present",
             [
+                "auto_scaling_group_name",
+                "lifecycle_hook_name",
                 "identifier",
                 "lifecycle_transition",
-                "lifecycle_hook_name",
-                "auto_scaling_group_name",
             ],
             True,
         ],
@@ -275,17 +275,20 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["AutoScalingGroupName", "LifecycleHookName"]
+    create_only_params = [
+        "/properties/AutoScalingGroupName",
+        "/properties/LifecycleHookName",
+    ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["AutoScalingGroupName", "LifecycleHookName"]
+    identifier = ["/properties/AutoScalingGroupName", "/properties/LifecycleHookName"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
@@ -294,7 +297,7 @@ def main():
             "lifecycle_hook_name"
         ):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('auto_scaling_group_name', 'lifecycle_hook_name') identifiers."
             )
 
     results = {"changed": False, "result": {}}

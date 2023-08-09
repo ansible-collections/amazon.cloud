@@ -91,3 +91,4 @@ plugins/modules/logs_metric_filter.py validate-modules:mutually_exclusive-type
 plugins/modules/wafv2_ip_set.py validate-modules:mutually_exclusive-type
 plugins/modules/wafv2_regex_pattern_set.py validate-modules:mutually_exclusive-type
 plugins/modules/wafv2_web_acl_association.py validate-modules:mutually_exclusive-type
+tools/update_constants.py shebang!skip

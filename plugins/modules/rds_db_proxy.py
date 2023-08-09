@@ -300,7 +300,7 @@ def main():
         [
             "state",
             "present",
-            ["vpc_subnet_ids", "role_arn", "auth", "db_proxy_name", "engine_family"],
+            ["engine_family", "role_arn", "auth", "db_proxy_name", "vpc_subnet_ids"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],
@@ -338,17 +338,21 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["DBProxyName", "EngineFamily", "VpcSubnetIds"]
+    create_only_params = [
+        "/properties/DBProxyName",
+        "/properties/EngineFamily",
+        "/properties/VpcSubnetIds",
+    ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["DBProxyName"]
+    identifier = ["/properties/DBProxyName"]
 
     results = {"changed": False, "result": {}}
 

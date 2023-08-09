@@ -30,12 +30,6 @@ options:
             operation to make the resource available so that another operation may
             be performed on it.
         type: bool
-    id:
-        aliases:
-        - Id
-        description:
-        - Id of the RegexPatternSet.
-        type: str
     identifier:
         description:
         - For compound primary identifiers, to specify the primary identifier as a
@@ -161,7 +155,6 @@ def main():
 
     argument_spec["description"] = {"type": "str", "aliases": ["Description"]}
     argument_spec["name"] = {"type": "str", "aliases": ["Name"]}
-    argument_spec["id"] = {"type": "str", "aliases": ["Id"]}
     argument_spec["regular_expression_list"] = {
         "type": "list",
         "elements": "str",
@@ -189,7 +182,7 @@ def main():
         [
             "state",
             "present",
-            ["name", "scope", "regular_expression_list", "id", "identifier"],
+            ["identifier", "id", "regular_expression_list", "name", "scope"],
             True,
         ],
         ["state", "absent", ["name", "id", "scope", "identifier"], True],
@@ -210,7 +203,6 @@ def main():
     params = {}
 
     params["description"] = module.params.get("description")
-    params["id"] = module.params.get("id")
     params["identifier"] = module.params.get("identifier")
     params["name"] = module.params.get("name")
     params["regular_expression_list"] = module.params.get("regular_expression_list")
@@ -224,17 +216,17 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["Name", "Scope"]
+    create_only_params = ["/properties/Name", "/properties/Scope"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "delete", "read", "update", "list"]
 
     state = module.params.get("state")
-    identifier = ["Name", "Id", "Scope"]
+    identifier = ["/properties/Name", "/properties/Id", "/properties/Scope"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
@@ -245,7 +237,7 @@ def main():
             or not module.params.get("scope")
         ):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('name', 'id', 'scope') identifiers."
             )
 
     results = {"changed": False, "result": {}}

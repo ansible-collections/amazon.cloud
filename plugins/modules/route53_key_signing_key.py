@@ -167,11 +167,11 @@ def main():
             "state",
             "present",
             [
-                "key_management_service_arn",
-                "name",
-                "hosted_zone_id",
                 "identifier",
                 "status",
+                "hosted_zone_id",
+                "name",
+                "key_management_service_arn",
             ],
             True,
         ],
@@ -207,24 +207,28 @@ def main():
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    # Use the alis from argument_spec as key and avoid snake_to_camel conversions
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
     params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["HostedZoneId", "Name", "KeyManagementServiceArn"]
+    create_only_params = [
+        "/properties/HostedZoneId",
+        "/properties/Name",
+        "/properties/KeyManagementServiceArn",
+    ]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["HostedZoneId", "Name"]
+    identifier = ["/properties/HostedZoneId", "/properties/Name"]
     if (
         state in ("present", "absent", "get", "describe")
         and module.params.get("identifier") is None
     ):
         if not module.params.get("hosted_zone_id") or not module.params.get("name"):
             module.fail_json(
-                f"You must specify all the {*[camel_to_snake(id, alias=False) for id in identifier], } identifiers."
+                "You must specify all the ('hosted_zone_id', 'name') identifiers."
             )
 
     results = {"changed": False, "result": {}}
