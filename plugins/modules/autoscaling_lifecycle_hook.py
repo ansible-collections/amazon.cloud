@@ -222,9 +222,9 @@ def main():
             "present",
             [
                 "lifecycle_transition",
-                "lifecycle_hook_name",
                 "identifier",
                 "auto_scaling_group_name",
+                "lifecycle_hook_name",
             ],
             True,
         ],

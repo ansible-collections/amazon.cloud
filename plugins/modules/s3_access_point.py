@@ -237,7 +237,7 @@ def main():
     argument_spec["force"] = {"type": "bool", "default": False}
 
     required_if = [
-        ["state", "present", ["name", "bucket"], True],
+        ["state", "present", ["bucket", "name"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]

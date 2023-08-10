@@ -223,7 +223,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["role_name", "assume_role_policy_document"], True],
+        ["state", "present", ["assume_role_policy_document", "role_name"], True],
         ["state", "absent", ["role_name"], True],
         ["state", "get", ["role_name"], True],
     ]

@@ -651,11 +651,11 @@ def main():
             "present",
             [
                 "cluster_identifier",
+                "master_user_password",
+                "master_username",
                 "db_name",
                 "cluster_type",
                 "node_type",
-                "master_user_password",
-                "master_username",
             ],
             True,
         ],

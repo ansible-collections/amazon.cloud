@@ -1048,7 +1048,7 @@ def main():
         [
             "state",
             "present",
-            ["replicas", "table_name", "attribute_definitions", "key_schema"],
+            ["attribute_definitions", "replicas", "table_name", "key_schema"],
             True,
         ],
         ["state", "absent", ["table_name"], True],

@@ -445,7 +445,7 @@ def main():
     argument_spec["purge_tags"] = {"type": "bool", "default": True}
 
     required_if = [
-        ["state", "present", ["name", "resources_vpc_config", "role_arn"], True],
+        ["state", "present", ["role_arn", "name", "resources_vpc_config"], True],
         ["state", "absent", ["name"], True],
         ["state", "get", ["name"], True],
     ]

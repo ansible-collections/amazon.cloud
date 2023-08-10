@@ -299,7 +299,7 @@ def main():
         [
             "state",
             "present",
-            ["db_proxy_name", "engine_family", "auth", "role_arn", "vpc_subnet_ids"],
+            ["engine_family", "role_arn", "vpc_subnet_ids", "auth", "db_proxy_name"],
             True,
         ],
         ["state", "absent", ["db_proxy_name"], True],

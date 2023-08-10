@@ -66,11 +66,6 @@ plugins/modules/memorydb_cluster.py validate-modules:parameter-state-invalid-cho
 plugins/modules/memorydb_parameter_group.py validate-modules:parameter-state-invalid-choice
 plugins/modules/memorydb_subnet_group.py validate-modules:parameter-state-invalid-choice
 plugins/modules/memorydb_user.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_custom_db_engine_version.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_db_cluster.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_db_parameter_group.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_event_subscription.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_db_proxy_target_group.py validate-modules:parameter-state-invalid-choice
 plugins/modules/eks_addon.py validate-modules:mutually_exclusive-type
 plugins/modules/eks_fargate_profile.py validate-modules:mutually_exclusive-type
 plugins/modules/redshift_endpoint_authorization.py validate-modules:mutually_exclusive-type
@@ -79,9 +74,3 @@ plugins/modules/autoscaling_lifecycle_hook.py validate-modules:mutually_exclusiv
 plugins/modules/ecs_primary_task_set.py validate-modules:mutually_exclusive-type
 plugins/modules/logs_metric_filter.py validate-modules:mutually_exclusive-type
 plugins/modules/wafv2_web_acl_association.py validate-modules:mutually_exclusive-type
-plugins/modules/rds_custom_db_engine_version.py validate-modules:mutually_exclusive-type
-plugins/modules/rds_custom_db_engine_version.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_db_cluster.py validate-modules:no-log-needed
-plugins/modules/rds_db_cluster.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_db_parameter_group.py validate-modules:parameter-state-invalid-choice
-plugins/modules/rds_event_subscription.py validate-modules:parameter-state-invalid-choice

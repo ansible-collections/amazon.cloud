@@ -173,7 +173,7 @@ def main():
         [
             "state",
             "present",
-            ["cluster", "capacity_providers", "default_capacity_provider_strategy"],
+            ["default_capacity_provider_strategy", "cluster", "capacity_providers"],
             True,
         ],
         ["state", "absent", ["cluster"], True],
