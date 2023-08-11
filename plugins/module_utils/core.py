@@ -70,7 +70,6 @@ from ansible_collections.amazon.aws.plugins.module_utils.transformation import (
     scrub_none_parameters,
 )
 
-
 BOTO3_IMP_ERR = None
 try:
     import botocore

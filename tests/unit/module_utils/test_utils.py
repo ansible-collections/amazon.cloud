@@ -13,6 +13,7 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     diff_dicts,
     normalize_response,
     tag_merge,
+    merge_dicts,
 )
 
 
@@ -295,3 +296,55 @@ def test_tag_merge_dicts():
 
     tag_merge(dict_1, dict_2)
     assert dict_1 == expected
+
+
+def test_tag_merge_empty_dicts():
+    old = [
+        {
+            "key1": [
+                {
+                    "key2": {"key3": ["value 1"]},
+                    "key4": {"key5": ["value 2"]},
+                    "key 6": {"key7": {"key8": {"key9": "value 3"}}},
+                    "key_10": [{"key_11": "value 4"}],
+                }
+            ],
+            "key12": '{"key 13": "value 4"}',
+            "key14": '[{"key 15": "value 5"}]',
+            "key16": "value6",
+        }
+    ]
+
+    new = [
+        {
+            "key1": [
+                {
+                    "key2": {"key3": ["value 1"]},
+                    "key4": {"key5": ["value 2 updated"]},
+                    "key 6": {"key7": {"key8": {"key9": "value 3 updated"}}},
+                    "key_10": [{"key_11": "value 4 updated"}],
+                }
+            ],
+            "key12": {"key 13": "value 4 updated"},
+            "key14": [{"key 15": "value 5 updated"}],
+        }
+    ]
+
+    expected = [
+        {
+            "key1": [
+                {
+                    "key2": {"key3": ["value 1"]},
+                    "key4": {"key5": ["value 2 updated"]},
+                    "key 6": {"key7": {"key8": {"key9": "value 3 updated"}}},
+                    "key_10": [{"key_11": "value 4 updated"}],
+                }
+            ],
+            "key12": {"key 13": "value 4 updated"},
+            "key14": [{"key 15": "value 5 updated"}],
+            "key16": "value6",
+        }
+    ]
+
+    result = merge_dicts(old, new)
+    assert result == expected

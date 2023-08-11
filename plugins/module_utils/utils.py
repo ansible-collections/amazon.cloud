@@ -2,6 +2,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 
+import ast
 import re
 import copy
 import json
@@ -106,11 +107,8 @@ def scrub_keys(a_dict: Dict, list_of_keys_to_remove: List[str]) -> Dict:
     """Filter a_dict by removing unwanted key: values listed in list_of_keys_to_remove"""
     if not isinstance(a_dict, dict):
         return a_dict
-    return {
-        k: v
-        for k, v in a_dict.items()
-        if not any(k in item for item in list_of_keys_to_remove)
-    }
+
+    return {k: v for k, v in a_dict.items() if k not in list_of_keys_to_remove}
 
 
 def normalize_response(response: Iterable):
@@ -306,15 +304,40 @@ def merge_dicts(list1, list2):
         matching_dicts = [
             dict1
             for dict1 in merged_list
-            if all(item in dict1.items() for item in dict2.items())
+            if dict1.get("PolicyName") == dict2.get("PolicyName")
         ]
+
         if matching_dicts:
-            for k, v in dict2.items():
-                matching_dicts[0][k] = v
+            dict1 = matching_dicts[0]
+            for key, value in dict2.items():
+                try:
+                    value_dict = ast.literal_eval(value)
+                    if isinstance(value_dict, dict):
+                        dict1[key] = recursive_merge(dict1[key], value_dict)
+                    elif isinstance(value_dict, list):
+                        for item in value_dict:
+                            if isinstance(item, dict):
+                                dict1[key] = recursive_merge(dict1[key], item)
+                    else:
+                        dict1[key] = value
+                except (SyntaxError, ValueError):
+                    dict1[key] = value
         else:
             merged_list.append(dict2)
 
     return merged_list
+
+
+def recursive_merge(dict1, dict2):
+    merged = dict1.copy()
+
+    for key, value in dict2.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+            merged[key] = recursive_merge(merged[key], value)
+        else:
+            merged[key] = value
+
+    return merged
 
 
 def make_op(path, old, new, strategy):
