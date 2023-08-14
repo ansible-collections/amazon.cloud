@@ -281,7 +281,7 @@ class CloudControlResource(object):
             if self.module.params.get("identifier"):
                 _primary_identifier = [id.split("/")[-1] for id in primary_identifier]
                 self.module.fail_json(
-                    f"""You must specify together {*_primary_identifier, } to create a new resource.
+                    f"""You must specify all of the following to create a new resource: {*_primary_identifier, }.
                         The identifier parameter can only be used to manipulate an existing resource."""
                 )
             results["changed"] |= self.create_resource(type_name, params)
