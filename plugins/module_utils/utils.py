@@ -207,8 +207,9 @@ def boto3_tag_list_to_ansible_dict(
     )
 
 
-def map_key_to_alias(data, mapping):
-    mapped_data = {}
+def map_key_to_alias(data: Dict, mapping: Dict) -> Dict:
+    mapped_data: Dict = {}
+
     for key, value in data.items():
         if key in mapping:
             mapped_key = mapping[key].get("aliases", [key])[0]
@@ -297,34 +298,40 @@ def op(operation, path, value):
     return {"op": operation, "path": path, "value": value}
 
 
-def merge_dicts(list1, list2):
+def safe_json(data: str) -> Dict:
+    try:
+        json_object = json.loads(data)
+    except (ValueError, TypeError) as e:
+        return data
+    return json_object
+
+
+def merge_dicts(list1: List, list2) -> List:
     merged_list = list1.copy()
 
     for dict2 in list2:
-        matching_dicts = [dict1 for dict1 in merged_list]
+        matching_indices = [
+            i for i, item1 in enumerate(merged_list) if any(k in item1 for k in dict2)
+        ]
 
-        if matching_dicts:
-            dict1 = matching_dicts[0]
-            for key, value in dict2.items():
-                try:
-                    value_dict = ast.literal_eval(value)
-                    if isinstance(value_dict, dict):
+        if matching_indices:
+            for index in matching_indices:
+                dict1 = merged_list[index]
+                for key, value in dict2.items():
+                    value_dict = safe_json(value)
+                    if isinstance(value_dict, dict) and isinstance(dict1[key], dict):
                         dict1[key] = recursive_merge(dict1[key], value_dict)
-                    elif isinstance(value_dict, list):
-                        for item in value_dict:
-                            if isinstance(item, dict):
-                                dict1[key] = recursive_merge(dict1[key], item)
+                    elif isinstance(value_dict, list) and isinstance(dict1[key], list):
+                        dict1[key] = merge_dicts(dict1[key], value_dict)
                     else:
                         dict1[key] = value
-                except (SyntaxError, ValueError):
-                    dict1[key] = value
         else:
             merged_list.append(dict2)
 
     return merged_list
 
 
-def recursive_merge(dict1, dict2):
+def recursive_merge(dict1: Dict, dict2: Dict) -> Dict:
     merged = dict1.copy()
 
     for key, value in dict2.items():

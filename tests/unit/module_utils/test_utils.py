@@ -348,3 +348,38 @@ def test_tag_merge_empty_dicts():
 
     result = merge_dicts(old, new)
     assert result == expected
+
+
+def test_merge_dicts_multi_dicts():
+    old = [
+        {
+            "key1": [{"key2": {"key3": ["A"]}, "key4": [{"key5": "B"}]}],
+        },
+        {
+            "one key": [{"one key nested": {"one key very nested": ["C"]}}],
+            "another key": "D",
+        },
+    ]
+
+    new = [
+        {
+            "key1": [{"key2": {"key3": ["A updated"]}}],
+        },
+        {
+            "one key": [{"one key nested": {"one key very nested": ["F"]}}],
+            "another key": "D",
+        },
+    ]
+
+    expected = [
+        {
+            "key1": [{"key2": {"key3": ["A updated"]}, "key4": [{"key5": "B"}]}],
+        },
+        {
+            "one key": [{"one key nested": {"one key very nested": ["F"]}}],
+            "another key": "D",
+        },
+    ]
+
+    result = merge_dicts(old, new)
+    assert result == expected
