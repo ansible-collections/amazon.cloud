@@ -301,11 +301,7 @@ def merge_dicts(list1, list2):
     merged_list = list1.copy()
 
     for dict2 in list2:
-        matching_dicts = [
-            dict1
-            for dict1 in merged_list
-            if dict1.get("PolicyName") == dict2.get("PolicyName")
-        ]
+        matching_dicts = [dict1 for dict1 in merged_list]
 
         if matching_dicts:
             dict1 = matching_dicts[0]
