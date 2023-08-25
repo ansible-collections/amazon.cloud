@@ -230,6 +230,9 @@ class CloudControlResource(object):
     def get_resources_async(self, type_name, identifier):
         return self.get_resource(type_name, identifier)
 
+    @AWSRetry.jittered_backoff(
+        catch_extra_error_codes=["ThrottlingException"], retries=10
+    )
     def get_resource(
         self, type_name: str, primary_identifier: Union[str, List, Dict]
     ) -> List:
