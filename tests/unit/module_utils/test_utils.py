@@ -416,12 +416,23 @@ def test_swap_quotes():
         "Policies": [
             {
                 "PolicyName": "dr-lambda-policy",
-                "PolicyDocument": "{'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], 'Resource': 'arn:aws:logs:*:*:*'}, {'Effect': 'Allow', 'Action': 'lambda:InvokeFunction', 'Resource': '*'}]}",
+                "PolicyDocument": "{'Version': '2012-10-17', \
+                'Statement': [{'Effect': 'Allow', \
+                    'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], \
+                        'Resource': 'arn:aws:logs:*:*:*'}, {'Effect': 'Allow', \
+                            'Action': 'lambda:InvokeFunction', 'Resource': '*'}]}",
             }
         ],
         "RoleName": "dr-lambda-role",
     }
 
-    expected = '{"AssumeRolePolicyDocument": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}, "ManagedPolicyArns": ["arn:aws:iam::721066863947:policy/dr-lambda-policy"], "Policies": [{"PolicyName": "dr-lambda-policy", "PolicyDocument": "{\\"Version\\": \\"2012-10-17\\", \\"Statement\\": [{\\"Effect\\": \\"Allow\\", \\"Action\\": [\\"logs:CreateLogGroup\\", \\"logs:CreateLogStream\\", \\"logs:PutLogEvents\\"], \\"Resource\\": \\"arn:aws:logs:*:*:*\\"}, {\\"Effect\\": \\"Allow\\", \\"Action\\": \\"lambda:InvokeFunction\\", \\"Resource\\": \\"*\\"}]}"}], "RoleName": "dr-lambda-role"}'
+    expected = '{"AssumeRolePolicyDocument": {"Version": "2012-10-17", \
+        "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, \
+            "Action": "sts:AssumeRole"}]}, "ManagedPolicyArns": ["arn:aws:iam::721066863947:policy/dr-lambda-policy"], \
+                "Policies": [{"PolicyName": "dr-lambda-policy", "PolicyDocument": "{\\"Version\\": \\"2012-10-17\\", \
+                    \\"Statement\\": [{\\"Effect\\": \\"Allow\\", \\"Action\\": [\\"logs:CreateLogGroup\\", \
+                    \\"logs:CreateLogStream\\", \\"logs:PutLogEvents\\"], \\"Resource\\": \\"arn:aws:logs:*:*:*\\"}, \
+                    {\\"Effect\\": \\"Allow\\", \\"Action\\": \\"lambda:InvokeFunction\\", \\"Resource\\": \\"*\\"}]}"}], \
+                        "RoleName": "dr-lambda-role"}'
 
     json.dumps(policy, indent=4, cls=QuoteSwappingEncoder) == expected
