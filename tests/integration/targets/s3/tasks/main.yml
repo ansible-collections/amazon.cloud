@@ -9,7 +9,7 @@
     - amazon.cloud
 
   block:
-    - name: Set S3 bucket name
+    - name: Set S3 bucket name 
       set_fact:
         bucket_name: "{{ lookup('password', '/dev/null') | to_uuid }}"
 
@@ -57,18 +57,16 @@
         that:
             - _result is success
 
-    # Add ignore_errors: true because it throws ThrottlingException
     - name: List S3 buckets
       amazon.cloud.s3_bucket:
         state: list
       register: _result
       tags:
         - docs
-      ignore_errors: true
 
-    # - assert:
-    #     that:
-    #         - _result is success
+    - assert:
+        that:
+            - _result is success
 
     - name: Create S3 bucket - idempotence
       amazon.cloud.s3_bucket:
@@ -136,10 +134,7 @@
             - _result is changed
             - "'diff' in _result"
             - _result.diff.after != {}
-            # public_access_block_configuration settings are now all true by default and
-            # they will be always returned by the API. That's why _result.diff.before won't be
-            # expected to be empty anymore.
-            # - _result.diff.before == {}
+            - _result.diff.before == {}
 
     - name: Update S3 bucket public access block configuration and tags - idempotence (diff=true)
       amazon.cloud.s3_bucket:
