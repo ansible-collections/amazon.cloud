@@ -3,13 +3,13 @@
   block:
     - name: Create memorydb cluster
       amazon.cloud.memorydb_cluster:
-        cluster_name: "{{ resource_prefix }}-cluster"
+        cluster_name: "cluster-{{ tiny_prefix }}"
         node_type: db.t4g.small
-        acl_name: "{{ resource_prefix }}-test-acl"
+        acl_name: "test-acl-{{ tiny_prefix }}"
         parameter_group_name: "{{ resource_prefix }}-test-parameter-group"
         subnet_group_name: "{{ resource_prefix }}-test-subnet-group"
         wait: True
-        wait_timeout: 700
+        wait_timeout: 1500
         tags:
           env: "test"
       register: cluster_output
@@ -24,9 +24,9 @@
 
     - name: Describe the cluster
       amazon.cloud.memorydb_cluster:
-        cluster_name: "{{ resource_prefix }}-cluster"
+        cluster_name: "cluster-{{ tiny_prefix }}"
         state: describe
-      register: pg_describe
+      register: cluster_describe
 
     - name: Assert that the cluster is described correctly.
       ansible.builtin.assert:
