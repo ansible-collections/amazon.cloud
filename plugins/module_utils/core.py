@@ -59,6 +59,7 @@ from .utils import (
     camel_to_snake,
     json_patch,
     get_patch,
+    QuoteSwappingEncoder,
 )
 from .utils import ansible_dict_to_boto3_tag_list  # pylint: disable=unused-import
 from .utils import snake_dict_to_camel_dict  # pylint: disable=unused-import
@@ -297,7 +298,8 @@ class CloudControlResource(object):
 
     def create_resource(self, type_name: str, params: Dict) -> bool:
         changed: bool = False
-        params = json.dumps(params)
+
+        params = json.dumps(params, cls=QuoteSwappingEncoder)
 
         if not self.module.check_mode:
             try:

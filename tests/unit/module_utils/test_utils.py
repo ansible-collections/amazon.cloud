@@ -7,6 +7,9 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+
+import json
+
 from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     ansible_dict_to_boto3_tag_list,
     boto3_tag_list_to_ansible_dict,
@@ -14,6 +17,7 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     normalize_response,
     tag_merge,
     merge_dicts,
+    QuoteSwappingEncoder,
 )
 
 
@@ -298,7 +302,18 @@ def test_tag_merge_dicts():
     assert dict_1 == expected
 
 
-def test_tag_merge_empty_dicts():
+def test_merge_dicts_simple():
+    old = [{"foo": "bar"}]
+
+    new = [{"foo": "gaz", "someotherkey": {"blah": "asdf"}}]
+
+    expected = [{"foo": "gaz", "someotherkey": {"blah": "asdf"}}]
+
+    result = merge_dicts(old, new)
+    assert result == expected
+
+
+def test_merge_dicts():
     old = [
         {
             "key1": [
@@ -383,3 +398,30 @@ def test_merge_dicts_multi_dicts():
 
     result = merge_dicts(old, new)
     assert result == expected
+
+
+def test_swap_quotes():
+    policy = {
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"Service": "lambda.amazonaws.com"},
+                    "Action": "sts:AssumeRole",
+                }
+            ],
+        },
+        "ManagedPolicyArns": ["arn:aws:iam::721066863947:policy/dr-lambda-policy"],
+        "Policies": [
+            {
+                "PolicyName": "dr-lambda-policy",
+                "PolicyDocument": "{'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], 'Resource': 'arn:aws:logs:*:*:*'}, {'Effect': 'Allow', 'Action': 'lambda:InvokeFunction', 'Resource': '*'}]}",
+            }
+        ],
+        "RoleName": "dr-lambda-role",
+    }
+
+    expected = '{"AssumeRolePolicyDocument": {"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}, "ManagedPolicyArns": ["arn:aws:iam::721066863947:policy/dr-lambda-policy"], "Policies": [{"PolicyName": "dr-lambda-policy", "PolicyDocument": "{\\"Version\\": \\"2012-10-17\\", \\"Statement\\": [{\\"Effect\\": \\"Allow\\", \\"Action\\": [\\"logs:CreateLogGroup\\", \\"logs:CreateLogStream\\", \\"logs:PutLogEvents\\"], \\"Resource\\": \\"arn:aws:logs:*:*:*\\"}, {\\"Effect\\": \\"Allow\\", \\"Action\\": \\"lambda:InvokeFunction\\", \\"Resource\\": \\"*\\"}]}"}], "RoleName": "dr-lambda-role"}'
+
+    json.dumps(policy, indent=4, cls=QuoteSwappingEncoder) == expected

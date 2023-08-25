@@ -207,6 +207,7 @@ def boto3_tag_list_to_ansible_dict(
 
 
 def map_key_to_alias(data: Dict, mapping: Dict) -> Dict:
+    # Ensures the alias is passed to the API call
     mapped_data: Dict = {}
 
     for key, value in data.items():
@@ -306,6 +307,7 @@ def safe_json(data: str) -> Dict:
 
 
 def merge_dicts(list1: List, list2) -> List:
+    # Handle when list of dicts (different than Tags and different key names) need to be merged
     merged_list = list1.copy()
 
     for dict2 in list2:
@@ -318,9 +320,17 @@ def merge_dicts(list1: List, list2) -> List:
                 dict1 = merged_list[index]
                 for key, value in dict2.items():
                     value_dict = safe_json(value)
-                    if isinstance(value_dict, dict) and isinstance(dict1[key], dict):
+                    if (
+                        dict1.get(key, {})
+                        and isinstance(value_dict, dict)
+                        and isinstance(dict1[key], dict)
+                    ):
                         dict1[key] = recursive_merge(dict1[key], value_dict)
-                    elif isinstance(value_dict, list) and isinstance(dict1[key], list):
+                    elif (
+                        dict1.get(key, [])
+                        and isinstance(value_dict, list)
+                        and isinstance(dict1[key], list)
+                    ):
                         dict1[key] = merge_dicts(dict1[key], value_dict)
                     else:
                         dict1[key] = value
@@ -340,6 +350,27 @@ def recursive_merge(dict1: Dict, dict2: Dict) -> Dict:
             merged[key] = value
 
     return merged
+
+
+class QuoteSwappingEncoder(json.JSONEncoder):
+    def encode(self, o):
+        # Replace single quotes with double quotes and vice versa in the JSON data
+        def swap_quotes(item):
+            if isinstance(item, str):
+                return (
+                    item.replace("'", "__TEMP_SINGLE_QUOTE__")
+                    .replace('"', "'")
+                    .replace("__TEMP_SINGLE_QUOTE__", '"')
+                )
+            elif isinstance(item, list):
+                return [swap_quotes(sub_item) for sub_item in item]
+            elif isinstance(item, dict):
+                return {
+                    swap_quotes(key): swap_quotes(value) for key, value in item.items()
+                }
+            return item
+
+        return super().encode(swap_quotes(o))
 
 
 def make_op(path, old, new, strategy):
