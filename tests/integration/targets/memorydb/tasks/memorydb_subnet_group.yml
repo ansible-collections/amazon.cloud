@@ -37,13 +37,13 @@
     - name: assert creation would happen
       assert:
         that:
-          - vpc_subnet_create1 is changed 
-          - vpc_subnet_create2 is changed 
+          - vpc_subnet_create1 is changed
+          - vpc_subnet_create2 is changed
 
     - name: Create subnet group
       amazon.cloud.memorydb_subnet_group:
         subnet_group_name: "{{ resource_prefix }}-test-subnet-group"
-        subnet_ids: 
+        subnet_ids:
           - "{{ vpc_subnet_create1.subnet.id }}"
           - "{{ vpc_subnet_create2.subnet.id }}"
         description: "test subnet group"

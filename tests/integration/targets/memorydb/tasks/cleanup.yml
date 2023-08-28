@@ -1,15 +1,17 @@
 ---
 - name: Delete memorydb cluster
   amazon.cloud.memorydb_cluster:
-    cluster_name: "{{ resource_prefix }}-cluster"
+    cluster_name: "cluster-{{ tiny_prefix }}"
     state: absent
+    wait: true
+    wait_timeout: 1000
   ignore_errors: true
   tags:
     - docs
 
 - name: Delete memorydb acl
   amazon.cloud.memorydb_acl:
-    acl_name: "{{ resource_prefix }}-test-acl"
+    acl_name: "test-acl-{{ tiny_prefix }}"
     state: absent
   ignore_errors: true
   tags:
@@ -22,7 +24,7 @@
   ignore_errors: true
   tags:
     - docs
-  
+
 - name: Delete memorydb subnet group
   amazon.cloud.memorydb_subnet_group:
     subnet_group_name: "{{ resource_prefix }}-test-subnet-group"
