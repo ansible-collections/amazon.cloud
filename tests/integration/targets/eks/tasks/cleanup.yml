@@ -1,17 +1,18 @@
 - include_tasks: set_facts.yml
+
 - name: Delete IAM role
-  community.aws.iam_role:
-    name: "{{ _result_create_iam_role.role_name }}"
+  amazon.cloud.iam_role:
+    role_name: "{{ _result_create_iam_role.result.identifier }}"
     state: absent
   ignore_errors: true
 
 - name: Delete IAM role
-  community.aws.iam_role:
-    name: "{{ _result_create_iam_role_fp.role_name }}"
+  amazon.cloud.iam_role:
+    role_name: "{{ _result_create_iam_role_fp.result.identifier }}"
     state: absent
   ignore_errors: true
 
-- name: Delete a Fargate Profile b 
+- name: Delete a Fargate Profile b
   amazon.cloud.eks_fargate_profile:
     fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
     cluster_name: "{{ eks_cluster_name }}"

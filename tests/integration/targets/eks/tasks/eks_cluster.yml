@@ -1,14 +1,14 @@
 - include_tasks: set_facts.yml
 # Create a EKS Cluster to test Fargate Profile
+
 - name: Ensure IAM instance role exists
-  community.aws.iam_role:
-    name: "{{ _resource_prefix }}-cluster-role"
+  amazon.cloud.iam_role:
+    role_name: "{{ _resource_prefix }}-cluster-role"
     assume_role_policy_document: "{{ lookup('file','eks_cluster-policy.json') }}"
     state: present
-    create_instance_profile: false
-    managed_policies:
-      - AmazonEKSServicePolicy
-      - AmazonEKSClusterPolicy
+    managed_policy_arns:
+      - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+      - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
   register: _result_create_iam_role
 
 - name: Create a VPC
@@ -95,7 +95,7 @@
       endpoint_private_access: false
       public_access_cidrs:
       - 0.0.0.0/0
-    role_arn: "{{ _result_create_iam_role.arn }}"
+    role_arn: "{{ _result_create_iam_role.result.properties.arn }}"
     tags:
       Name: "{{ _resource_prefix }}-eks-cluster"
     wait_timeout: 900
