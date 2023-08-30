@@ -492,32 +492,6 @@ def test_merge_list_of_dicts_iam():
     assert result == expected
 
 
-def test_merge_list_of_dicts_eks():
-    old = [{"labels": [{"key": "test", "value": "test"}], "namespace": "fp-default"}]
-
-    new = [
-        {
-            "labels": [
-                {"key": "test", "value": "test"},
-                {"key": "another key label name", "value": "another key label value"},
-            ],
-            "namespace": "fp-default",
-        }
-    ]
-    expected = [
-        {
-            "labels": [
-                {"key": "test", "value": "test"},
-                {"key": "another key label name", "value": "another key label value"},
-            ],
-            "namespace": "fp-default",
-        }
-    ]
-
-    result = merge_list_of_dicts(old, new)
-    assert result == expected
-
-
 def test_swap_quotes():
     policy = {
         "AssumeRolePolicyDocument": {

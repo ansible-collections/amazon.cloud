@@ -504,7 +504,7 @@ def make_op(path, old, new, strategy):
             if path == "Tags":
                 _new_cpy = tag_merge(_old_cpy, new)
             else:
-                # When list of dictionaries different with keys different that Key and values than Value need to be merged
+                # When list of dictionaries are different and have keys different that Key and values than Value need to be merged here
                 _new_cpy = merge_list_of_dicts(_old_cpy, new)
 
     return op("replace", path, _new_cpy)
