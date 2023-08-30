@@ -7,12 +7,15 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+
 from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     ansible_dict_to_boto3_tag_list,
     boto3_tag_list_to_ansible_dict,
     diff_dicts,
     normalize_response,
     tag_merge,
+    merge_list_of_dicts,
+    ensure_json_dumps,
 )
 
 
@@ -295,3 +298,233 @@ def test_tag_merge_dicts():
 
     tag_merge(dict_1, dict_2)
     assert dict_1 == expected
+
+
+def test_merge_list_of_dicts_simple():
+    old = [{"foo": "bar"}]
+    new = [{"foo": "gaz", "someotherkey": {"blah": "asdf"}}]
+    expected = [{"foo": "gaz", "someotherkey": {"blah": "asdf"}}]
+
+    result = merge_list_of_dicts(old, new)
+    assert result == expected
+
+
+def test_merge_list_of_dicts_rds_1():
+    old = [
+        {
+            "VpcSecurityGroupMemberships": [
+                "sg-0529298fedfbd1554",
+            ],
+            "OptionSettings": [
+                {"Value": "20", "Name": "MAX_SIMULTANEOUS_CONNECTIONS"},
+                {"Value": "10", "Name": "A"},
+                {"Value": "40", "Name": "B"},
+            ],
+            "Port": 11211,
+            "OptionName": "MEMCACHED",
+            "DBSecurityGroupMemberships": [],
+        }
+    ]
+
+    new = [
+        {
+            "OptionName": "MEMCACHED",
+            "Port": 11211,
+            "VpcSecurityGroupMemberships": ["sg-0529298fedfbd1554", "sg-test"],
+            "OptionSettings": [
+                {"Name": "MAX_SIMULTANEOUS_CONNECTIONS", "Value": "30"},
+                {"Name": "CHUNK_SIZE_GROWTH_FACTOR", "Value": "1.25"},
+            ],
+        }
+    ]
+    expected = [
+        {
+            "OptionName": "MEMCACHED",
+            "Port": 11211,
+            "VpcSecurityGroupMemberships": ["sg-0529298fedfbd1554", "sg-test"],
+            "OptionSettings": [
+                {"Name": "MAX_SIMULTANEOUS_CONNECTIONS", "Value": "30"},
+                {"Name": "CHUNK_SIZE_GROWTH_FACTOR", "Value": "1.25"},
+                {"Value": "10", "Name": "A"},
+                {"Value": "40", "Name": "B"},
+            ],
+            "DBSecurityGroupMemberships": [],
+        }
+    ]
+
+    result = merge_list_of_dicts(old, new)
+    assert result == expected
+
+
+def test_merge_list_of_dicts_rds_2():
+    old = [
+        {
+            "VpcSecurityGroupMemberships": [
+                "sg-042d845c4e8b78406",
+                "sg-04de45a62e4b6abc4",
+                "sg-0cf1c9abae707d8c3",
+            ],
+            "OptionSettings": [
+                {"Value": "30", "Name": "MAX_SIMULTANEOUS_CONNECTIONS"},
+                {"Value": "0", "Name": "ERROR_ON_MEMORY_EXHAUSTED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_R_BATCH_SIZE"},
+                {"Value": "1024", "Name": "BACKLOG_QUEUE_LIMIT"},
+                {"Value": "5", "Name": "INNODB_API_BK_COMMIT_INTERVAL"},
+                {"Value": "1.25", "Name": "CHUNK_SIZE_GROWTH_FACTOR"},
+                {"Value": "v", "Name": "VERBOSITY"},
+                {"Value": "0", "Name": "INNODB_API_DISABLE_ROWLOCK"},
+                {"Value": "auto", "Name": "BINDING_PROTOCOL"},
+                {"Value": "48", "Name": "CHUNK_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_TRX_LEVEL"},
+                {"Value": "0", "Name": "CAS_DISABLED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_W_BATCH_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_ENABLE_MDL"},
+            ],
+            "Port": 11211,
+            "OptionName": "MEMCACHED",
+            "DBSecurityGroupMemberships": [],
+        }
+    ]
+    new = [
+        {
+            "OptionName": "MEMCACHED",
+            "Port": 11211,
+            "VpcSecurityGroupMemberships": [
+                "sg-04de45a62e4b6abc4",
+                "sg-0cf1c9abae707d8c3",
+                "sg-042d845c4e8b78406",
+            ],
+            "OptionSettings": [{"Name": "MAX_SIMULTANEOUS_CONNECTIONS", "Value": "30"}],
+        }
+    ]
+    expected = [
+        {
+            "VpcSecurityGroupMemberships": [
+                "sg-042d845c4e8b78406",
+                "sg-04de45a62e4b6abc4",
+                "sg-0cf1c9abae707d8c3",
+            ],
+            "OptionSettings": [
+                {"Value": "30", "Name": "MAX_SIMULTANEOUS_CONNECTIONS"},
+                {"Value": "0", "Name": "ERROR_ON_MEMORY_EXHAUSTED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_R_BATCH_SIZE"},
+                {"Value": "1024", "Name": "BACKLOG_QUEUE_LIMIT"},
+                {"Value": "5", "Name": "INNODB_API_BK_COMMIT_INTERVAL"},
+                {"Value": "1.25", "Name": "CHUNK_SIZE_GROWTH_FACTOR"},
+                {"Value": "v", "Name": "VERBOSITY"},
+                {"Value": "0", "Name": "INNODB_API_DISABLE_ROWLOCK"},
+                {"Value": "auto", "Name": "BINDING_PROTOCOL"},
+                {"Value": "48", "Name": "CHUNK_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_TRX_LEVEL"},
+                {"Value": "0", "Name": "CAS_DISABLED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_W_BATCH_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_ENABLE_MDL"},
+            ],
+            "Port": 11211,
+            "OptionName": "MEMCACHED",
+            "DBSecurityGroupMemberships": [],
+        }
+    ]
+
+    result = merge_list_of_dicts(old, new)
+    assert result == expected
+
+
+def test_merge_list_of_dicts_iam():
+    old = [
+        {
+            "PolicyName": "dr-lambda-policy",
+            "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents",
+                        ],
+                        "Resource": "arn:aws:logs:*:*:*",
+                        "Effect": "Allow",
+                    },
+                    {
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "*",
+                        "Effect": "Allow",
+                    },
+                ],
+            },
+        }
+    ]
+    new = [
+        {
+            "PolicyName": "dr-lambda-policy",
+            "PolicyDocument": "{'Version': '2012-10-17', \
+                'Statement': [{'Effect': 'Allow', 'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], \
+                    'Resource': 'arn:aws:logs:*:*:*'}]}",
+        }
+    ]
+    expected = [
+        {
+            "PolicyName": "dr-lambda-policy",
+            "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents",
+                        ],
+                        "Resource": "arn:aws:logs:*:*:*",
+                        "Effect": "Allow",
+                    },
+                    {
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "*",
+                        "Effect": "Allow",
+                    },
+                ],
+            },
+        }
+    ]
+
+    result = merge_list_of_dicts(old, new)
+    assert result == expected
+
+
+def test_swap_quotes():
+    policy = {
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"Service": "lambda.amazonaws.com"},
+                    "Action": "sts:AssumeRole",
+                }
+            ],
+        },
+        "ManagedPolicyArns": ["arn:aws:iam::721066863947:policy/dr-lambda-policy"],
+        "Policies": [
+            {
+                "PolicyName": "dr-lambda-policy",
+                "PolicyDocument": "{'Version': '2012-10-17', \
+                'Statement': [{'Effect': 'Allow', \
+                    'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], \
+                        'Resource': 'arn:aws:logs:*:*:*'}, {'Effect': 'Allow', \
+                            'Action': 'lambda:InvokeFunction', 'Resource': '*'}]}",
+            }
+        ],
+        "RoleName": "dr-lambda-role",
+    }
+
+    expected = '{"AssumeRolePolicyDocument": {"Version": "2012-10-17", \
+        "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, \
+            "Action": "sts:AssumeRole"}]}, "ManagedPolicyArns": ["arn:aws:iam::721066863947:policy/dr-lambda-policy"], \
+                "Policies": [{"PolicyName": "dr-lambda-policy", "PolicyDocument": "{\\"Version\\": \\"2012-10-17\\", \
+                    \\"Statement\\": [{\\"Effect\\": \\"Allow\\", \\"Action\\": [\\"logs:CreateLogGroup\\", \
+                    \\"logs:CreateLogStream\\", \\"logs:PutLogEvents\\"], \\"Resource\\": \\"arn:aws:logs:*:*:*\\"}, \
+                    {\\"Effect\\": \\"Allow\\", \\"Action\\": \\"lambda:InvokeFunction\\", \\"Resource\\": \\"*\\"}]}"}], \
+                        "RoleName": "dr-lambda-role"}'
+
+    ensure_json_dumps(policy) == expected

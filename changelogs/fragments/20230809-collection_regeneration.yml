@@ -1,0 +1,19 @@
+bugfixes:
+  - "plugins/module_utils/utils.py - Fix how dictionaries are merged."
+
+minor_changes:
+  - "amazon.cloud - Add the original option name as an alias to avoid issues when snake cased option names are not correctly reversed to CamelCase."
+  - "Update README.md and meta/runtime.yml to reflect our ansible core testing versions."
+
+breaking_changes:
+  - backup_framework - This module was removed in version 0.5.0 of this collection because the ``framework_arn`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - backup_report_plan - This module was removed in version 0.5.0 of this collection because the ``report_plan_arn`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - cloudtrail_event_data_store - This module was removed in version 0.5.0 of this collection because the ``event_data_store_arn`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - ec2_placement_group - This module was removed in version 0.5.0 of this collection because the ``group_name`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - kms_replica_key - This module was removed in version 0.5.0 of this collection because the ``key_id`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - lambda_code_signing_config - This module was removed in version 0.5.0 of this collection because the ``code_signing_config_arn`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - lambda_event_source_mapping - This module was removed in version 0.5.0 of this collection because the ``id`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - logs_query_definition - This module was removed in version 0.5.0 of this collection because the ``query_definition_id`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - ssm_resource_data_sync - This module was removed in version 0.5.0 of this collection because the ``sync_name`` option, which is the main identifier of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - wafv2_ip_set - This module was removed in version 0.5.0 of this collection because the ``id`` option, which is one of the main identifiers of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.
+  - wafv2_regex_pattern_set - This module was removed in version 0.5.0 of this collection because the ``id`` option, which is one of the main identifiers of the resource, is a read-only property, so it cannot be set by the user and breaks the use of the module.

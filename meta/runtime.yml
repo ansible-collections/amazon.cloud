@@ -1,16 +1,11 @@
-requires_ansible: '>=2.12.0'
+requires_ansible: '>=2.13.0'
 action_groups:
   aws:
   - backup_backup_vault
-  - backup_framework
-  - backup_report_plan
   - eks_cluster
   - iam_role
-  - lambda_code_signing_config
-  - lambda_event_source_mapping
   - lambda_function
   - logs_log_group
-  - logs_query_definition
   - logs_resource_policy
   - rds_db_proxy
   - redshift_cluster
@@ -26,7 +21,6 @@ action_groups:
   - eks_addon
   - iam_server_certificate
   - kms_alias
-  - kms_replica_key
   - rds_db_proxy_endpoint
   - redshift_endpoint_access
   - redshift_endpoint_authorization
@@ -34,7 +28,6 @@ action_groups:
   - route53_dnssec
   - route53_key_signing_key
   - cloudtrail_trail
-  - cloudtrail_event_data_store
   - cloudwatch_composite_alarm
   - cloudwatch_metric_stream
   - rds_db_instance
@@ -43,10 +36,7 @@ action_groups:
   - rds_global_cluster
   - rds_option_group
   - ssm_document
-  - ssm_resource_data_sync
-  - wafv2_ip_set
   - wafv2_logging_configuration
-  - wafv2_regex_pattern_set
   - wafv2_web_acl_association
   - ecr_repository
   - ecs_capacity_provider
@@ -55,18 +45,17 @@ action_groups:
   - ecs_primary_task_set
   - iam_instance_profile
   - logs_metric_filter
-  - ec2_placement_group
   - autoscaling_launch_configuration
   - autoscaling_lifecycle_hook
   - autoscaling_warm_pool
-  - rdsdb_proxy
-  - s3_object_lambda_access_point
-  - s3_object_lambda_access_point_policy
   - memorydb_acl
   - memorydb_cluster
   - memorydb_parameter_group
   - memorydb_subnet_group
   - memorydb_user
+  - rdsdb_proxy
+  - s3_object_lambda_access_point
+  - s3_object_lambda_access_point_policy
 plugin_routing:
   modules:
     rdsdb_proxy:

@@ -5,18 +5,6 @@
       description:
       - Creates and manages logical containers where backups are stored.
     resource: AWS::Backup::BackupVault
-- backup_framework:
-    documentation:
-      short_description: Create and manage frameworks with one or more controls
-      description:
-      - Creates and manages frameworks with one or more controls.
-    resource: AWS::Backup::Framework
-- backup_report_plan:
-    documentation:
-      short_description: Create and manage report plans
-      description:
-      - Creates and manages report plans.
-    resource: AWS::Backup::ReportPlan
 - eks_cluster:
     documentation:
       short_description: Create and manages Amazon EKS control planes
@@ -29,19 +17,6 @@
       description:
       - Creates and manages new roles for your AWS account.
     resource: AWS::IAM::Role
-- lambda_code_signing_config:
-    documentation:
-      short_description: Code signing for AWS Lambda
-      description:
-      - Creates and manage code signing for AWS Lambda.
-    resource: AWS::Lambda::CodeSigningConfig
-- lambda_event_source_mapping:
-    documentation:
-      short_description: Create a mapping between an event source and an AWS Lambda
-        function
-      description:
-      - Create a mapping between an event source and an AWS Lambda function.
-    resource: AWS::Lambda::EventSourceMapping
 - lambda_function:
     documentation:
       short_description: Create and manage Lambda functions
@@ -54,12 +29,6 @@
       description:
       - Create and manage log groups.
     resource: AWS::Logs::LogGroup
-- logs_query_definition:
-    documentation:
-      short_description: Create and manage query definitions
-      description:
-      - Creates and manage query definitions for CloudWatch Logs Insights.
-    resource: AWS::Logs::QueryDefinition
 - logs_resource_policy:
     documentation:
       short_description: Create and manage resource policies
@@ -165,14 +134,6 @@
       description:
       - Specifies a display name for a KMS key.
     resource: AWS::KMS::Alias
-- kms_replica_key:
-    documentation:
-      short_description: Creates and manages a multi-Region replica key that is based
-        on a multi-Region primary key
-      description:
-      - Creates andn manages a multi-Region replica key that is based on a multi-Region
-        primary key.
-    resource: AWS::KMS::ReplicaKey
 - rds_db_proxy_endpoint:
     documentation:
       short_description: Creates and manages a DB proxy endpoint
@@ -224,12 +185,6 @@
       - Creates and manages a trail that specifies the settings for delivery of log
         data to an Amazon S3 bucket.
     resource: AWS::CloudTrail::Trail
-- cloudtrail_event_data_store:
-    documentation:
-      short_description: Creates and manages a new event data store
-      description:
-      - Creates and manages a new event data store.
-    resource: AWS::CloudTrail::EventDataStore
 - cloudwatch_composite_alarm:
     documentation:
       short_description: Creates and manages a composite alarm
@@ -296,25 +251,6 @@
       - This document defines the actions that Systems Manager performs on your AWS
         resources.
     resource: AWS::SSM::Document
-- ssm_resource_data_sync:
-    documentation:
-      short_description: Creates and manages a resource data sync
-      description:
-      - Creates and manages a resource data sync for AWS Systems Manager.
-      - A resource data sync helps you view data from multiple sources in a single
-        location.
-    resource: AWS::SSM::ResourceDataSync
-- wafv2_ip_set:
-    documentation:
-      short_description: Creates and manages and IP set
-      description:
-      - Creates and manages and IP set to identify web requests that originate from
-        specific IP addresses or ranges of IP addresses.
-      - For example, if you're receiving a lot of requests from a ranges of IP addresses,
-        you can configure AWS WAF to block them using an IP set that lists those IP
-        addresses.
-      - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-ipset.html).
-    resource: AWS::WAFv2::IPSet
 - wafv2_logging_configuration:
     documentation:
       short_description: Creates and manages an association between logging destinations
@@ -324,14 +260,6 @@
         ACL resource, for logging from AWS WAF.
       - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-loggingconfiguration.html).
     resource: AWS::WAFv2::LoggingConfiguration
-- wafv2_regex_pattern_set:
-    documentation:
-      short_description: Creates and manages an AWS WAFv2 Regex Pattern Set
-      description:
-      - Creates and manages an AWS WAFv2 Regex Pattern Set.
-      - Use an AWS WAFv2 Regex Pattern Set to have AWS WAF inspect a web request component
-        for a specific set of regular expression patterns.
-    resource: AWS::WAFv2::RegexPatternSet
 - wafv2_web_acl_association:
     documentation:
       short_description: Creates and manages a web ACL association
@@ -402,15 +330,6 @@
       - The maximum number of metric filters that can be associated with a log group
         is 100.
     resource: AWS::Logs::MetricFilter
-- ec2_placement_group:
-    documentation:
-      short_description: Creates and manages a placement group
-      description:
-      - Specifies a placement group in which to launch instances.
-      - The strategy of the placement group determines how the instances are organized
-        within the group.
-      - For more information see U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-placementgroup.html).
-    resource: AWS::EC2::PlacementGroup
 - autoscaling_launch_configuration:
     documentation:
       short_description: Creates and manages a web ACL association.
@@ -443,6 +362,7 @@
       - Whenever your application needs to scale out, the Auto Scaling group can draw
         on the warm pool to meet its new desired capacity.
     resource: AWS::AutoScaling::WarmPool
+# 0.4.0
 - memorydb_acl:
     documentation:
       short_description: Creates and manages a MemoryDB ACL

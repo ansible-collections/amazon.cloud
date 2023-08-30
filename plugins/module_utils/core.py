@@ -47,6 +47,8 @@ from ansible_collections.amazon.cloud.plugins.module_utils.common import (
 from ansible_collections.amazon.cloud.plugins.module_utils.common import (
     AMAZON_CLOUD_COLLECTION_VERSION,
 )
+
+# pylint: disable=unused-import
 from .utils import (
     normalize_response,
     scrub_keys,
@@ -54,12 +56,21 @@ from .utils import (
     to_async,
     diff_dicts,
     snake_to_camel,
+    camel_to_snake,
     json_patch,
     get_patch,
+    ensure_json_dumps,
+    helper_sort_dict,
 )
 from .utils import ansible_dict_to_boto3_tag_list  # pylint: disable=unused-import
 from .utils import snake_dict_to_camel_dict  # pylint: disable=unused-import
+from .utils import map_key_to_alias  # pylint: disable=unused-import
 from ansible_collections.amazon.cloud.plugins.module_utils.waiters import get_waiter
+
+# pylint: disable=unused-import
+from ansible_collections.amazon.aws.plugins.module_utils.transformation import (
+    scrub_none_parameters,
+)
 
 BOTO3_IMP_ERR = None
 try:
@@ -147,9 +158,10 @@ class CloudControlResource(object):
             if identifiers:
                 additional_properties: Dict = {}
                 for id in identifiers:
-                    additional_properties[
-                        snake_to_camel(id, capitalize_first=True)
-                    ] = self.module.params.get(id)
+                    _id = id.split("/")[-1]
+                    additional_properties[_id] = self.module.params.get(
+                        camel_to_snake(_id)
+                    )
                 params["ResourceModel"] = json.dumps(additional_properties)
 
             if i == 0 or "NextToken" in response:
@@ -219,15 +231,17 @@ class CloudControlResource(object):
     def get_resources_async(self, type_name, identifier):
         return self.get_resource(type_name, identifier)
 
+    @AWSRetry.jittered_backoff(
+        catch_extra_error_codes=["ThrottlingException"], retries=10
+    )
     def get_resource(
         self, type_name: str, primary_identifier: Union[str, List, Dict]
     ) -> List:
         # This is the "describe" equivalent for AWS Cloud Control API
         response: Dict = {}
-        identifier: Dict = {}
 
         if isinstance(primary_identifier, list):
-            primary_identifier = self.get_identifier(identifier, primary_identifier)
+            primary_identifier = self.get_identifier(primary_identifier)
         elif isinstance(primary_identifier, dict):
             primary_identifier = json.dumps(primary_identifier)
         try:
@@ -255,13 +269,14 @@ class CloudControlResource(object):
     ) -> bool:
         results = {"changed": False, "result": {}}
         create_only_params = create_only_params or []
+        resource = None
         identifier: Dict = {}
 
-        resource = None
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
-            identifier = self.get_identifier(identifier, primary_identifier)
+            identifier = self.get_identifier(primary_identifier)
+
         try:
             resource = self.client.get_resource(
                 TypeName=type_name, Identifier=identifier, aws_retry=True
@@ -269,8 +284,9 @@ class CloudControlResource(object):
             results = self.update_resource(resource, params, create_only_params)
         except self.client.exceptions.ResourceNotFoundException:
             if self.module.params.get("identifier"):
+                _primary_identifier = [id.split("/")[-1] for id in primary_identifier]
                 self.module.fail_json(
-                    f"""You must specify both {*primary_identifier, } to create a new resource.
+                    f"""You must specify all of the following to create a new resource: {*_primary_identifier, }.
                         The identifier parameter can only be used to manipulate an existing resource."""
                 )
             results["changed"] |= self.create_resource(type_name, params)
@@ -286,7 +302,8 @@ class CloudControlResource(object):
 
     def create_resource(self, type_name: str, params: Dict) -> bool:
         changed: bool = False
-        params = json.dumps(params)
+
+        params = json.dumps(ensure_json_dumps(params))
 
         if not self.module.check_mode:
             try:
@@ -351,7 +368,7 @@ class CloudControlResource(object):
         if self.module.params.get("identifier"):
             identifier = self.module.params.get("identifier")
         else:
-            identifier = self.get_identifier(identifier, primary_identifier)
+            identifier = self.get_identifier(primary_identifier)
 
         try:
             response = self.client.get_resource(
@@ -446,15 +463,11 @@ class CloudControlResource(object):
         obj = None
 
         # Ignore createOnlyProperties that can be set only during resource creation
-        params = scrub_keys(
-            params_to_set,
-            [
-                "ACLName"
-                if item == "acl_name"
-                else snake_to_camel(item, capitalize_first=True)
-                for item in create_only_params
-            ],
-        )
+        params = scrub_keys(params_to_set, create_only_params)
+
+        # If we work with Policies just ensure the right quotes are used, otherwise, just ignore
+        params = ensure_json_dumps(params)
+
         in_progress_requests = self.check_in_progress_requests(type_name, identifier)
 
         if not self.module.check_mode:
@@ -479,7 +492,9 @@ class CloudControlResource(object):
         obj, error = json_patch(properties, patch)
         if error:
             self.module.fail_json(**error)
-        match, diffs = diff_dicts(properties, obj)
+
+        # Ensure properties and obj are sorted before calculating the difference
+        match, diffs = diff_dicts(helper_sort_dict(properties), helper_sort_dict(obj))
 
         if not self.module.check_mode:
             # To handle idempotency when purge_* params are False (where the patch is always generated with strategy='replace')
@@ -520,14 +535,11 @@ class CloudControlResource(object):
 
         return results
 
-    def get_identifier(self, identifier: dict, primary_identifier: list):
+    def get_identifier(self, primary_identifier: list) -> Dict:
+        identifier: Dict = {}
         for id in primary_identifier:
-            if id == "acl_name":
-                identifier["ACLName"] = self.module.params.get("acl_name")
-            else:
-                identifier[
-                    snake_to_camel(id, capitalize_first=True)
-                ] = self.module.params.get(id)
+            _id = id.split("/")[-1]
+            identifier[_id] = self.module.params.get(camel_to_snake(_id))
         return json.dumps(identifier)
 
 

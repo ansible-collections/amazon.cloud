@@ -15,6 +15,8 @@ description:
     for Redis cluster. For more information, see U(https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html)
 options:
     acl_name:
+        aliases:
+        - ACLName
         description:
         - The name of the acl.
         type: str
@@ -50,12 +52,15 @@ options:
         type: str
     tags:
         aliases:
+        - Tags
         - resource_tags
         description:
         - A dict of tags to apply to the resource.
         - To remove all tags set I(tags={}) and I(purge_tags=true).
         type: dict
     user_names:
+        aliases:
+        - UserNames
         description:
         - List of users associated to this acl.
         elements: str
@@ -71,7 +76,7 @@ options:
         - How many seconds to wait for an operation to complete before timing out.
         type: int
 author: Ansible Cloud Team (@ansible-collections)
-version_added: 0.4.0
+version_added: 0.3.0
 extends_documentation_fragment:
 - amazon.aws.aws
 - amazon.aws.ec2
@@ -79,23 +84,6 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
-    - name: Create memorydb acl with name test-acl
-      amazon.cloud.memorydb_acl:
-        acl_name: "test-acl"
-        tags:
-          env: "test"
-      register: acl_output
-
-    - name: Describe the acl
-      amazon.cloud.memorydb_acl:
-        acl_name: "test-acl"
-        state: describe
-      register: acl_describe
-
-    - name: Delete memorydb cluster
-      amazon.cloud.memorydb_cluster:
-        cluster_name: test-cluster
-        state: absent
 """
 
 RETURN = r"""
@@ -123,11 +111,12 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     CloudControlResource,
 )
 from ansible_collections.amazon.cloud.plugins.module_utils.core import (
-    snake_dict_to_camel_dict,
-)
-from ansible_collections.amazon.cloud.plugins.module_utils.core import (
     ansible_dict_to_boto3_tag_list,
 )
+from ansible_collections.amazon.cloud.plugins.module_utils.core import (
+    scrub_none_parameters,
+)
+from ansible_collections.amazon.cloud.plugins.module_utils.core import map_key_to_alias
 
 
 def main():
@@ -139,12 +128,13 @@ def main():
         ),
     )
 
-    argument_spec["acl_name"] = {"type": "str"}
+    argument_spec["acl_name"] = {"type": "str", "aliases": ["ACLName"]}
     argument_spec["user_names"] = {
         "type": "list",
         "elements": "str",
+        "aliases": ["UserNames"],
     }
-    argument_spec["tags"] = {"type": "dict", "aliases": ["resource_tags"]}
+    argument_spec["tags"] = {"type": "dict", "aliases": ["Tags", "resource_tags"]}
     argument_spec["state"] = {
         "type": "str",
         "choices": ["present", "absent", "list", "describe", "get"],
@@ -179,24 +169,23 @@ def main():
     params["user_names"] = module.params.get("user_names")
 
     # The DesiredState we pass to AWS must be a JSONArray of non-null values
-    _params_to_set = {k: v for k, v in params.items() if v is not None}
+    _params_to_set = scrub_none_parameters(params)
 
     # Only if resource is taggable
     if module.params.get("tags") is not None:
         _params_to_set["tags"] = ansible_dict_to_boto3_tag_list(module.params["tags"])
 
-    params_to_set = snake_dict_to_camel_dict(_params_to_set, capitalize_first=True)
-    if "AclName" in params_to_set:
-        params_to_set["ACLName"] = params_to_set.pop("AclName")
+    # Use the alias from argument_spec as key and avoid snake_to_camel conversions
+    params_to_set = map_key_to_alias(_params_to_set, argument_spec)
 
     # Ignore createOnlyProperties that can be set only during resource creation
-    create_only_params = ["acl_name"]
+    create_only_params = ["/properties/ACLName"]
 
     # Necessary to handle when module does not support all the states
     handlers = ["create", "read", "update", "delete", "list"]
 
     state = module.params.get("state")
-    identifier = ["acl_name"]
+    identifier = ["/properties/ACLName"]
 
     results = {"changed": False, "result": {}}
 
