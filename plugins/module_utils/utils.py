@@ -316,6 +316,10 @@ def helper_sort_dict(obj):
     """
     Order a nested complex dictionary
     """
+
+    def custom_key(x):
+        return json.dumps(x)
+
     if isinstance(obj, dict):
         obj = OrderedDict(sorted(obj.items()))
         for k, v in obj.items():
@@ -326,7 +330,7 @@ def helper_sort_dict(obj):
         for i, v in enumerate(obj):
             if isinstance(v, dict) or isinstance(v, list):
                 obj[i] = helper_sort_dict(v)
-        obj = sorted(obj, key=lambda x: json.dumps(x))
+        obj = sorted(obj, key=custom_key)
 
     return obj
 
@@ -348,7 +352,9 @@ def merge_lists(list1, list2):
                 for key in dict2:
                     if dict1.get(key) == dict2.get(key):
                         # Enforce matching between dictionaries
-                        if all(type(dict1[key]) == type(dict2[key]) for key in dict1):
+                        if all(
+                            isinstance(dict1[key], type(dict2[key])) for key in dict1
+                        ):
                             if dict1 == dict2:
                                 # They match, nothing further to do, just append dict1 to merged_list
                                 if dict1 not in merged_list:
@@ -443,7 +449,7 @@ def recursive_merge(dict1: Dict, dict2: Dict) -> Dict:
 
 
 class QuoteSwappingEncoder(json.JSONEncoder):
-    def encode(self, obj):
+    def encode(self, o):
         def swap_quotes(item):
             if isinstance(item, str):
                 return (
@@ -453,7 +459,7 @@ class QuoteSwappingEncoder(json.JSONEncoder):
                 )
             return item
 
-        return super().encode(swap_quotes(obj))
+        return super().encode(swap_quotes(o))
 
 
 def ensure_json_dumps(data):

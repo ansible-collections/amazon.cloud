@@ -8,8 +8,6 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-import json
-
 from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     ansible_dict_to_boto3_tag_list,
     boto3_tag_list_to_ansible_dict,
@@ -460,7 +458,9 @@ def test_merge_list_of_dicts_iam():
     new = [
         {
             "PolicyName": "dr-lambda-policy",
-            "PolicyDocument": "{'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], 'Resource': 'arn:aws:logs:*:*:*'}]}",
+            "PolicyDocument": "{'Version': '2012-10-17', \
+                'Statement': [{'Effect': 'Allow', 'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], \
+                    'Resource': 'arn:aws:logs:*:*:*'}]}",
         }
     ]
     expected = [
