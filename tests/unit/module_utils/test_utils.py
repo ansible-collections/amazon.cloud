@@ -16,8 +16,8 @@ from ansible_collections.amazon.cloud.plugins.module_utils.utils import (
     diff_dicts,
     normalize_response,
     tag_merge,
-    merge_dicts,
-    QuoteSwappingEncoder,
+    merge_list_of_dicts,
+    ensure_json_dumps,
 )
 
 
@@ -302,101 +302,219 @@ def test_tag_merge_dicts():
     assert dict_1 == expected
 
 
-def test_merge_dicts_simple():
+def test_merge_list_of_dicts_simple():
     old = [{"foo": "bar"}]
-
     new = [{"foo": "gaz", "someotherkey": {"blah": "asdf"}}]
-
     expected = [{"foo": "gaz", "someotherkey": {"blah": "asdf"}}]
 
-    result = merge_dicts(old, new)
+    result = merge_list_of_dicts(old, new)
     assert result == expected
 
 
-def test_merge_dicts():
+def test_merge_list_of_dicts_rds_1():
     old = [
         {
-            "key1": [
-                {
-                    "key2": {"key3": ["value 1"]},
-                    "key4": {"key5": ["value 2"]},
-                    "key 6": {"key7": {"key8": {"key9": "value 3"}}},
-                    "key_10": [{"key_11": "value 4"}],
-                }
+            "VpcSecurityGroupMemberships": [
+                "sg-0529298fedfbd1554",
             ],
-            "key12": '{"key 13": "value 4"}',
-            "key14": '[{"key 15": "value 5"}]',
-            "key16": "value6",
+            "OptionSettings": [
+                {"Value": "20", "Name": "MAX_SIMULTANEOUS_CONNECTIONS"},
+                {"Value": "10", "Name": "A"},
+                {"Value": "40", "Name": "B"},
+            ],
+            "Port": 11211,
+            "OptionName": "MEMCACHED",
+            "DBSecurityGroupMemberships": [],
         }
     ]
 
     new = [
         {
-            "key1": [
-                {
-                    "key2": {"key3": ["value 1"]},
-                    "key4": {"key5": ["value 2 updated"]},
-                    "key 6": {"key7": {"key8": {"key9": "value 3 updated"}}},
-                    "key_10": [{"key_11": "value 4 updated"}],
-                }
+            "OptionName": "MEMCACHED",
+            "Port": 11211,
+            "VpcSecurityGroupMemberships": ["sg-0529298fedfbd1554", "sg-test"],
+            "OptionSettings": [
+                {"Name": "MAX_SIMULTANEOUS_CONNECTIONS", "Value": "30"},
+                {"Name": "CHUNK_SIZE_GROWTH_FACTOR", "Value": "1.25"},
             ],
-            "key12": {"key 13": "value 4 updated"},
-            "key14": [{"key 15": "value 5 updated"}],
         }
     ]
-
     expected = [
         {
-            "key1": [
-                {
-                    "key2": {"key3": ["value 1"]},
-                    "key4": {"key5": ["value 2 updated"]},
-                    "key 6": {"key7": {"key8": {"key9": "value 3 updated"}}},
-                    "key_10": [{"key_11": "value 4 updated"}],
-                }
+            "OptionName": "MEMCACHED",
+            "Port": 11211,
+            "VpcSecurityGroupMemberships": ["sg-0529298fedfbd1554", "sg-test"],
+            "OptionSettings": [
+                {"Name": "MAX_SIMULTANEOUS_CONNECTIONS", "Value": "30"},
+                {"Name": "CHUNK_SIZE_GROWTH_FACTOR", "Value": "1.25"},
+                {"Value": "10", "Name": "A"},
+                {"Value": "40", "Name": "B"},
             ],
-            "key12": {"key 13": "value 4 updated"},
-            "key14": [{"key 15": "value 5 updated"}],
-            "key16": "value6",
+            "DBSecurityGroupMemberships": [],
         }
     ]
 
-    result = merge_dicts(old, new)
+    result = merge_list_of_dicts(old, new)
     assert result == expected
 
 
-def test_merge_dicts_multi_dicts():
+def test_merge_list_of_dicts_rds_2():
     old = [
         {
-            "key1": [{"key2": {"key3": ["A"]}, "key4": [{"key5": "B"}]}],
-        },
-        {
-            "one key": [{"one key nested": {"one key very nested": ["C"]}}],
-            "another key": "D",
-        },
+            "VpcSecurityGroupMemberships": [
+                "sg-042d845c4e8b78406",
+                "sg-04de45a62e4b6abc4",
+                "sg-0cf1c9abae707d8c3",
+            ],
+            "OptionSettings": [
+                {"Value": "30", "Name": "MAX_SIMULTANEOUS_CONNECTIONS"},
+                {"Value": "0", "Name": "ERROR_ON_MEMORY_EXHAUSTED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_R_BATCH_SIZE"},
+                {"Value": "1024", "Name": "BACKLOG_QUEUE_LIMIT"},
+                {"Value": "5", "Name": "INNODB_API_BK_COMMIT_INTERVAL"},
+                {"Value": "1.25", "Name": "CHUNK_SIZE_GROWTH_FACTOR"},
+                {"Value": "v", "Name": "VERBOSITY"},
+                {"Value": "0", "Name": "INNODB_API_DISABLE_ROWLOCK"},
+                {"Value": "auto", "Name": "BINDING_PROTOCOL"},
+                {"Value": "48", "Name": "CHUNK_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_TRX_LEVEL"},
+                {"Value": "0", "Name": "CAS_DISABLED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_W_BATCH_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_ENABLE_MDL"},
+            ],
+            "Port": 11211,
+            "OptionName": "MEMCACHED",
+            "DBSecurityGroupMemberships": [],
+        }
     ]
+    new = [
+        {
+            "OptionName": "MEMCACHED",
+            "Port": 11211,
+            "VpcSecurityGroupMemberships": [
+                "sg-04de45a62e4b6abc4",
+                "sg-0cf1c9abae707d8c3",
+                "sg-042d845c4e8b78406",
+            ],
+            "OptionSettings": [{"Name": "MAX_SIMULTANEOUS_CONNECTIONS", "Value": "30"}],
+        }
+    ]
+    expected = [
+        {
+            "VpcSecurityGroupMemberships": [
+                "sg-042d845c4e8b78406",
+                "sg-04de45a62e4b6abc4",
+                "sg-0cf1c9abae707d8c3",
+            ],
+            "OptionSettings": [
+                {"Value": "30", "Name": "MAX_SIMULTANEOUS_CONNECTIONS"},
+                {"Value": "0", "Name": "ERROR_ON_MEMORY_EXHAUSTED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_R_BATCH_SIZE"},
+                {"Value": "1024", "Name": "BACKLOG_QUEUE_LIMIT"},
+                {"Value": "5", "Name": "INNODB_API_BK_COMMIT_INTERVAL"},
+                {"Value": "1.25", "Name": "CHUNK_SIZE_GROWTH_FACTOR"},
+                {"Value": "v", "Name": "VERBOSITY"},
+                {"Value": "0", "Name": "INNODB_API_DISABLE_ROWLOCK"},
+                {"Value": "auto", "Name": "BINDING_PROTOCOL"},
+                {"Value": "48", "Name": "CHUNK_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_TRX_LEVEL"},
+                {"Value": "0", "Name": "CAS_DISABLED"},
+                {"Value": "1", "Name": "DAEMON_MEMCACHED_W_BATCH_SIZE"},
+                {"Value": "0", "Name": "INNODB_API_ENABLE_MDL"},
+            ],
+            "Port": 11211,
+            "OptionName": "MEMCACHED",
+            "DBSecurityGroupMemberships": [],
+        }
+    ]
+
+    result = merge_list_of_dicts(old, new)
+    assert result == expected
+
+
+def test_merge_list_of_dicts_iam():
+    old = [
+        {
+            "PolicyName": "dr-lambda-policy",
+            "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents",
+                        ],
+                        "Resource": "arn:aws:logs:*:*:*",
+                        "Effect": "Allow",
+                    },
+                    {
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "*",
+                        "Effect": "Allow",
+                    },
+                ],
+            },
+        }
+    ]
+    new = [
+        {
+            "PolicyName": "dr-lambda-policy",
+            "PolicyDocument": "{'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], 'Resource': 'arn:aws:logs:*:*:*'}]}",
+        }
+    ]
+    expected = [
+        {
+            "PolicyName": "dr-lambda-policy",
+            "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents",
+                        ],
+                        "Resource": "arn:aws:logs:*:*:*",
+                        "Effect": "Allow",
+                    },
+                    {
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "*",
+                        "Effect": "Allow",
+                    },
+                ],
+            },
+        }
+    ]
+
+    result = merge_list_of_dicts(old, new)
+    assert result == expected
+
+
+def test_merge_list_of_dicts_eks():
+    old = [{"labels": [{"key": "test", "value": "test"}], "namespace": "fp-default"}]
 
     new = [
         {
-            "key1": [{"key2": {"key3": ["A updated"]}}],
-        },
-        {
-            "one key": [{"one key nested": {"one key very nested": ["F"]}}],
-            "another key": "D",
-        },
+            "labels": [
+                {"key": "test", "value": "test"},
+                {"key": "another key label name", "value": "another key label value"},
+            ],
+            "namespace": "fp-default",
+        }
     ]
-
     expected = [
         {
-            "key1": [{"key2": {"key3": ["A updated"]}, "key4": [{"key5": "B"}]}],
-        },
-        {
-            "one key": [{"one key nested": {"one key very nested": ["F"]}}],
-            "another key": "D",
-        },
+            "labels": [
+                {"key": "test", "value": "test"},
+                {"key": "another key label name", "value": "another key label value"},
+            ],
+            "namespace": "fp-default",
+        }
     ]
 
-    result = merge_dicts(old, new)
+    result = merge_list_of_dicts(old, new)
     assert result == expected
 
 
@@ -435,4 +553,4 @@ def test_swap_quotes():
                     {\\"Effect\\": \\"Allow\\", \\"Action\\": \\"lambda:InvokeFunction\\", \\"Resource\\": \\"*\\"}]}"}], \
                         "RoleName": "dr-lambda-role"}'
 
-    json.dumps(policy, indent=4, cls=QuoteSwappingEncoder) == expected
+    ensure_json_dumps(policy) == expected

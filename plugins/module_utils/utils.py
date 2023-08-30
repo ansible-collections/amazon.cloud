@@ -7,6 +7,7 @@ import copy
 import json
 import functools
 import traceback
+from collections import OrderedDict
 from typing import Iterable, List, Dict, Union
 
 JSON_PATCH_IMPORT_ERR = None
@@ -298,15 +299,86 @@ def op(operation, path, value):
     return {"op": operation, "path": path, "value": value}
 
 
-def safe_json(data: str) -> Dict:
+def safe_json(data):
     try:
         json_object = json.loads(data)
-    except (ValueError, TypeError) as e:
-        return data
+    except (ValueError, TypeError, json.JSONDecodeError) as e:
+        if "Expecting property name enclosed in double quotes" in str(e):
+            json_string_fixed = data.replace("'", '"')
+            json_object = safe_json(json_string_fixed)
+        else:
+            # Return data as is
+            return data
     return json_object
 
 
-def merge_dicts(list1: List, list2) -> List:
+def helper_sort_dict(obj):
+    """
+    Order a nested complex dictionary
+    """
+    if isinstance(obj, dict):
+        obj = OrderedDict(sorted(obj.items()))
+        for k, v in obj.items():
+            if isinstance(v, dict) or isinstance(v, list):
+                obj[k] = helper_sort_dict(v)
+
+    if isinstance(obj, list):
+        for i, v in enumerate(obj):
+            if isinstance(v, dict) or isinstance(v, list):
+                obj[i] = helper_sort_dict(v)
+        obj = sorted(obj, key=lambda x: json.dumps(x))
+
+    return obj
+
+
+def merge_lists(list1, list2):
+    merged_list: List = []
+    matched_list: List = []
+
+    for dict1 in list1:
+        if isinstance(dict1, dict):
+            dict1 = helper_sort_dict(dict1)
+            merged_dict = dict1.copy()
+        else:
+            merged_dict = dict1
+
+        for dict2 in list2:
+            if isinstance(dict1, dict) and isinstance(dict2, dict):
+                dict2 = helper_sort_dict(dict2)
+                for key in dict2:
+                    if dict1.get(key) == dict2.get(key):
+                        # Enforce matching between dictionaries
+                        if all(type(dict1[key]) == type(dict2[key]) for key in dict1):
+                            if dict1 == dict2:
+                                # They match, nothing further to do, just append dict1 to merged_list
+                                if dict1 not in merged_list:
+                                    merged_list.append(dict1)
+                                    matched_list.append(dict1)
+                            else:
+                                # They have the same value types, but do not match
+                                merged_dict = recursive_merge(merged_dict, dict2)
+                                matched_list.append(dict1)
+                                matched_list.append(dict2)
+                                if merged_dict not in merged_list:
+                                    merged_list.append(merged_dict)
+                                    matched_list.append(merged_dict)
+                    else:
+                        # They do not have anything in common, just add both to merge_list and matched_list
+                        if dict1 not in merged_list and dict1 not in matched_list:
+                            merged_list.append(dict1)
+                            matched_list.append(dict1)
+                        if dict2 not in merged_list and dict2 not in matched_list:
+                            # Add dict2 if already not present in merged_list
+                            merged_list.append(dict2)
+                            matched_list.append(dict2)
+            else:
+                if dict2 not in merged_list:
+                    merged_list.append(dict2)
+
+    return merged_list
+
+
+def merge_list_of_dicts(list1: List, list2) -> List:
     # Handle when list of dicts (different than Tags and different key names) need to be merged
     merged_list = list1.copy()
 
@@ -317,24 +389,36 @@ def merge_dicts(list1: List, list2) -> List:
 
         if matching_indices:
             for index in matching_indices:
-                dict1 = merged_list[index]
-                for key, value in dict2.items():
-                    value_dict = safe_json(value)
-                    if (
-                        dict1.get(key, {})
-                        and isinstance(value_dict, dict)
-                        and isinstance(dict1[key], dict)
-                    ):
-                        dict1[key] = recursive_merge(dict1[key], value_dict)
-                    elif (
-                        dict1.get(key, [])
-                        and isinstance(value_dict, list)
-                        and isinstance(dict1[key], list)
-                    ):
-                        dict1[key] = merge_dicts(dict1[key], value_dict)
-                    else:
-                        dict1[key] = value
+                if isinstance(merged_list, list):
+                    dict1 = merged_list[index]
+                    if isinstance(dict2, dict) and isinstance(dict1, dict):
+                        for key, value in dict2.items():
+                            value_dict = safe_json(value)
+                            if (
+                                dict1.get(key, {})
+                                and isinstance(value_dict, dict)
+                                and isinstance(dict1[key], dict)
+                            ):
+                                dict1[key] = recursive_merge(dict1[key], value_dict)
+                            elif (
+                                dict1.get(key, [])
+                                and isinstance(value_dict, list)
+                                and isinstance(dict1[key], list)
+                            ):
+                                # Easy merge
+                                if all(
+                                    isinstance(item, (str, int, float))
+                                    for item in dict1[key]
+                                ):
+                                    dict1[key] = sorted(
+                                        list(set(dict1[key]).union(value_dict))
+                                    )
+                                else:
+                                    dict1[key] = merge_lists(dict1[key], value_dict)
+                            else:
+                                dict1[key] = value_dict
         else:
+            # else: there's no matching, so just add dict2 to merged_list
             merged_list.append(dict2)
 
     return merged_list
@@ -346,6 +430,12 @@ def recursive_merge(dict1: Dict, dict2: Dict) -> Dict:
     for key, value in dict2.items():
         if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
             merged[key] = recursive_merge(merged[key], value)
+        if key in merged and isinstance(merged[key], list) and isinstance(value, list):
+            # Easy merge
+            if all(isinstance(item, (str, int, float)) for item in merged[key]):
+                dict1[key] = sorted(list(set(merged[key]).union(value)))
+            else:
+                merged[key] = merge_lists(merged[key], value)
         else:
             merged[key] = value
 
@@ -353,8 +443,7 @@ def recursive_merge(dict1: Dict, dict2: Dict) -> Dict:
 
 
 class QuoteSwappingEncoder(json.JSONEncoder):
-    def encode(self, o):
-        # Replace single quotes with double quotes and vice versa in the JSON data
+    def encode(self, obj):
         def swap_quotes(item):
             if isinstance(item, str):
                 return (
@@ -362,15 +451,45 @@ class QuoteSwappingEncoder(json.JSONEncoder):
                     .replace('"', "'")
                     .replace("__TEMP_SINGLE_QUOTE__", '"')
                 )
-            elif isinstance(item, list):
-                return [swap_quotes(sub_item) for sub_item in item]
-            elif isinstance(item, dict):
-                return {
-                    swap_quotes(key): swap_quotes(value) for key, value in item.items()
-                }
             return item
 
-        return super().encode(swap_quotes(o))
+        return super().encode(swap_quotes(obj))
+
+
+def ensure_json_dumps(data):
+    """
+    This function hadles the case when the iam_role modules is used with the
+    policies option which requiress a policy_document as a string. We'll need
+    to ensure the correct quotes are used for the API call
+    For example:
+    'Policies': [{
+        'PolicyName': 'dr-lambda-policy',
+        'PolicyDocument': "{'Version': '2012-10-17', \
+            'Statement': [{'Effect': 'Allow', \
+                'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'], \
+                    'Resource': 'arn:aws:logs:*:*:*'}, {'Effect': 'Allow', \
+                        'Action': 'lambda:InvokeFunction', 'Resource': '*'}]}"
+    }],
+    will become:
+    '"Policies": [{"PolicyName": "dr-lambda-policy", "PolicyDocument": "{\\"Version\\": \\"2012-10-17\\", \
+                \\"Statement\\": [{\\"Effect\\": \\"Allow\\", \\"Action\\": [\\"logs:CreateLogGroup\\", \
+                \\"logs:CreateLogStream\\", \\"logs:PutLogEvents\\"], \\"Resource\\": \\"arn:aws:logs:*:*:*\\"}, \
+                {\\"Effect\\": \\"Allow\\", \\"Action\\": \\"lambda:InvokeFunction\\", \\"Resource\\": \\"*\\"}]}"}]'
+    """
+
+    if "Policies" in data and isinstance(data.get("Policies"), list):
+        for policy_entry in data["Policies"]:
+            if "PolicyDocument" in policy_entry and isinstance(
+                policy_entry.get("PolicyDocument"), str
+            ):
+                inner_json = json.loads(
+                    policy_entry["PolicyDocument"].replace("'", '"')
+                )  # Convert single quotes to double quotes
+                policy_entry["PolicyDocument"] = json.loads(
+                    json.dumps(inner_json, cls=QuoteSwappingEncoder)
+                )
+
+    return data
 
 
 def make_op(path, old, new, strategy):
@@ -381,11 +500,12 @@ def make_op(path, old, new, strategy):
             _new_cpy = dict(old, **new)
     elif isinstance(old, list):
         if strategy == "merge":
+            _old_cpy = copy.deepcopy(old)
             if path == "Tags":
-                _old_cpy = copy.deepcopy(old)
                 _new_cpy = tag_merge(_old_cpy, new)
             else:
-                _new_cpy = merge_dicts(old, new)
+                # When list of dictionaries different with keys different that Key and values than Value need to be merged
+                _new_cpy = merge_list_of_dicts(_old_cpy, new)
 
     return op("replace", path, _new_cpy)
 

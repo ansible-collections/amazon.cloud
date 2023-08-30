@@ -59,7 +59,8 @@ from .utils import (
     camel_to_snake,
     json_patch,
     get_patch,
-    QuoteSwappingEncoder,
+    ensure_json_dumps,
+    helper_sort_dict,
 )
 from .utils import ansible_dict_to_boto3_tag_list  # pylint: disable=unused-import
 from .utils import snake_dict_to_camel_dict  # pylint: disable=unused-import
@@ -302,7 +303,7 @@ class CloudControlResource(object):
     def create_resource(self, type_name: str, params: Dict) -> bool:
         changed: bool = False
 
-        params = json.dumps(params, cls=QuoteSwappingEncoder)
+        params = json.dumps(ensure_json_dumps(params))
 
         if not self.module.check_mode:
             try:
@@ -464,6 +465,9 @@ class CloudControlResource(object):
         # Ignore createOnlyProperties that can be set only during resource creation
         params = scrub_keys(params_to_set, create_only_params)
 
+        # If we work with Policies just ensure the right quotes are used, otherwise, just ignore
+        params = ensure_json_dumps(params)
+
         in_progress_requests = self.check_in_progress_requests(type_name, identifier)
 
         if not self.module.check_mode:
@@ -488,7 +492,9 @@ class CloudControlResource(object):
         obj, error = json_patch(properties, patch)
         if error:
             self.module.fail_json(**error)
-        match, diffs = diff_dicts(properties, obj)
+
+        # Ensure properties and obj are sorted before calculating the difference
+        match, diffs = diff_dicts(helper_sort_dict(properties), helper_sort_dict(obj))
 
         if not self.module.check_mode:
             # To handle idempotency when purge_* params are False (where the patch is always generated with strategy='replace')
