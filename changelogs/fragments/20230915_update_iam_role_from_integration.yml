@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Update integration tests target eks, iam_role has been migrated from community.aws to amazon.aws

@@ -1,7 +1,7 @@
 - include_tasks: set_facts.yml
 # Create a EKS Cluster to test Fargate Profile
 - name: Ensure IAM instance role exists
-  community.aws.iam_role:
+  amazon.aws.iam_role:
     name: "{{ _resource_prefix }}-cluster-role"
     assume_role_policy_document: "{{ lookup('file','eks_cluster-policy.json') }}"
     state: present

@@ -1,12 +1,12 @@
 - include_tasks: set_facts.yml
 - name: Delete IAM role
-  community.aws.iam_role:
+  amazon.aws.iam_role:
     name: "{{ _result_create_iam_role.role_name }}"
     state: absent
   ignore_errors: true
 
 - name: Delete IAM role
-  community.aws.iam_role:
+  amazon.aws.iam_role:
     name: "{{ _result_create_iam_role_fp.role_name }}"
     state: absent
   ignore_errors: true
