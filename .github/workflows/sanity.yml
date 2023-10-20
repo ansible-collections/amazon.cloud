@@ -1,3 +1,4 @@
+---
 name: sanity tests
 
 on: [workflow_call]  # allow this workflow to be called from other workflows
@@ -77,4 +78,3 @@ jobs:
               "python-version": "3.9"
             }
           ]
-      collection_pre_install: ''
