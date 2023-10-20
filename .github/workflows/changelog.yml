@@ -1,21 +1,6 @@
 name: changelog
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
-on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - labeled
-      - unlabeled
-      - synchronize
-    branches:
-      - main
-      - stable-*
-    tags:
-      - '*'
+on: [workflow_call]  # allow this workflow to be called from other workflows
 
 jobs:
   test:
