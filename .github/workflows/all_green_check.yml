@@ -10,8 +10,6 @@ on:  # yamllint disable-line rule:truthy
     types:
       - opened
       - reopened
-      - labeled
-      - unlabeled
       - synchronize
     branches:
       - main
