@@ -1,0 +1,16 @@
+---
+collection:
+  path: {{ collection_path }}
+  namespace: amazon
+  name: cloud
+plugins:
+  - type: module_openapi
+    name: "amazon_cloud"
+    content: cloud
+    api_object_path: api_specifications
+    resource: {{ collection_path }}/config
+    action: generate_all
+    unique_key: ""
+    rm_swagger_json: ""
+    module_version: {{ collection_version }}
+    author: "Ansible Cloud Team"
