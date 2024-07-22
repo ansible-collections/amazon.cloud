@@ -1,25 +1,10 @@
-# AWS Cloud Control Collection for Ansible
+# Amazon Cloud Collection for Ansible
 The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services.
 
-This work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state.
+## Description
 
-<!--start requires_ansible-->
-## Ansible version compatibility
-
-This collection has been tested against following Ansible versions: **>=2.12.0**.
-
-Plugins and modules within a collection may be tested with only specific Ansible versions.
-A collection may contain metadata that identifies these versions.
-PEP440 is the schema used to describe the versions of Ansible.
-<!--end requires_ansible-->
-
-## Python version compatibility
-
-This collection requires Python 3.9 or greater.
-
-## AWS SDK version compatibility
-
-Version 0.3.0 of this collection supports `boto3 >= 1.25.0` and `botocore >= 1.28.0`
+AWS Cloud Control Collection's work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state.
+It provides the automation capabilities needed to optimize cloud operations, ensuring efficient, reliable, and secure management of AWS resources. 
 
 ## Included content
 <!--start collection content-->
@@ -28,19 +13,40 @@ See the complete list of collection content in the [Plugin Index](https://ansibl
 
 <!--end collection content-->
 
-## Installing this collection
+## Requirements
 
-You can install the AWS Cloud Control Collection with the Ansible Galaxy CLI:
+<!--start requires_ansible-->
+### Ansible version compatibility
+
+This collection has been tested against following Ansible versions: **>=2.12.0**.
+
+Plugins and modules within a collection may be tested with only specific Ansible versions.
+A collection may contain metadata that identifies these versions.
+PEP440 is the schema used to describe the versions of Ansible.
+<!--end requires_ansible-->
+
+### Python version compatibility
+
+This collection requires Python 3.9 or greater.
+
+### AWS SDK version compatibility
+
+Version 0.3.0 of this collection supports `boto3 >= 1.25.0` and `botocore >= 1.28.0`
+
+## Installation
+
+A specific version of the AWS Cloud Control Collection can be installed with Ansible Galaxy command-line tool:
 ```bash
-    ansible-galaxy collection install amazon.cloud
+    ansible-galaxy collection install amazon.cloud==1.0.0
 ```
 
-You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
+It can also included in a `requirements.yml` file and installed with `ansible-galaxy collection install -r requirements.yml`, using the format:
 
 ```yaml
 ---
 collections:
   - name: amazon.cloud
+    version: 1.0.0
 ```
 
 The python module dependencies are not installed by `ansible-galaxy`.  They can
@@ -56,13 +62,13 @@ ansible-galaxy collection install amazon.cloud --upgrade
 See [Ansible Using collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
 
 
-## Using this collection
+## Use Cases
 
 You can either call modules by their Fully Qualified Collection Namespace (FQCN), such as `amazon.cloud.logs_log_group`, or you can call modules by their short name if you list the `amazon.cloud` collection in the playbook's `collections` keyword:
 
 ```yaml
 ---
-  - name: Create log group (check mode)
+  - name: Create log group
     amazon.cloud.logs_log_group:
       state: present
       log_group_name: "{{ log_group_name }}"
@@ -70,6 +76,20 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
       tags:
         testkey: "testvalue"
     register: log_group
+
+  - name: Describe log group
+    amazon.cloud.logs_log_group:
+      state: describe
+      log_group_name: "{{ log_group_name }}"
+    register: output
+
+  - name: Update log group
+    amazon.cloud.logs_log_group:
+      state: present
+      log_group_name: "{{ log_group_name }}"
+      tags:
+        anotherkey: "anothervalue"
+    register: output
 ```
 
 Because modules may keep the same name in the `amazon.cloud`, `amazon.aws` and `community.aws` collections, we recommend using the FQCN.
@@ -93,23 +113,9 @@ This collection can be generated using the [content_builder](https://github.com/
 
 This tool can generate the api specification files and use them to generate the modules. The developer can use the [api specification](https://github.com/ansible-collections/amazon.cloud/api_specifications) files and the [modules.yaml](https://github.com/ansible-collections/amazon.cloud/modules.yaml) file hosted in this repository. The path to these files should be provided as input to the content builder tool to generate the schema and modules. To get more details on the command and input arguments please refer to the tool's [README](https://github.com/ansible-community/ansible.content_builder#resource-module-scaffolding-generated-using-openapi-based-json).
 
+## Testing
+
 This collection is tested using GitHub Actions. To know more on testing, refer to [CI.md](https://github.com/ansible-collections/amazon.cloud/blob/main/CI,md).
-
-### See Also:
-
-* [Amazon.Cloud Collection Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_amazon_cloud.html)
-* [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
-
-
-## Known issues
-
-* Modules are only as good as the API and its schema. Documentation may not be complete for all the modules' options and suboptions.
-* Missing supportability for important AWS resources like, EC2 instance, RDS instance, EC2 volume, Elastic Load Balancer, RDS Snapshot, EC2 snapshot, etc.
-* Idempotency is a function of the API and may not be fully supported.
-* Missing server-side pagination. This may have severe impact on performance.
-* Name-based identification filtering to support desired state (idempotency) logic is absent. This limitation has made us to exclude several resources and reduce the numebr of modules. A client-side filtering will definitely have a large impact on performance.
-* Not all the resources support the available states. In practice this means that some resources cannot be updated or listed.
-
 
 ## Contributing to this collection
 
@@ -131,6 +137,14 @@ We use the following guidelines:
 * [Ansible Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/index.html)
 * [Ansible Collection Development Guide](https://docs.ansible.com/ansible/devel/dev_guide/developing_collections.html#contributing-to-collections)
 
+## Known issues
+
+* Modules are only as good as the API and its schema. Documentation may not be complete for all the modules' options and suboptions.
+* Missing supportability for important AWS resources like, EC2 instance, RDS instance, EC2 volume, Elastic Load Balancer, RDS Snapshot, EC2 snapshot, etc.
+* Idempotency is a function of the API and may not be fully supported.
+* Missing server-side pagination. This may have severe impact on performance.
+* Name-based identification filtering to support desired state (idempotency) logic is absent. This limitation has made us to exclude several resources and reduce the numebr of modules. A client-side filtering will definitely have a large impact on performance.
+* Not all the resources support the available states. In practice this means that some resources cannot be updated or listed.
 
 ## Governance
 
@@ -143,7 +157,7 @@ Every voice is important. If you have something on your mind, create an issue or
 See the [rendered changelog](https://ansible-collections.github.io/amazon.cloud/branch/main/collections/amazon/cloud/docsite/CHANGELOG.html) or the [raw generated changelog](https://github.com/ansible-collections/amazon.cloud/tree/main/CHANGELOG.rst).
 
 
-## Communication
+## Support
 
 <!--List available communication channels. In addition to channels specific to your collection, we also recommend to use the following ones.-->
 
@@ -166,6 +180,8 @@ If you encounter abusive behavior, please refer to the [policy violations](https
 
 <!-- List out where the user can find additional information, such as working group meeting times, slack/IRC channels, or documentation for the product this collection automates. At a minimum, link to: -->
 
+- [Amazon.Cloud Collection Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_amazon_cloud.html)
+- [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html)
 - [Ansible Collection overview](https://github.com/ansible-collections/overview)
 - [Ansible User guide](https://docs.ansible.com/ansible/devel/user_guide/index.html)
 - [Ansible Developer guide](https://docs.ansible.com/ansible/devel/dev_guide/index.html)
@@ -174,7 +190,7 @@ If you encounter abusive behavior, please refer to the [policy violations](https
 - [The Bullhorn (the Ansible Contributor newsletter)](https://us19.campaign-archive.com/home/?u=56d874e027110e35dea0e03c1&id=d6635f5420)
 - [Changes impacting Contributors](https://github.com/ansible-collections/overview/issues/45)
 
-## Licensing
+## License Information
 
 <!-- Include the appropriate license information here and a pointer to the full licensing details. If the collection contains modules migrated from the ansible/ansible repo, you must use the same license that existed in the ansible/ansible repo. See the GNU license example below. -->
 
