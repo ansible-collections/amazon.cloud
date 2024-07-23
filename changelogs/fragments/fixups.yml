@@ -1,0 +1,4 @@
+trivial:
+  - "Copy over tests/sanity/ignore-2.17.txt and tests/sanity/ignore-2.18.txt."
+  - "Cleanup GitHub workflows."
+  - "Update test requirements."
