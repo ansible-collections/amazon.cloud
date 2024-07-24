@@ -6,4 +6,4 @@ placebo
 mock
 pytest
 pytest-xdist
-pytest-ansible-units
+pytest-ansible
