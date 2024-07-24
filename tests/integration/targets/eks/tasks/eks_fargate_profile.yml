@@ -45,7 +45,7 @@
     fargate_profile_name: '{{ eks_fargate_profile_name_a }}'
     state: present
     cluster_name: fake_cluster
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -64,7 +64,7 @@
     fargate_profile_name: fake_profile
     cluster_name: '{{ eks_cluster_name }}'
     state: absent
-    pod_execution_role_arn: '{{ _result_create_iam_role_fp.arn }}'
+    pod_execution_role_arn: '{{ _result_create_iam_role_fp.iam_role.arn }}'
     subnets: >-
       {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -81,7 +81,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ _result_create_cluster.result.identifier }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
       'public') | map(attribute='subnet.id') }}
@@ -101,7 +101,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -120,7 +120,7 @@
   amazon.cloud.eks_fargate_profile:
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -134,7 +134,7 @@
   amazon.cloud.eks_fargate_profile:
     identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_b }}"
     state: present
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.rn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -149,7 +149,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -170,7 +170,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -191,7 +191,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -218,7 +218,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -241,7 +241,7 @@
   amazon.cloud.eks_fargate_profile:
     identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_a }}"
     state: present
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -263,7 +263,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -285,7 +285,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results | selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -308,7 +308,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -330,7 +330,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -351,7 +351,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_a }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -372,7 +372,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
@@ -391,7 +391,7 @@
     fargate_profile_name: "{{ eks_fargate_profile_name_b }}"
     state: present
     cluster_name: "{{ eks_cluster_name }}"
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.arn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
