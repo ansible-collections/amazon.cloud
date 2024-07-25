@@ -134,7 +134,7 @@
   amazon.cloud.eks_fargate_profile:
     identifier: "{{ eks_cluster_name }}|{{ eks_fargate_profile_name_b }}"
     state: present
-    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.rn }}"
+    pod_execution_role_arn: "{{ _result_create_iam_role_fp.iam_role.arn }}"
     subnets: >-
       {{_result_create_subnets.results|selectattr('subnet.tags.Name', 'contains',
       'private') | map(attribute='subnet.id') }}
