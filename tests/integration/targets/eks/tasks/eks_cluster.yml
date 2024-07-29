@@ -95,7 +95,7 @@
       endpoint_private_access: false
       public_access_cidrs:
       - 0.0.0.0/0
-    role_arn: "{{ _result_create_iam_role.arn }}"
+    role_arn: "{{ _result_create_iam_role.iam_role.arn }}"
     tags:
       Name: "{{ _resource_prefix }}-eks-cluster"
     wait_timeout: 900

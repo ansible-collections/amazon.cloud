@@ -1,0 +1,3 @@
+---
+bugfixes:
+- "Fix bugs in the eks integration tests."
