@@ -6,9 +6,21 @@ concurrency:
 
 on:
   pull_request_target:
+    types:
+      - opened
+      - reopened
+      - labeled
+      - unlabeled
+      - synchronize
 
 jobs:
+  safe-to-test:
+    if: ${{ github.event.label.name == 'safe to test' }} || ${{ github.event.action != 'labeled' }}
+    uses: ansible-network/github_actions/.github/workflows/safe-to-test.yml@main
+
   integration:
+    needs:
+      - safe-to-test
     env:
       source: "./source"
       amazon: "./amazon"
@@ -26,6 +38,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: ${{ env.source }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: "0"
 
       - name: checkout amazon.aws
