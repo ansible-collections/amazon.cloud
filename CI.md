@@ -1,24 +1,31 @@
-# CI
+# Continuous Integration (CI)
 
-## Code validation workflows
+## Amazon Cloud Upstream Testing
 
-GitHub Actions are used to run the Continuous Integration for amazon.cloud collection. The workflows used for the CI can be found [here](https://github.com/ansible-collections/amazon.cloud/tree/main/.github/workflows). These workflows include jobs to run the unit tests, integration tests, sanity tests, linters, changelog check and doc related checks. The following table lists the python and ansible versions against which these jobs are run.
+GitHub Actions are used to run the CI for the amazon.cloud collection. The workflows used for the CI can be found in the [.github/workflows](.github/workflows) directory.
 
-| Jobs              | Description                                    | Python Versions      | Ansible Versions                                                    |
-| ----------------- | ---------------------------------------------- | -------------------- | ------------------------------------------------------------------- |
-| changelog         | Checks for the presence of Changelog fragments | 3.9                  | devel                                                               |
-| Linters           | Runs `black` and `flake8` on plugins and tests | 3.9                  | devel                                                               |
-| Sanity            | Runs ansible sanity checks                     | 3.8, 3.9, 3.10, 3.11 | Stable-2.12, 2.13, 2.14 (not on py 3.11), Stable-2.15+ (not on 3.8) |
-| Unit tests        | Executes the unit test cases                   | 3.9, 3.10            | Stable-2.12+                                                        |
-| Integration tests | Executes the integration test suites           | 3.9                  | devel                                                               |
+### PR Testing Workflows
 
-## Release worflows
+The following tests run on every pull request:
 
-These workflows include jobs to validate galaxy importer, manually create release, push release tag and publish collection to ansible galaxy. The following table lists the workflows and how they are triggered.
+| Job | Description | Python Versions | ansible-core Versions |
+| --- | ----------- | --------------- | --------------------- |
+| [Changelog](.github/workflows/changelog.yml) | Checks for the presence of changelog fragments | 3.9 | devel |
+| [Linters](.github/workflows/linters.yml) | Runs `black` and `flake8` on plugins and tests | 3.9 | N/A |
+| [Sanity](.github/workflows/sanity.yml) | Runs ansible sanity checks | See compatibility table below | devel, stable-2.17, stable-2.18, stable-2.19, stable-2.20 |
+| [Unit tests](.github/workflows/units.yml) | Executes unit test cases | See compatibility table below | devel, stable-2.17, stable-2.18, stable-2.19, stable-2.20 |
+| [Integration](.github/workflows/integration.yml) | Executes integration test suites | 3.11 | milestone |
 
-| Jobs            | Description                                          | trigger                                         |
-| --------------- | ---------------------------------------------------- | ----------------------------------------------- |
-| galaxy/importer | validate that collection can be imported into galaxy | pull request/push/schedule                      |
-| Release/prepare | Create a new release pull request                    | manual trigger by repository admin              |
-| Release/tag     | Publish repository tag                               | pull request [closed] with label 'ok-to-tag'    |
-| Release/publish | Publish release to galaxy                            | release [published] (when a new tag is created) |
+**Note:** Integration tests require manual approval via the `protected` environment and AWS credentials from ansible-core-ci.
+
+### Python Version Compatibility by ansible-core Version
+
+These are outlined in the collection's [tox.ini](tox.ini) file (`envlist`) and GitHub Actions workflow exclusions.
+
+| ansible-core Version | Sanity Tests | Unit Tests |
+| -------------------- | ------------ | ---------- |
+| devel | 3.12, 3.13, 3.14 | 3.12, 3.13 |
+| stable-2.20 | 3.12, 3.13, 3.14 | 3.12, 3.13 |
+| stable-2.19 | 3.11, 3.12, 3.13 | 3.11, 3.12, 3.13 |
+| stable-2.18 | 3.11, 3.12, 3.13 | 3.11, 3.12, 3.13 |
+| stable-2.17 | 3.10, 3.11, 3.12 | 3.10, 3.11, 3.12 |
