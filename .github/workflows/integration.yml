@@ -5,69 +5,33 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
-      - labeled
-      - unlabeled
       - synchronize
+    branches:
+      - main
+      - stable-*
 
 jobs:
   integration:
-    
-    environment: protected # requires manual approval within GitHub Actions to proceed
-    
-    env:
-      source: "./source"
-      amazon: "./amazon"
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        ansible-version:
-          - milestone
-        python-version:
-          - "3.11"
-    name: "ansible-test-integration-py${{ matrix.python-version }}-${{ matrix.ansible-version }}"
+    env:
+      ansible_version: milestone
+      python_version: "3.12"
     steps:
-      - name: Checkout collection
-        uses: actions/checkout@v3
-        with:
-          path: ${{ env.source }}
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: "0"
-
-      - name: checkout amazon.aws
-        uses: ansible-network/github_actions/.github/actions/checkout_dependency@main
-        with:
-          repository: ansible-collections/amazon.aws
-          path: ${{ env.amazon }}
-          ref: main
-
-      - name: Build and install collection
-        id: install-src
-        uses: ansible-network/github_actions/.github/actions/build_install_collection@main
-        with:
-          install_python_dependencies: true
-          source_path: ${{ env.source }}
-
-      - name: Build and install amazon.aws collection
-        id: install-amazon
-        uses: ansible-network/github_actions/.github/actions/build_install_collection@main
-        with:
-          install_python_dependencies: true
-          source_path: ${{ env.amazon }}
-
       - name: Create AWS/sts session credentials
-        uses: ansible-network/github_actions/.github/actions/ansible_aws_test_provider@main
-        with:
-          collection_path: ${{ steps.install-src.outputs.collection_path }}
-          ansible_core_ci_key: ${{ secrets.ANSIBLE_CORE_CI_KEY }}
+        uses: ansible/ansible-test-auth@v1
 
       - name: Run integration tests
-        uses: ansible-network/github_actions/.github/actions/ansible_test_integration@main
+        uses: ansible-community/ansible-test-gh-action@d3a8ec7a59694e25e210fcd44738910149537f0e
         with:
-          collection_path: ${{ steps.install-src.outputs.collection_path }}
-          python_version: ${{ matrix.python-version }}
-          ansible_version: ${{ matrix.ansible-version }}
+          ansible-core-version: ${{ env.ansible_version }}
+          origin-python-version: ${{ env.python_version }}
+          testing-type: integration
+          test-deps: >-
+            git+https://github.com/ansible-collections/amazon.aws.git,main
+            git+https://github.com/ansible-collections/community.aws.git,main
+            community.crypto
+          pre-test-cmd: python -m pip install -r tests/integration/constraints.txt -r tests/integration/requirements.txt
