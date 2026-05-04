@@ -87,8 +87,8 @@ options:
 author: Ansible Cloud Team (@ansible-collections)
 version_added: 0.2.0
 extends_documentation_fragment:
-- amazon.aws.aws
-- amazon.aws.ec2
+- amazon.aws.common.modules
+- amazon.aws.region.modules
 - amazon.cloud.boto3
 """
 
