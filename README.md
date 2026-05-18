@@ -117,7 +117,7 @@ This tool can generate the api specification files and use them to generate the 
 
 This collection is tested using GitHub Actions. To know more on testing, refer to [CI.md](https://github.com/ansible-collections/amazon.cloud/blob/main/CI,md).
 
-SonarQube Cloud (static analysis) is documented in [sonarcloud.md](https://github.com/ansible-collections/amazon.cloud/blob/main/sonarcloud.md)
+SonarQube Cloud (static analysis) is documented in [`SONARCLOUD.md`](https://github.com/ansible-collections/amazon.cloud/blob/main/SONARCLOUD.md)
 
 ## Contributing to this collection
 
