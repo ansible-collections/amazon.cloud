@@ -4,7 +4,7 @@ The AWS Cloud Control Collection is an experimental alpha collection of generate
 ## Description
 
 AWS Cloud Control Collection's work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state.
-It provides the automation capabilities needed to optimize cloud operations, ensuring efficient, reliable, and secure management of AWS resources. 
+It provides the automation capabilities needed to optimize cloud operations, ensuring efficient, reliable, and secure management of AWS resources.
 
 ## Included content
 <!--start collection content-->
@@ -116,6 +116,8 @@ This tool can generate the api specification files and use them to generate the 
 ## Testing
 
 This collection is tested using GitHub Actions. To know more on testing, refer to [CI.md](https://github.com/ansible-collections/amazon.cloud/blob/main/CI,md).
+
+SonarQube Cloud (static analysis) is documented in [sonarcloud.md](https://github.com/ansible-collections/amazon.cloud/blob/main/sonarcloud.md)
 
 ## Contributing to this collection
 
