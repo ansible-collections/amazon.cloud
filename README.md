@@ -1,10 +1,16 @@
 # Amazon Cloud Collection for Ansible
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+
 The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services.
 
 ## Description
 
 AWS Cloud Control Collection's work is being made available for research purposes on the Cloud Control API and community feedback on the user experience of API generated module like these. Therefore, this content is not intended for production in its current state.
 It provides the automation capabilities needed to optimize cloud operations, ensuring efficient, reliable, and secure management of AWS resources.
+
+For information about code quality analysis and static analysis results, see the [SonarCloud project overview](https://sonarcloud.io/project/overview?id=ansible-collections_amazon.cloud).
 
 ## Included content
 <!--start collection content-->
