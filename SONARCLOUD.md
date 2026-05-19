@@ -67,7 +67,7 @@ The scan job:
 
 ### Why `workflow_call` (not `workflow_run`)
 
-- **Checkout**: The caller’s `pull_request` / `push` event allows `actions/checkout` to use `github.event.pull_request.head.sha` on PRs, which SonarCloud expects for pull request analysis.
+- **Checkout**: The caller's `pull_request` / `push` event allows `actions/checkout` to use `github.event.pull_request.head.sha` on PRs, which SonarCloud expects for pull request analysis.
 - **Artifacts**: Coverage is uploaded in the same workflow run as the gate; the reusable job uses `actions/download-artifact@v4` with `name: coverage`.
 - **Secrets**: The caller passes only the required org secret explicitly (do not use `secrets: inherit` when GitHub reports that only required secrets may be passed).
 
@@ -82,7 +82,7 @@ Fork PRs may skip Sonar until changes are merged or a maintainer runs analysis f
 
 ## Coverage integration (planned)
 
-This repository’s **first** SonarCloud PR adds `sonar-project.properties`, the reusable `sonarcloud.yml`, and this document. A **follow-up** PR will:
+This repository's **first** SonarCloud PR adds `sonar-project.properties`, the reusable `sonarcloud.yml`, and this document. A **follow-up** PR will:
 
 1. Add a **coverage** job to `.github/workflows/all_green_check.yml` that produces Cobertura XML and uploads it as artifact **`coverage`**.
 2. Extend the **`all_green`** gate to depend on **coverage**.
@@ -108,7 +108,7 @@ Until that lands, CI will not run SonarCloud scans automatically; you can still 
 If analysis fails or coverage is missing after coverage CI is enabled:
 
 1. **Check `all_green`**: Ensure the workflow (including the **coverage** job) succeeded for the same commit.
-2. **Check artifact**: In the SonarCloud run, confirm the download and “Set coverage report paths” steps found at least one `coverage*.xml` and set `COVERAGE_PATHS`.
+2. **Check artifact**: In the SonarCloud run, confirm the download and "Set coverage report paths" steps found at least one `coverage*.xml` and set `COVERAGE_PATHS`.
 3. **Run SonarScanner locally**: Install [SonarScanner CLI](https://docs.sonarsource.com/sonarqube-cloud/advanced-setup/ci-based-analysis/sonarscanner-cli/), set `SONAR_TOKEN` from [SonarCloud Security](https://sonarcloud.io/account/security), and run from the repo root:
 
    ```sh
