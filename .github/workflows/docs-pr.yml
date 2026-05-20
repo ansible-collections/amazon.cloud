@@ -18,6 +18,7 @@ jobs:
     with:
       init-lenient: false
       init-fail-on-error: true
+      ansible-ref: milestone
       extra-collections: 'git+https://github.com/ansible-collections/amazon.aws.git,main'
       intersphinx-links: |
         amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
@@ -33,6 +34,7 @@ jobs:
     with:
       init-lenient: true
       init-fail-on-error: false
+      ansible-ref: milestone
       extra-collections: 'git+https://github.com/ansible-collections/amazon.aws.git,main'
       intersphinx-links: |
         amazon_aws:https://ansible-collections.github.io/amazon.aws/branch/main/
