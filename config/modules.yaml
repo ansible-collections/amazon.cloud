@@ -489,3 +489,32 @@
       - Creates a MemoryDB user. For more information, see
         U(https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html)
     resource: AWS::MemoryDB::User
+# 0.5.0
+- rds_custom_db_engine_version:
+    documentation:
+      short_description: Creates and manages a custom DB engine version (CEV)
+      description:
+      - Creates and manages a custom DB engine version (CEV). For more information, see
+        U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-customdbengineversion.html)
+    resource: AWS::RDS::CustomDBEngineVersion
+- rds_db_cluster:
+    documentation:
+      short_description: Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster
+      description:
+      - Creates and manages an Amazon Aurora DB cluster or Multi-AZ DB cluster. For more information, see
+        U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html)
+    resource: AWS::RDS::DBCluster
+- rds_db_parameter_group:
+    documentation:
+      short_description: Creates and manages a custom parameter group for an RDS database family
+      description:
+      - Creates and manages a custom parameter group for an RDS database family. For more information, see
+        U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbparametergroup.html)
+    resource: AWS::RDS::DBParameterGroup
+- rds_event_subscription:
+    documentation:
+      short_description: Allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS)
+      description:
+      - Allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see
+        U(https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-eventsubscription.html)
+    resource: AWS::RDS::EventSubscription
