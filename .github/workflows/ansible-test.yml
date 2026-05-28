@@ -135,4 +135,4 @@ jobs:
           testing-type: units
           target-python-version: ${{ matrix.python-version }}
           test-deps: -r ansible_collections/amazon/cloud/tests/unit/requirements.yml
-          pre-test-cmd: python -m pip install -r ansible_collections/amazon/cloud/tests/test-requirements.txt
+          pre-test-cmd: python -m pip install -r test-requirements.txt
