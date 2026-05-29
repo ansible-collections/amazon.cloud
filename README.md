@@ -2,6 +2,11 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=bugs)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
 
 The AWS Cloud Control Collection is an experimental alpha collection of generated modules using the Cloud Control API for interacting with AWS Services.
 

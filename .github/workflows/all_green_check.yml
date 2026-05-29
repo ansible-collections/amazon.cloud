@@ -19,6 +19,7 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   linters:
+    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/linters.yml  # use the callable linters job to run tests
   sanity:
     uses: ./.github/workflows/sanity.yml  # use the callable sanity job to run tests
@@ -27,48 +28,48 @@ jobs:
   coverage:
     name: Unit test coverage
     runs-on: ubuntu-latest
+    needs:
+      - sanity
+      - units
+    env:
+      ANSIBLE_CORE_REF: "stable-2.17"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Install ansible-core and dependencies
+      - name: Install Ansible (ansible-test)
         run: |
           python -m pip install --upgrade pip
-          pip install https://github.com/ansible/ansible/archive/stable-2.17.tar.gz --disable-pip-version-check
-          pip install coverage[toml]
+          python -m pip install "https://github.com/ansible/ansible/archive/${ANSIBLE_CORE_REF}.tar.gz"
 
       - name: Run unit tests with coverage
-        run: |
-          ansible-test units --venv --coverage --python 3.10 --requirements || true
+        run: ansible-test units --venv --coverage --python 3.10 --requirements
 
-      - name: Generate coverage XML
+      - name: Combine and emit coverage XML
         run: |
-          ansible-test coverage combine --venv --python 3.10 --requirements || true
+          ansible-test coverage combine --venv --python 3.10 --requirements
           ansible-test coverage xml --venv --python 3.10 --requirements
 
-      - name: Copy coverage file to repo root
+      - name: Prepare coverage.xml for SonarCloud
         run: |
-          COVERAGE_XML=$(find tests/output/reports -name "coverage*.xml" -type f 2>/dev/null | head -1)
-          if [[ -n "$COVERAGE_XML" ]]; then
-            cp "$COVERAGE_XML" coverage.xml
-            echo "Copied $COVERAGE_XML to coverage.xml"
-          else
-            echo "Warning: No coverage XML found, creating empty coverage.xml"
-            touch coverage.xml
-          fi
+          set -euo pipefail
+          mkdir -p "${GITHUB_WORKSPACE}"
+          xml=$(find tests/output/reports -maxdepth 1 -name '*.xml' ! -name '*powershell*' | head -1)
+          test -n "${xml}"
+          cp "${xml}" "${GITHUB_WORKSPACE}/coverage.xml"
+          # Strip workspace prefix so Sonar sees repo-relative paths (same idea as amazon.aws path rewrite)
+          sed -i "s#${GITHUB_WORKSPACE}/##g" "${GITHUB_WORKSPACE}/coverage.xml"
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: coverage.xml
+          path: ${{ github.workspace }}/coverage.xml
 
   all_green:
     if: ${{ always() }}
@@ -79,13 +80,45 @@ jobs:
       - coverage
     runs-on: ubuntu-latest
     steps:
-      - run: >-
-          python -c "assert set([
-          '${{ needs.linters.result }}',
-          '${{ needs.sanity.result }}',
-          '${{ needs.units.result }}',
-          '${{ needs.coverage.result }}'
-          ]) == {'success'}"
+      - run: |
+          python -c "
+          import sys
+
+          required = ['sanity', 'units', 'coverage']
+          if '${{ github.event_name }}' == 'pull_request':
+              required = ['linters', 'sanity', 'units', 'coverage']
+          results = {
+              'linters': '${{ needs.linters.result }}',
+              'sanity': '${{ needs.sanity.result }}',
+              'units': '${{ needs.units.result }}',
+              'coverage': '${{ needs.coverage.result }}',
+          }
+
+          for name in required:
+              if results[name] == 'failure':
+                  print(f'all_green: required job failed: {name} results={results}', file=sys.stderr)
+                  sys.exit(1)
+
+          # cancel-in-progress superseded this run; do not fail (newer run is authoritative)
+          if any(v == 'cancelled' for v in results.values()):
+              print(
+                  'all_green: one or more jobs cancelled (usually concurrency); skipping strict gate.',
+                  results,
+              )
+              sys.exit(0)
+
+          not_ok = [j for j in required if results[j] != 'success']
+          if not_ok:
+              print(f'all_green: required jobs not success: {not_ok} results={results}', file=sys.stderr)
+              sys.exit(1)
+
+          for job, status in results.items():
+              if job not in required and status not in ('success', 'skipped'):
+                  print(f'all_green: unexpected {job}={status} results={results}', file=sys.stderr)
+                  sys.exit(1)
+
+          print('all_green OK', results)
+          "
 
   sonarcloud:
     name: SonarCloud scan
