@@ -2,7 +2,7 @@
 
 SonarQube Cloud (SonarCloud) is a Software-as-a-Service (SaaS) code analysis tool that helps maintain code quality by identifying issues related to maintainability, reliability, and security.
 
-The amazon.cloud collection uses SonarQube Cloud to analyze the main branch and pull requests, and (once coverage CI is wired) to track unit test coverage and quality gate compliance.
+The amazon.cloud collection uses SonarQube Cloud to analyze the main branch and pull requests, and to track unit test coverage and quality gate compliance.
 
 ## Core concepts
 
@@ -20,7 +20,7 @@ The collection uses **CI-based analysis** with GitHub Actions:
 
 - The SonarScanner runs inside the CI build.
 - Configuration is controlled in the repository (`sonar-project.properties` and `.github/workflows/sonarcloud.yml`).
-- **Code coverage** will be produced by a dedicated coverage job in `all_green` and passed to the scanner via a `coverage` artifact (follow-up CI work; see [Coverage integration](#coverage-integration-planned) below).
+- **Code coverage** is produced by a dedicated coverage job in `all_green` and passed to the scanner via a `coverage` artifact (see [Coverage integration](#coverage-integration) below).
 
 Automatic analysis is not used because it does not support code coverage and has limited branch support.
 
@@ -80,15 +80,15 @@ GitHub **does not** expose org/repository secrets to workflows triggered by pull
 
 Fork PRs may skip Sonar until changes are merged or a maintainer runs analysis from a trusted branch. See [Using secrets in GitHub Actions](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) and [Approving workflow runs from forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/approving-workflow-runs-from-public-forks).
 
-## Coverage integration (planned)
+## Coverage integration
 
-This repository's **first** SonarCloud PR adds `sonar-project.properties`, the reusable `sonarcloud.yml`, and this document. A **follow-up** PR will:
+Coverage integration is now complete:
 
-1. Add a **coverage** job to `.github/workflows/all_green_check.yml` that produces Cobertura XML and uploads it as artifact **`coverage`**.
-2. Extend the **`all_green`** gate to depend on **coverage**.
-3. Add a **`sonarcloud`** job that calls `./.github/workflows/sonarcloud.yml` with explicit `secrets:` for `ANSIBLE_COLLECTIONS_ORG_SONAR_TOKEN_CICD_BOT` (see org template `all_green-caller.sonarcloud-job.yml.template` in the ansible-collection-sdlc module).
+1. A **coverage** job in `.github/workflows/all_green_check.yml` produces Cobertura XML and uploads it as artifact **`coverage`**.
+2. The **`all_green`** gate depends on **coverage** completion.
+3. A **`sonarcloud`** job calls `./.github/workflows/sonarcloud.yml` with explicit `secrets:` for `ANSIBLE_COLLECTIONS_ORG_SONAR_TOKEN_CICD_BOT`.
 
-Until that lands, CI will not run SonarCloud scans automatically; you can still validate configuration with the SonarScanner CLI locally (below).
+CI now runs SonarCloud scans automatically on pull requests and pushes to `main` and `stable-*` branches. You can also validate configuration with the SonarScanner CLI locally (see [Debugging SonarCloud issues](#debugging-sonarcloud-issues) below).
 
 ## Summary
 
@@ -96,16 +96,16 @@ Until that lands, CI will not run SonarCloud scans automatically; you can still 
 |-----------|------|--------|
 | Sonar project settings | `sonar-project.properties` | Present |
 | Reusable scanner workflow | `.github/workflows/sonarcloud.yml` | Present (`workflow_call` only) |
-| `all_green` coverage + Sonar caller | `.github/workflows/all_green_check.yml` | Planned (follow-up PR) |
+| `all_green` coverage + Sonar caller | `.github/workflows/all_green_check.yml` | Complete |
 
-| Workflow | File | Trigger (when fully wired) | Purpose |
-|----------|------|----------------------------|---------|
+| Workflow | File | Trigger | Purpose |
+|----------|------|---------|---------|
 | `all_green` | `.github/workflows/all_green_check.yml` | `pull_request`, push to `main` / `stable-*` | Linters, sanity, units, coverage; gate on success |
 | SonarCloud | `.github/workflows/sonarcloud.yml` | `workflow_call` from `all_green` | Download coverage artifact and run SonarScanner |
 
 ## Debugging SonarCloud issues
 
-If analysis fails or coverage is missing after coverage CI is enabled:
+If analysis fails or coverage is missing:
 
 1. **Check `all_green`**: Ensure the workflow (including the **coverage** job) succeeded for the same commit.
 2. **Check artifact**: In the SonarCloud run, confirm the download and "Set coverage report paths" steps found at least one `coverage*.xml` and set `COVERAGE_PATHS`.
@@ -117,7 +117,7 @@ If analysis fails or coverage is missing after coverage CI is enabled:
 
    Fix any errors reported at the end of the output.
 
-*Note:* Misconfigured `sonar-project.properties` may not fail the main PR checks until the Sonar job is wired and required. Use the SonarCloud project page and local `sonar-scanner` runs to verify settings.
+*Note:* Use the SonarCloud project page and local `sonar-scanner` runs to verify settings if analysis results are unexpected.
 
 ## Prerequisites (org admins)
 
