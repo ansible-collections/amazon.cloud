@@ -22,7 +22,7 @@ jobs:
       python_version: "3.12"
     steps:
       - name: Create AWS/sts session credentials
-        uses: ansible/ansible-test-auth@v1
+        uses: ansible/ansible-test-auth@008750a5bf07124c3ab86d30d73d7319d7518f36
 
       - name: Run integration tests
         uses: ansible-community/ansible-test-gh-action@d3a8ec7a59694e25e210fcd44738910149537f0e
