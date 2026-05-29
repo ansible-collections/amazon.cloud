@@ -30,6 +30,7 @@ jobs:
           ansible-core-version: ${{ env.ansible_version }}
           origin-python-version: ${{ env.python_version }}
           testing-type: integration
+          target-python-version: ${{ env.python_version }}
           test-deps: >-
             git+https://github.com/ansible-collections/amazon.aws.git,main
             git+https://github.com/ansible-collections/community.aws.git,main
