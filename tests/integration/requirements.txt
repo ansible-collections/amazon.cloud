@@ -2,4 +2,6 @@
 boto3
 botocore
 
+jsonpatch
+
 virtualenv
