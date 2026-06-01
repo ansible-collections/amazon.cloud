@@ -1,7 +1,6 @@
 # Amazon Cloud Collection for Ansible
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ansible-collections_amazon.cloud&metric=bugs)](https://sonarcloud.io/summary/new_code?id=ansible-collections_amazon.cloud)
