@@ -19,11 +19,28 @@ def ccr():
     class NotFound(Exception):
         pass
 
-    resource = CloudControlResource(Mock())
-    resource.module.check_mode = False
-    resource.module.params = {"wait_timeout": 5}
+    module = Mock()
+    module.check_mode = False
+    module.params = {"wait_timeout": 5, "bucket_name": "test_bucket"}
+
+    def _fail(*args, **kwargs):
+        raise Exception("module exit")
+
+    module.fail_json.side_effect = _fail
+    module.fail_json_aws.side_effect = _fail
+
+    resource = CloudControlResource(module)
     resource.client = MagicMock()
     resource.client.exceptions.ResourceNotFoundException = NotFound
+    resource.client.list_resource_requests.return_value = {
+        "ResourceRequestStatusSummaries": []
+    }
+    resource.client.update_resource.return_value = {
+        "ProgressEvent": {
+            "OperationStatus": "IN_PROGRESS",
+            "RequestToken": "test-token",
+        }
+    }
     return resource
 
 
@@ -55,8 +72,10 @@ def test_present_updates_resource(ccr):
     ccr.client.get_resource.return_value = resource
     create_only_params = []
     params = {"BucketName": "test_bucket", "Tags": [{"Key": "k", "Value": "v"}]}
-    changed = ccr.present("AWS::S3::Bucket", "test_bucket", params, create_only_params)
-    assert changed
+    results = ccr.present(
+        "AWS::S3::Bucket", ["bucket_name"], params, create_only_params
+    )
+    assert results["changed"]
     ccr.client.update_resource.assert_called_with(
         TypeName="AWS::S3::Bucket",
         Identifier="test_bucket",
@@ -75,7 +94,8 @@ def test_absent_deletes_resource(ccr):
         },
     }
     ccr.client.get_resource.return_value = resource
-    changed = ccr.absent("AWS::S3::Bucket", "test_bucket")
+    ccr.module.params = {"wait_timeout": 5, "bucket_name": "test_bucket"}
+    changed = ccr.absent("AWS::S3::Bucket", ["bucket_name"])
     assert changed
     ccr.client.delete_resource.assert_called_with(
         TypeName="AWS::S3::Bucket",
@@ -90,7 +110,8 @@ def test_absent_deletes_resource_NotFound(ccr):
     ccr.client.get_resource.side_effect = (
         ccr.client.exceptions.ResourceNotFoundException()
     )
-    changed = ccr.absent("AWS::S3::Bucket", "test_bucket")
+    ccr.module.params = {"wait_timeout": 5, "bucket_name": "test_bucket"}
+    changed = ccr.absent("AWS::S3::Bucket", ["bucket_name"])
     assert changed is False
     ccr.client.delete_resource.assert_not_called()
     ccr.client.create_resource.assert_not_called()
