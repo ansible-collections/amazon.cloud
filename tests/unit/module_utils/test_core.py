@@ -14,6 +14,10 @@ from ansible_collections.amazon.cloud.plugins.module_utils.core import (
 )
 
 
+class ModuleFailure(Exception):
+    """Simulates Ansible module exit via fail_json."""
+
+
 @pytest.fixture
 def ccr():
     class NotFound(Exception):
@@ -24,7 +28,7 @@ def ccr():
     module.params = {"wait_timeout": 5, "bucket_name": "test_bucket"}
 
     def _fail(*args, **kwargs):
-        raise Exception("module exit")
+        raise ModuleFailure("module exit")
 
     module.fail_json.side_effect = _fail
     module.fail_json_aws.side_effect = _fail
