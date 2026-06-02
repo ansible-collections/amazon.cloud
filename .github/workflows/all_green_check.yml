@@ -35,6 +35,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # ansible-test requires cwd under .../ansible_collections/{namespace}/{name}/
+          path: ansible_collections/amazon/cloud
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -47,22 +50,33 @@ jobs:
           python -m pip install "https://github.com/ansible/ansible/archive/${ANSIBLE_CORE_REF}.tar.gz"
 
       - name: Run unit tests with coverage
+        working-directory: ansible_collections/amazon/cloud
         run: ansible-test units --venv --coverage --python 3.10 --requirements
 
       - name: Combine and emit coverage XML
+        working-directory: ansible_collections/amazon/cloud
         run: |
           ansible-test coverage combine --venv --python 3.10 --requirements
           ansible-test coverage xml --venv --python 3.10 --requirements
 
       - name: Prepare coverage.xml for SonarCloud
+        env:
+          COLLECTION_DIR: ${{ github.workspace }}/ansible_collections/amazon/cloud
         run: |
           set -euo pipefail
-          mkdir -p "${GITHUB_WORKSPACE}"
-          xml=$(find tests/output/reports -maxdepth 1 -name '*.xml' ! -name '*powershell*' | head -1)
-          test -n "${xml}"
+          xml=$(find "${COLLECTION_DIR}/tests/output/reports" -maxdepth 1 -name '*.xml' ! -name '*powershell*' | head -1)
+          if [[ -z "${xml}" ]]; then
+            echo "::error::coverage XML not found under tests/output/reports"
+            exit 1
+          fi
           cp "${xml}" "${GITHUB_WORKSPACE}/coverage.xml"
-          # Strip workspace prefix so Sonar sees repo-relative paths (same idea as amazon.aws path rewrite)
           sed -i "s#${GITHUB_WORKSPACE}/##g" "${GITHUB_WORKSPACE}/coverage.xml"
+          sed -i 's#ansible_collections/amazon/cloud/##g' "${GITHUB_WORKSPACE}/coverage.xml"
+          if ! grep -q '<coverage' "${GITHUB_WORKSPACE}/coverage.xml"; then
+            echo "::error::coverage.xml does not look like Cobertura XML"
+            exit 1
+          fi
+          test -s "${GITHUB_WORKSPACE}/coverage.xml"
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
