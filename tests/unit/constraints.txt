@@ -1,0 +1,3 @@
+# Specifically run tests against the oldest versions that we support
+boto3==1.25.0
+botocore==1.28.0

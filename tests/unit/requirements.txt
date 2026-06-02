@@ -1,0 +1,5 @@
+# Installed by ansible-test into the unit test container.
+# Keep in sync with requirements.txt.
+boto3>=1.25.0
+botocore>=1.28.0
+jsonpatch

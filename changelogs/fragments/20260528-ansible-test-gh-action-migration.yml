@@ -1,0 +1,6 @@
+---
+trivial:
+  - Migrate CI workflows to use ansible-community/ansible-test-gh-action for unified sanity and unit testing.(https://github.com/ansible-collections/amazon.cloud/pull/142)
+  - Add jsonpatch to test-requirements.txt and tests/unit/requirements.txt.(https://github.com/ansible-collections/amazon.cloud/pull/143)
+  - Fix unit test failures in tests/unit/module_utils/test_core.py.(https://github.com/ansible-collections/amazon.cloud/pull/144)
+  
