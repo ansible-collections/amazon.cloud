@@ -25,10 +25,6 @@ jobs:
   linters:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/linters.yml  # use the callable linters job to run tests
-  sanity:
-    uses: ./.github/workflows/sanity.yml  # use the callable sanity job to run tests
-  units:
-    uses: ./.github/workflows/units.yml  # use the callable units job to run tests
   coverage:
     name: Unit test coverage
     runs-on: ubuntu-latest
@@ -74,28 +70,28 @@ jobs:
         with:
           name: coverage
           path: ${{ github.workspace }}/coverage.xml
+  ansible-test:
+    uses: ./.github/workflows/ansible-test.yml
 
   all_green:
     if: ${{ always() }}
     needs:
       - linters
-      - sanity
-      - units
       - coverage
+      - ansible-test
     runs-on: ubuntu-latest
     steps:
       - run: |
           python -c "
           import sys
 
-          required = ['sanity', 'units', 'coverage']
+          required = ['coverage', 'ansible-test']
           if '${{ github.event_name }}' == 'pull_request':
-              required = ['linters', 'sanity', 'units', 'coverage']
+              required = ['linters', 'coverage', 'ansible-test']
           results = {
               'linters': '${{ needs.linters.result }}',
-              'sanity': '${{ needs.sanity.result }}',
-              'units': '${{ needs.units.result }}',
               'coverage': '${{ needs.coverage.result }}',
+              'ansible-test': '${{ needs.ansible-test.result }}',
           }
 
           for name in required:
