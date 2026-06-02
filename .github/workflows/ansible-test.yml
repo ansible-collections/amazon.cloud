@@ -70,6 +70,7 @@ jobs:
           ansible-core-version: ${{ matrix.ansible-core-version }}
           testing-type: sanity
           target-python-version: ${{ matrix.python-version }}
+          test-deps: -r ansible_collections/amazon/cloud/tests/sanity/requirements.yml
 
   units:
     runs-on: ubuntu-latest
