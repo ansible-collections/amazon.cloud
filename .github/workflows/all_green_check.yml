@@ -39,6 +39,13 @@ jobs:
           # ansible-test requires cwd under .../ansible_collections/{namespace}/{name}/
           path: ansible_collections/amazon/cloud
 
+      - name: Checkout amazon.aws dependency
+        uses: ansible-network/github_actions/.github/actions/checkout_dependency@47822b51aee957080e811cc434443c4e3bb9569a
+        with:
+          repository: ansible-collections/amazon.aws
+          path: ansible_collections/amazon/aws
+          ref: main
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
