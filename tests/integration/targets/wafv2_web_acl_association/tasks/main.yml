@@ -1,10 +1,5 @@
 ---
 # Integration tests for amazon.cloud.wafv2_web_acl_association.
-#
-# Acceptance criteria covered:
-#   * state=absent disassociates a web ACL from a resource (changed=true)
-#   * re-running state=absent is idempotent (changed=false)
-#
 # A regional web ACL and an API Gateway REST API stage (a resource type that
 # AWS WAF can be associated with) are created as fixtures using community.aws,
 # then associated/disassociated with the amazon.cloud module under test.

@@ -123,9 +123,8 @@ def test_absent_deletes_resource_NotFound(ccr):
 
 
 def test_get_identifier_web_acl_arn_casing(ccr):
-    # Regression: web_acl_arn must map to the "WebACLArn" Cloud Control property
-    # (ACL uppercase), not the generic snake_to_camel "WebAclArn", otherwise
-    # GetResource/DeleteResource raise a ValidationException.
+    # web_acl_arn must become "WebACLArn", not snake_to_camel's "WebAclArn",
+    # or Cloud Control rejects the identifier with a ValidationException.
     import json
 
     ccr.module.params = {
