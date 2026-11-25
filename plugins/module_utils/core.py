@@ -520,10 +520,19 @@ class CloudControlResource(object):
 
         return results
 
+    # Property names whose correct Cloud Control casing differs from the
+    # generic snake_to_camel() conversion (e.g. embedded acronyms).
+    IDENTIFIER_NAME_OVERRIDES = {
+        "acl_name": "ACLName",
+        "web_acl_arn": "WebACLArn",
+    }
+
     def get_identifier(self, identifier: dict, primary_identifier: list):
         for id in primary_identifier:
-            if id == "acl_name":
-                identifier["ACLName"] = self.module.params.get("acl_name")
+            if id in self.IDENTIFIER_NAME_OVERRIDES:
+                identifier[self.IDENTIFIER_NAME_OVERRIDES[id]] = self.module.params.get(
+                    id
+                )
             else:
                 identifier[
                     snake_to_camel(id, capitalize_first=True)

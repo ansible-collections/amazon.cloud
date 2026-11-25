@@ -74,6 +74,26 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
+- name: Associate a web ACL with an Application Load Balancer
+  amazon.cloud.wafv2_web_acl_association:
+    state: present
+    web_acl_arn: 'arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111'
+    resource_arn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188'
+
+# Disassociate a web ACL from a resource using state=absent.
+# This replaces calling the "aws wafv2 disassociate-web-acl" CLI command directly.
+# Re-running the same task is idempotent: once the association is gone the task
+# reports changed=false.
+- name: Disassociate a web ACL from an Application Load Balancer
+  amazon.cloud.wafv2_web_acl_association:
+    state: absent
+    web_acl_arn: 'arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111'
+    resource_arn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188'
+
+- name: Disassociate a web ACL using the compound identifier
+  amazon.cloud.wafv2_web_acl_association:
+    state: absent
+    identifier: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188|arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111'
 """
 
 RETURN = r"""

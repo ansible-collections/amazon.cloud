@@ -122,6 +122,27 @@ def test_absent_deletes_resource_NotFound(ccr):
     ccr.client.update_resource.assert_not_called()
 
 
+def test_get_identifier_web_acl_arn_casing(ccr):
+    # web_acl_arn must become "WebACLArn", not snake_to_camel's "WebAclArn",
+    # or Cloud Control rejects the identifier with a ValidationException.
+    import json
+
+    ccr.module.params = {
+        "resource_arn": "arn:res",
+        "web_acl_arn": "arn:waf",
+    }
+    identifier = json.loads(ccr.get_identifier({}, ["resource_arn", "web_acl_arn"]))
+    assert identifier == {"ResourceArn": "arn:res", "WebACLArn": "arn:waf"}
+
+
+def test_get_identifier_acl_name_casing(ccr):
+    import json
+
+    ccr.module.params = {"acl_name": "my-acl"}
+    identifier = json.loads(ccr.get_identifier({}, ["acl_name"]))
+    assert identifier == {"ACLName": "my-acl"}
+
+
 def test__ansible_dict_to_boto3_tag_list():
     tags_dict = {
         "lowerCamel": "lowerCamelValue",

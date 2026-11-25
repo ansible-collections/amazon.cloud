@@ -1,0 +1,5 @@
+---
+bugfixes:
+- wafv2_web_acl_association - fix ``state=present`` and ``state=absent`` failing with a Cloud Control ``ValidationException`` because the ``web_acl_arn`` identifier was generated as ``WebAclArn`` instead of the expected ``WebACLArn`` casing; this allows associating and disassociating a web ACL using ``web_acl_arn`` and ``resource_arn``.
+minor_changes:
+- wafv2_web_acl_association - add EXAMPLES showing how to associate and disassociate (``state=absent``) a web ACL from a resource.

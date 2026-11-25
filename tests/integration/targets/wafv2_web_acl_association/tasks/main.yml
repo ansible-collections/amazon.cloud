@@ -1,0 +1,160 @@
+---
+# Integration tests for amazon.cloud.wafv2_web_acl_association.
+# A regional web ACL and an API Gateway REST API stage (a resource type that
+# AWS WAF can be associated with) are created as fixtures using community.aws,
+# then associated/disassociated with the amazon.cloud module under test.
+
+- name: wafv2_web_acl_association integration tests
+  module_defaults:
+    # amazon.aws / community.aws fixtures
+    group/aws:
+      access_key: "{{ aws_access_key }}"
+      secret_key: "{{ aws_secret_key }}"
+      session_token: "{{ security_token | default(omit) }}"
+      region: "{{ aws_region }}"
+    # amazon.cloud module under test
+    group/amazon.cloud.aws:
+      access_key: "{{ aws_access_key }}"
+      secret_key: "{{ aws_secret_key }}"
+      session_token: "{{ security_token | default(omit) }}"
+      region: "{{ aws_region }}"
+  collections:
+    - amazon.cloud
+    - community.aws
+
+  block:
+    - name: Set unique resource names
+      ansible.builtin.set_fact:
+        test_name: "ansible-test-wafassoc-{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=8') }}"
+
+    # ---------------------------------------------------------------
+    # Fixtures
+    # ---------------------------------------------------------------
+    - name: Create a regional web ACL
+      community.aws.wafv2_web_acl:
+        name: "{{ test_name }}"
+        scope: REGIONAL
+        state: present
+        default_action: Allow
+        cloudwatch_metrics: false
+        sampled_requests: false
+        metric_name: "{{ test_name | regex_replace('[^A-Za-z0-9]', '') }}"
+        rules: []
+      register: web_acl
+
+    - name: Create an API Gateway REST API with a deployed stage
+      community.aws.api_gateway:
+        state: present
+        stage: test
+        swagger_dict:
+          swagger: "2.0"
+          info:
+            title: "{{ test_name }}"
+            version: "1.0"
+          basePath: "/"
+          schemes:
+            - https
+          paths:
+            "/":
+              get:
+                responses:
+                  "200":
+                    description: OK
+                x-amazon-apigateway-integration:
+                  type: mock
+                  requestTemplates:
+                    application/json: "{\"statusCode\": 200}"
+                  responses:
+                    default:
+                      statusCode: "200"
+      register: api_gw
+
+    - name: Build the resource and web ACL ARNs
+      ansible.builtin.set_fact:
+        resource_arn: "arn:aws:apigateway:{{ aws_region }}::/restapis/{{ api_gw.api_id }}/stages/test"
+        web_acl_arn: "{{ web_acl.arn }}"
+
+    # ---------------------------------------------------------------
+    # Setup: associate (also proves state=present now works with the
+    # web_acl_arn / resource_arn identifier casing fix). Retried because a
+    # freshly deployed stage can briefly be invisible to AWS WAF.
+    # ---------------------------------------------------------------
+    - name: Associate the web ACL with the stage (state=present)
+      amazon.cloud.wafv2_web_acl_association:
+        state: present
+        web_acl_arn: "{{ web_acl_arn }}"
+        resource_arn: "{{ resource_arn }}"
+        wait: true
+      register: associate
+      until: associate is not failed
+      retries: 8
+      delay: 15
+
+    - name: Assert the association was created
+      ansible.builtin.assert:
+        that:
+          - associate is changed
+        fail_msg: "Expected state=present to create the association (changed=true)"
+
+    # ---------------------------------------------------------------
+    # AC: state=absent disassociates the web ACL
+    # ---------------------------------------------------------------
+    - name: Disassociate the web ACL (state=absent)
+      amazon.cloud.wafv2_web_acl_association:
+        state: absent
+        web_acl_arn: "{{ web_acl_arn }}"
+        resource_arn: "{{ resource_arn }}"
+        wait: true
+      register: disassociate
+
+    - name: Assert the disassociation reported a change
+      ansible.builtin.assert:
+        that:
+          - disassociate is changed
+        fail_msg: "Expected state=absent to disassociate the web ACL (changed=true)"
+
+    # ---------------------------------------------------------------
+    # AC: state=absent is idempotent on re-run
+    # ---------------------------------------------------------------
+    - name: Disassociate the web ACL again (state=absent, idempotence)
+      amazon.cloud.wafv2_web_acl_association:
+        state: absent
+        web_acl_arn: "{{ web_acl_arn }}"
+        resource_arn: "{{ resource_arn }}"
+      register: disassociate_idem
+
+    - name: Assert the second disassociation is idempotent
+      ansible.builtin.assert:
+        that:
+          - disassociate_idem is not changed
+        fail_msg: "Expected a second state=absent to be idempotent (changed=false)"
+
+  always:
+    - name: Cleanup - disassociate (best effort)
+      amazon.cloud.wafv2_web_acl_association:
+        state: absent
+        web_acl_arn: "{{ web_acl_arn }}"
+        resource_arn: "{{ resource_arn }}"
+      when:
+        - web_acl_arn is defined
+        - resource_arn is defined
+      ignore_errors: true
+
+    - name: Cleanup - delete the API Gateway REST API
+      community.aws.api_gateway:
+        state: absent
+        api_id: "{{ api_gw.api_id }}"
+      when: api_gw is defined and api_gw.api_id is defined
+      ignore_errors: true
+
+    - name: Cleanup - delete the web ACL
+      community.aws.wafv2_web_acl:
+        name: "{{ test_name }}"
+        scope: REGIONAL
+        state: absent
+      when: test_name is defined
+      register: waf_cleanup
+      until: waf_cleanup is not failed
+      retries: 10
+      delay: 20
+      ignore_errors: true
